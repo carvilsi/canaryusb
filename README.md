@@ -14,7 +14,7 @@ For debug mode:
 
 `$ ./canaryusb <your DNS canary token>`
 
-You can have a [Canary DNS token](https://canarytokens.org/generate) 
+Here you can create your [DNS canary token](https://canarytokens.org/generate)
 
 ## Notes
 
