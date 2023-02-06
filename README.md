@@ -1,6 +1,6 @@
 # Canaryusb 
 
-Sends DNS canary tokens when a USB device is connected on a GNU/Linux system.
+Get a mail notification via, Canary Tokens (DNS) when a USB device is connected on a GNU/Linux computer.
 
 ## Build
 
