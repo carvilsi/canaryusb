@@ -27,6 +27,15 @@
 
 char *canary_token;
 
+struct UsbAttr_s {
+        char *vendor;
+        char *product;
+        char *product_name;
+        char *serial;
+} UsbAttrs_default = {"0000", "0000", "no", "no"};
+
+typedef struct UsbAttr_s UsbAttrs; 
+
 static int call_the_canary(const char *canary_dns_token) {
         int canaryrsp;
         struct addrinfo hints_1, *res_1;
@@ -35,10 +44,10 @@ static int call_the_canary(const char *canary_dns_token) {
         return canaryrsp;
 }
 
-static char *get_usb_fingerprint(const char *vendor, const char *product, const char *product_name, const char *serial) {
-        size_t fingp_len = strlen(vendor) + strlen(product) + strlen(product_name) + strlen(serial) + 5;
+static char *get_usb_fingerprint(UsbAttrs usbattrs) {
+        size_t fingp_len = strlen(usbattrs.vendor) + strlen(usbattrs.product) + strlen(usbattrs.product_name) + strlen(usbattrs.serial) + 5;
         char *usb_fingprt = (char*)malloc(fingp_len);
-        sprintf(usb_fingprt, "%s:%s-%s-%s", vendor, product, product_name, serial);
+        sprintf(usb_fingprt, "%s:%s-%s-%s", usbattrs.vendor, usbattrs.product, usbattrs.product_name, usbattrs.serial);
         dprintf("usb fingerprint: %s\n", usb_fingprt);
         return usb_fingprt;
 }
@@ -73,28 +82,34 @@ static char *get_canary_encoded_usb_fingerprint(char *usb_fingprt) {
         return buf_sub_fingerptr;
 }
 
-static void canary_usb(struct udev_device* dev) {
+static UsbAttrs get_usb_attributes(struct udev_device *dev) {
+        UsbAttrs usbattr = UsbAttrs_default;
         const char *vendor = udev_device_get_sysattr_value(dev, "idVendor");
-        if (!vendor)
-                vendor = "0000";
+        if (vendor)
+                usbattr.vendor = (char*)vendor;
         const char *product = udev_device_get_sysattr_value(dev, "idProduct");
-        if (! product)
-                product = "0000"; 
+        if (product)
+                usbattr.product = (char*)product; 
         const char *product_name = udev_device_get_sysattr_value(dev, "product");
-        if (!product_name)
-                product_name = "no";
+        if (product_name)
+                usbattr.product_name = (char*)product_name;
         const char *serial = udev_device_get_sysattr_value(dev, "serial");
-        if (!serial)
-                serial = "no";
+        if (serial)
+                usbattr.serial = (char*)serial;
+        return usbattr;
+}
+
+static void canary_usb(struct udev_device *dev) {
+        UsbAttrs usbattrs = get_usb_attributes(dev); 
 
         dprintf("USB device with %s name and vendor/product %s:%s and %s serial: connected at: %s\n",
-                        product_name,
-                        vendor,
-                        product,
-                        serial,
+                        usbattrs.product_name,
+                        usbattrs.vendor,
+                        usbattrs.product,
+                        usbattrs.serial,
                         udev_device_get_devnode(dev));
        
-        char *usb_fingprt = get_usb_fingerprint(vendor, product, product_name, serial);
+        char *usb_fingprt = get_usb_fingerprint(usbattrs);
         char *base32_usb_fingprt = get_canary_encoded_usb_fingerprint(usb_fingprt);
         char *canary_dns_token = build_canary_dns_token(base32_usb_fingprt);
         int canaryrsp = call_the_canary(canary_dns_token);
@@ -102,6 +117,7 @@ static void canary_usb(struct udev_device* dev) {
                 dprintf("ERROR canaryusb: When calling canary tokens site, for connected USB: %s, run it on debug mode for more insights", usb_fingprt);
                 syslog(LOG_ERR, "canaryusb errored when trying to advice about new connected USB %s", usb_fingprt);
         } else {
+                syslog(LOG_NOTICE, "canary token sent for connected USB device: %s", usb_fingprt);
                 dprintf("canary token sent");
         }
 }
