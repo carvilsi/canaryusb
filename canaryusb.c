@@ -117,6 +117,7 @@ static void canary_usb(struct udev_device *dev) {
                 dprintf("ERROR canaryusb: When calling canary tokens site, for connected USB: %s, run it on debug mode for more insights", usb_fingprt);
                 syslog(LOG_ERR, "canaryusb errored when trying to advice about new connected USB %s", usb_fingprt);
         } else {
+                syslog(LOG_NOTICE, "canary token sent for connected USB device: %s", usb_fingprt);
                 dprintf("canary token sent");
         }
 }

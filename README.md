@@ -16,6 +16,14 @@ For debug mode:
 
 Here you can create your [DNS canary token](https://canarytokens.org/generate)
 
+## Stop the daemon
+
+Get the `PID` for canaryusb process and kill it:
+
+`$ ps -ef | grep canaryusb`
+`$ kill [PID]`
+
+
 ## Notes
 
 - Inspired by [canaryfy](https://github.com/thinkst/canaryfy)
