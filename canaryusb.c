@@ -7,10 +7,9 @@
 #include <netdb.h>
 #include <syslog.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include "base32.h"
-
-#define NAME_VERSION "canaryusb_v1.0.0" 
 
 #define SUBSYSTEM "usb"
 #define TOTAL_MAX_BASE_32_MESSAGE_LENGTH 118
@@ -24,6 +23,12 @@
 #else                                    
 #define dprintf(...) {}                  
 #endif                                   
+
+#define _NAME_ "canaryusb" 
+#define _VERSION_ "1.0.0"
+
+#define BOLD_TEXT "\e[1m"
+#define NO_BOLD_TEXT "\e[m"
 
 char *canary_token;
 
@@ -155,11 +160,42 @@ static void monitor_usb(struct udev* udev) {
         }
 }
 
+static struct option long_options[] = {
+       {"trust_list", required_argument, 0, 't'},
+       {"usb_fingerprint", no_argument, 0, 'u'},
+       {"canary_token", required_argument, 0, 'c'},
+       {"help", no_argument, 0, 'h'},
+       {0, 0 , 0, 0}
+};
+
+void show_help(){
+        printf(BOLD_TEXT "%s v%s\n" NO_BOLD_TEXT, _NAME_, _VERSION_);
+        printf("\n");
+        printf("Sends email notification when a USB device is plugged into your computer, powered by Canary Tokens\n");
+        printf("\n");
+        printf("Options:\n");
+        printf(BOLD_TEXT "-c, --canary_token [DNS canary token]\n" NO_BOLD_TEXT);
+        printf("\t\tcreated token from Canary token site: https://canarytokens.org/generate\n");
+        printf("\t\tyou'll receive the notification based on the created DNS token\n");
+        printf("\t\tto know more about it check: https://docs.canarytokens.org/guide/dns-token.html\n");
+        printf(BOLD_TEXT "-u, --usb_fingerprint\n" NO_BOLD_TEXT);
+        printf("\t\tthis prints the fingerprint related with a USB device that  is plugged into computer\n");
+        printf("\t\tand could be used to retrieve the list for " BOLD_TEXT "trust_list" NO_BOLD_TEXT " option\n");
+        printf(BOLD_TEXT "-t, --trust_list [comma separated usb_fingerprint list]\n" NO_BOLD_TEXT);
+        printf("\t\tlist of usb fingerprints, comma seprated, to not notify when the related deviced is connected\n");
+        printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
+
+        exit(EXIT_SUCCESS);
+}
+
 int main(int argc, char *argv[]) {
         if (argc < 2) {
-                fprintf(stderr, "ERROR: missing parameters: needs a canary DNS token\n");
+                fprintf(stderr, "ERROR: missing parameters: \n");
                 exit(EXIT_FAILURE); 
         }
+
+        int opts;
+
         
         canary_token = (char*)malloc(strlen(argv[1])+1);
         canary_token = argv[1];
@@ -180,8 +216,8 @@ int main(int argc, char *argv[]) {
         if (setsid() < 0)
                 exit(EXIT_FAILURE);
 
-        dprintf("%s daemon started\n", NAME_VERSION);
-        syslog(LOG_NOTICE, "%s daemon started", NAME_VERSION);
+        dprintf("%s daemon started\n", _NAME_);
+        syslog(LOG_NOTICE, "%s daemon started", _NAME_);
 
         monitor_usb(udev);
         udev_unref(udev);
