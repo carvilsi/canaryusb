@@ -191,7 +191,8 @@ void show_help(){
 int main(int argc, char *argv[]) {
         if (argc < 2) {
                 fprintf(stderr, "ERROR: missing parameters: \n");
-                exit(EXIT_FAILURE); 
+                show_help();
+                /*exit(EXIT_FAILURE); */
         }
 
         int opts;
