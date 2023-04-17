@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#include "base32.h"
+#include "utils/base32.h"
 #include "utils/trusted_list.h"
 
 #define SUBSYSTEM "usb"
