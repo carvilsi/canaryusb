@@ -8,4 +8,4 @@ debug: CCFLAGS += -DDEBUG
 debug: executable
 	
 executable:
-	$(CC) $(CCFLAGS) -o canaryusb canaryusb.c base32.c $(LIBS)
+	$(CC) $(CCFLAGS) -o canaryusb canaryusb.c base32.c utils/trusted_list.c $(LIBS)

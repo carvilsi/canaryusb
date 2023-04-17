@@ -34,4 +34,3 @@ Get the `PID` for canaryusb process and kill it:
 
 - Adding a list of trusted USB devices.
 - Exploring possibility of block some rogue devices.
-- Giving a try to same concept but for macOS.

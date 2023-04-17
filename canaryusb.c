@@ -10,6 +10,7 @@
 #include <getopt.h>
 
 #include "base32.h"
+#include "utils/trusted_list.h"
 
 #define SUBSYSTEM "usb"
 #define TOTAL_MAX_BASE_32_MESSAGE_LENGTH 118
@@ -31,6 +32,9 @@
 #define NO_BOLD_TEXT "\e[m"
 
 char *canary_token;
+int usb_fingerprint = 0;
+int trusted_list = 0;
+char *trusted_list_value;
 
 struct UsbAttr_s {
         char *vendor;
@@ -114,16 +118,24 @@ static void canary_usb(struct udev_device *dev) {
                         usbattrs.serial,
                         udev_device_get_devnode(dev));
        
-        char *usb_fingprt = get_usb_fingerprint(usbattrs);
-        char *base32_usb_fingprt = get_canary_encoded_usb_fingerprint(usb_fingprt);
-        char *canary_dns_token = build_canary_dns_token(base32_usb_fingprt);
-        int canaryrsp = call_the_canary(canary_dns_token);
-        if (canaryrsp != 0) {
-                dprintf("ERROR canaryusb: When calling canary tokens site, for connected USB: %s, run it on debug mode for more insights", usb_fingprt);
-                syslog(LOG_ERR, "canaryusb errored when trying to advice about new connected USB %s", usb_fingprt);
+        char *usb_fingrprnt = get_usb_fingerprint(usbattrs);
+        char *base32_usb_fingprt = get_canary_encoded_usb_fingerprint(usb_fingrprnt);
+        // if we want to the related fingerprint with the connected usb, print it!
+        // else, not call canary token
+        if (usb_fingerprint) {
+                printf("usb_fingerprint: %s\n", usb_fingrprnt);
+                printf("another: %s\n", base32_usb_fingprt);
         } else {
-                syslog(LOG_NOTICE, "canary token sent for connected USB device: %s", usb_fingprt);
-                dprintf("canary token sent");
+                char *canary_dns_token = build_canary_dns_token(base32_usb_fingprt);
+
+                int canaryrsp = call_the_canary(canary_dns_token);
+                if (canaryrsp != 0) {
+                        dprintf("ERROR canaryusb: When calling canary tokens site, for connected USB: %s, run it on debug mode for more insights", usb_fingrprnt);
+                        syslog(LOG_ERR, "canaryusb errored when trying to advice about new connected USB %s", usb_fingrprnt);
+                } else {
+                        syslog(LOG_NOTICE, "canary token sent for connected USB device: %s", usb_fingrprnt);
+                        dprintf("canary token sent");
+                }
         }
 }
 
@@ -180,7 +192,8 @@ void show_help(){
         printf("\t\tto know more about it check: https://docs.canarytokens.org/guide/dns-token.html\n");
         printf(BOLD_TEXT "-u, --usb_fingerprint\n" NO_BOLD_TEXT);
         printf("\t\tthis prints the fingerprint related with a USB device that  is plugged into computer\n");
-        printf("\t\tand could be used to retrieve the list for " BOLD_TEXT "trust_list" NO_BOLD_TEXT " option\n");
+        printf("\t\tand could be used to create the list for " BOLD_TEXT "trust_list" NO_BOLD_TEXT " option.\n");
+        printf("\t\tIn this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.\n");
         printf(BOLD_TEXT "-t, --trust_list [comma separated usb_fingerprint list]\n" NO_BOLD_TEXT);
         printf("\t\tlist of usb fingerprints, comma seprated, to not notify when the related deviced is connected\n");
         printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
@@ -189,17 +202,49 @@ void show_help(){
 }
 
 int main(int argc, char *argv[]) {
+     	int c;
+	
         if (argc < 2) {
-                fprintf(stderr, "ERROR: missing parameters: \n");
+                fprintf(stderr, "ERROR: missing parameters, check the usage: \n");
                 show_help();
-                /*exit(EXIT_FAILURE); */
         }
 
-        int opts;
+    	while (1) {
+                int option_index = 0;
 
-        
-        canary_token = (char*)malloc(strlen(argv[1])+1);
-        canary_token = argv[1];
+                c = getopt_long(argc, argv, "uht:c:",
+                        long_options, &option_index);
+                if (c == -1)
+                break;
+
+                switch (c) {
+                            case 't':
+                                    trusted_list = 1;
+                                    trusted_list_value = (char*)malloc(strlen(optarg)+1);
+                                    trusted_list_value = optarg;
+                                    break;
+
+                            case 'h':
+                                    show_help();
+                                    break;
+
+                            case 'u':
+                                    usb_fingerprint = 1;
+                                    break;
+
+                            case 'c':
+                                    canary_token = (char*)malloc(strlen(optarg)+1);
+                                    canary_token = optarg;
+                                    break;
+
+                            case '?':
+                                    show_help();
+                                    break;
+
+                            default:
+                                    printf("?? getopt returned character code 0%o ??\n", c);
+                }
+        }       
         
         struct udev* udev = udev_new();
         if (!udev) {
@@ -207,6 +252,7 @@ int main(int argc, char *argv[]) {
                 exit(EXIT_FAILURE); 
         }
 
+        /*TODO: needs to not duplicate daemon*/
         pid_t pid;
         pid = fork();
 
@@ -220,8 +266,12 @@ int main(int argc, char *argv[]) {
         dprintf("%s daemon started\n", _NAME_);
         syslog(LOG_NOTICE, "%s daemon started", _NAME_);
 
+        /*printf("The list: %s\n", trusted_list_value);*/
+        /*create_array_for_trusted_list(trusted_list_value);*/
+
         monitor_usb(udev);
         udev_unref(udev);
         
         return EXIT_SUCCESS;
 }
+
