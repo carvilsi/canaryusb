@@ -1,11 +1,34 @@
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 
-void create_array_for_trusted_list(const char *trusted_list) {
+int compare_str(char *sub_list, char *cmp)
+{
+        int res = 0;
         int i = 0;
-        for (i; i < strlen(trusted_list); i++)
-        {
-                printf("%c", trusted_list[i]);
-                printf("\n");
+        if (strlen(sub_list) != strlen(cmp))
+                        return res;
+        for (i; i < strlen(cmp); i++) {
+                if (sub_list[i] == cmp[i])
+                        res = 1;
+                else
+                        res = 0;
         }
+        return res;
+}
+
+int is_usb_device_in_trust_list(char *trusted_list, char *usb_fngprnt, char *delim) 
+{
+        char *sub_list;
+        int is_equal;
+
+        sub_list = strtok(trusted_list, delim);
+        do {
+                is_equal = compare_str(sub_list, usb_fngprnt);
+                if (is_equal) {
+                        return is_equal;
+                        break;
+                }
+        } while (sub_list = strtok(NULL, delim));
+
+        return 0;
 }
