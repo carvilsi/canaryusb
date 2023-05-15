@@ -18,6 +18,7 @@
 #define CANARY_ON_ACTION "add"
 #define CANARY_PORT "80"
 #define MAGIC_STRING "G42"
+#define TRUSTED_LIST_DELIMITER ",\n"
 
 #ifdef DEBUG                             
 #define dprintf(...) printf (__VA_ARGS__)
@@ -26,17 +27,20 @@
 #endif                                   
 
 #define _NAME_ "canaryusb" 
-#define _VERSION_ "1.0.0"
+#define _VERSION_ "1.1.0"
 
 #define BOLD_TEXT "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
 
-char *canary_token;
 int usb_fingerprint = 0;
 int trusted_list = 0;
+char *canary_token;
 char *trusted_list_value;
 
-struct UsbAttr_s {
+// TODO: take care of malloc and free
+
+struct UsbAttr_s 
+{
         char *vendor;
         char *product;
         char *product_name;
@@ -45,7 +49,8 @@ struct UsbAttr_s {
 
 typedef struct UsbAttr_s UsbAttrs; 
 
-static int call_the_canary(const char *canary_dns_token) {
+static int call_the_canary(const char *canary_dns_token) 
+{
         int canaryrsp;
         struct addrinfo hints_1, *res_1;
         memset(&hints_1, '\0', sizeof(hints_1));
@@ -53,16 +58,26 @@ static int call_the_canary(const char *canary_dns_token) {
         return canaryrsp;
 }
 
-static char *get_usb_fingerprint(UsbAttrs usbattrs) {
+static char *get_usb_fingerprint(UsbAttrs usbattrs) 
+{
         size_t fingp_len = strlen(usbattrs.vendor) + strlen(usbattrs.product) + strlen(usbattrs.product_name) + strlen(usbattrs.serial) + 5;
         char *usb_fingprt = (char*)malloc(fingp_len);
+        if (usb_fingprt == NULL) {
+                fprintf(stderr, "ERROR allocating memory");
+                exit(EXIT_FAILURE);
+        }
         sprintf(usb_fingprt, "%s:%s-%s-%s", usbattrs.vendor, usbattrs.product, usbattrs.product_name, usbattrs.serial);
         dprintf("usb fingerprint: %s\n", usb_fingprt);
         return usb_fingprt;
 }
 
-static char *build_canary_dns_token(char *buf_sub_fingerptr) {
+static char *build_canary_dns_token(char *buf_sub_fingerptr) 
+{
         char *canary_dns_token = (char*)malloc(strlen(buf_sub_fingerptr) + strlen(MAGIC_STRING) + 2 + strlen(canary_token));
+        if (canary_dns_token == NULL) {
+                fprintf(stderr, "ERROR allocating memory");
+                exit(EXIT_FAILURE);
+        }
         if (strlen(buf_sub_fingerptr) > MAX_BASE_32_MESSAGE_LENGTH) {
                 int i;
                 for (i = 0; i < MAX_BASE_32_MESSAGE_LENGTH; i++) {
@@ -83,15 +98,22 @@ static char *build_canary_dns_token(char *buf_sub_fingerptr) {
         return canary_dns_token;
 }
 
-static char *get_canary_encoded_usb_fingerprint(char *usb_fingprt) {
+static char *get_canary_encoded_usb_fingerprint(char *usb_fingprt) 
+{
+        // TODO: not need to malloc here, because it's already a constant size variable
         char *buf_sub_fingerptr = (char*)malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
+        if (buf_sub_fingerptr == NULL) {
+                fprintf(stderr, "ERROR allocating memory");
+                exit(EXIT_FAILURE);
+        }
         size_t buflen = (size_t)TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1;
         int size_enc = base32_encode(buf_sub_fingerptr, &buflen, usb_fingprt, strlen(usb_fingprt)); 
         dprintf("Encoded %d characters as: %s\n", size_enc, buf_sub_fingerptr);
         return buf_sub_fingerptr;
 }
 
-static UsbAttrs get_usb_attributes(struct udev_device *dev) {
+static UsbAttrs get_usb_attributes(struct udev_device *dev) 
+{
         UsbAttrs usbattr = UsbAttrs_default;
         const char *vendor = udev_device_get_sysattr_value(dev, "idVendor");
         if (vendor)
@@ -108,7 +130,8 @@ static UsbAttrs get_usb_attributes(struct udev_device *dev) {
         return usbattr;
 }
 
-static void canary_usb(struct udev_device *dev) {
+static void canary_usb(struct udev_device *dev) 
+{
         UsbAttrs usbattrs = get_usb_attributes(dev); 
 
         dprintf("USB device with %s name and vendor/product %s:%s and %s serial: connected at: %s\n",
@@ -139,7 +162,8 @@ static void canary_usb(struct udev_device *dev) {
         }
 }
 
-static void monitor_usb(struct udev* udev) {
+static void monitor_usb(struct udev* udev) 
+{
         struct udev_monitor* mon = udev_monitor_new_from_netlink(udev, "udev");
 
         udev_monitor_filter_add_match_subsystem_devtype(mon, SUBSYSTEM, NULL);
@@ -172,7 +196,8 @@ static void monitor_usb(struct udev* udev) {
         }
 }
 
-static struct option long_options[] = {
+static struct option long_options[] = 
+{
        {"trust_list", required_argument, 0, 't'},
        {"usb_fingerprint", no_argument, 0, 'u'},
        {"canary_token", required_argument, 0, 'c'},
@@ -180,7 +205,8 @@ static struct option long_options[] = {
        {0, 0 , 0, 0}
 };
 
-void show_help(){
+void show_help()
+{
         printf(BOLD_TEXT "%s v%s\n" NO_BOLD_TEXT, _NAME_, _VERSION_);
         printf("\n");
         printf("Sends email notification when a USB device is plugged into your computer, powered by Canary Tokens\n");
@@ -201,7 +227,8 @@ void show_help(){
         exit(EXIT_SUCCESS);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{       
      	int c;
 	
         if (argc < 2) {
@@ -212,35 +239,37 @@ int main(int argc, char *argv[]) {
     	while (1) {
                 int option_index = 0;
 
-                c = getopt_long(argc, argv, "uht:c:",
-                        long_options, &option_index);
+                c = getopt_long(argc, argv, "uht:c:", long_options, &option_index);
                 if (c == -1)
-                break;
+                        break;
 
                 switch (c) {
                             case 't':
                                     trusted_list = 1;
-                                    trusted_list_value = (char*)malloc(strlen(optarg)+1);
-                                    trusted_list_value = optarg;
+                                    trusted_list_value = (char*) malloc(strlen(optarg)+1);
+                                    if (trusted_list_value == NULL) {
+                                            fprintf(stderr, "ERROR allocating memory");
+                                            exit(EXIT_FAILURE);
+                                    }
+                                    trusted_list_value = strcpy(trusted_list_value, optarg);
                                     break;
-
                             case 'h':
                                     show_help();
                                     break;
-
                             case 'u':
                                     usb_fingerprint = 1;
                                     break;
-
                             case 'c':
                                     canary_token = (char*)malloc(strlen(optarg)+1);
-                                    canary_token = optarg;
+                                    if (canary_token == NULL) {
+                                            fprintf(stderr, "ERROR allocating memory");
+                                            exit(EXIT_FAILURE);
+                                    }
+                                    canary_token = strcpy(canary_token, optarg);
                                     break;
-
                             case '?':
                                     show_help();
                                     break;
-
                             default:
                                     printf("?? getopt returned character code 0%o ??\n", c);
                 }
@@ -253,25 +282,33 @@ int main(int argc, char *argv[]) {
         }
 
         /*TODO: needs to not duplicate daemon*/
-        pid_t pid;
-        pid = fork();
+        /*pid_t pid;*/
+        /*pid = fork();*/
 
-        if (pid < 0)
-                exit(EXIT_FAILURE);
-        if (pid > 0) 
-                exit(EXIT_SUCCESS);
-        if (setsid() < 0)
-                exit(EXIT_FAILURE);
+        /*if (pid < 0)*/
+                /*exit(EXIT_FAILURE);*/
+        /*if (pid > 0) */
+                /*exit(EXIT_SUCCESS);*/
+        /*if (setsid() < 0)*/
+                /*exit(EXIT_FAILURE);*/
 
         dprintf("%s daemon started\n", _NAME_);
         syslog(LOG_NOTICE, "%s daemon started", _NAME_);
 
-        /*printf("The list: %s\n", trusted_list_value);*/
-        /*create_array_for_trusted_list(trusted_list_value);*/
+        // printf("The list: %s\n", trusted_list_value);
+        // const int is_there = is_usb_device_in_trust_list(trusted_list_value, "foobar", TRUSTED_LIST_DELIMITER);
+        // printf("Is there? %s\n", is_there ? "yes" : "no"); 
+        // printf("the canary token: %s\n", canary_token);
 
-        monitor_usb(udev);
-        udev_unref(udev);
+
+        /*monitor_usb(udev);*/
+        /*udev_unref(udev);*/
+        
+        if (canary_token != NULL)
+                free(canary_token);
+
+        if (trusted_list_value != NULL)
+                free(trusted_list_value);
         
         return EXIT_SUCCESS;
 }
-

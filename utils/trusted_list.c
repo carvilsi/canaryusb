@@ -4,9 +4,9 @@
 int compare_str(char *sub_list, char *cmp)
 {
         int res = 0;
-        int i = 0;
         if (strlen(sub_list) != strlen(cmp))
                         return res;
+        int i = 0;
         for (i; i < strlen(cmp); i++) {
                 if (sub_list[i] == cmp[i])
                         res = 1;
