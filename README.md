@@ -26,7 +26,7 @@ Get the `PID` for canaryusb process and kill it:
 ## Notes
 
 - Inspired by [canaryfy](https://github.com/thinkst/canaryfy)
-- Only works on GNU/Linux systems, and by now only tested on a 20/22.04.1-Ubuntu 64
+- Only works on GNU/Linux systems, and by now only tested on a 20/22.04.1-Ubuntu 64, Linux the-arch 6.3.2-arch1-1
 - Contributions are very welcome (Pull requests, issues, comments and even a code review)  
 - Also if you like it, please leave a start I would appreciate it ;)
 
