@@ -113,10 +113,7 @@ static void canary_usb(struct udev_device *dev)
         UsbAttrs usbattrs = get_usb_attributes(dev);
         size_t fingp_len = strlen(usbattrs.vendor) + strlen(usbattrs.product) + strlen(usbattrs.product_name) + strlen(usbattrs.serial) + 5;
         char *usb_fingrprnt = (char*)malloc(fingp_len);
-        if (usb_fingrprnt == NULL) {
-                fprintf(stderr, "ERROR allocating memory");
-                exit(EXIT_FAILURE);
-        }
+        check_memory_allocation(usb_fingrprnt);
 
         dprintf("USB device with %s name and vendor/product %s:%s and %s serial: connected at: %s\n",
                         usbattrs.product_name,
@@ -127,10 +124,7 @@ static void canary_usb(struct udev_device *dev)
        
         get_usb_fingerprint(usbattrs, usb_fingrprnt);
         char *base32_usb_fingprt = (char*)malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
-        if (base32_usb_fingprt == NULL) {
-                fprintf(stderr, "ERROR allocating memory");
-                exit(EXIT_FAILURE);
-        }
+        check_memory_allocation(base32_usb_fingprt);
         get_canary_encoded_usb_fingerprint(usb_fingrprnt, base32_usb_fingprt);
         // if we want to the related fingerprint with the connected usb, print it!
         // else, not call canary token
@@ -139,10 +133,7 @@ static void canary_usb(struct udev_device *dev)
                 printf("another: %s\n", base32_usb_fingprt);
         } else {
                 char *canary_dns_token = (char*)malloc(strlen(base32_usb_fingprt) + strlen(MAGIC_STRING) + 2 + strlen(canary_token));
-                if (canary_dns_token == NULL) {
-                        fprintf(stderr, "ERROR allocating memory");
-                        exit(EXIT_FAILURE);
-                }
+                check_memory_allocation(canary_dns_token);
                 build_canary_dns_token(base32_usb_fingprt, canary_dns_token);
 
                 /*int canaryrsp = call_the_canary(canary_dns_token);*/
@@ -246,10 +237,7 @@ int main(int argc, char *argv[])
                             case 't':
                                     trusted_list = 1;
                                     trusted_list_value = (char*) malloc(strlen(optarg)+1);
-                                    if (trusted_list_value == NULL) {
-                                            fprintf(stderr, "ERROR allocating memory");
-                                            exit(EXIT_FAILURE);
-                                    }
+                                    check_memory_allocation(trusted_list_value);
                                     trusted_list_value = strcpy(trusted_list_value, optarg);
                                     break;
                             case 'h':
@@ -260,10 +248,7 @@ int main(int argc, char *argv[])
                                     break;
                             case 'c':
                                     canary_token = (char*)malloc(strlen(optarg)+1);
-                                    if (canary_token == NULL) {
-                                            fprintf(stderr, "ERROR allocating memory");
-                                            exit(EXIT_FAILURE);
-                                    }
+                                    check_memory_allocation(canary_token);
                                     canary_token = strcpy(canary_token, optarg);
                                     break;
                             case '?':
@@ -294,10 +279,10 @@ int main(int argc, char *argv[])
         dprintf("%s daemon started\n", _NAME_);
         syslog(LOG_NOTICE, "%s daemon started", _NAME_);
 
-         printf("The list: %s\n", trusted_list_value);
-         const int is_there = is_usb_device_in_trust_list(trusted_list_value, "foobar", TRUSTED_LIST_DELIMITER);
-         printf("Is there? %s\n", is_there ? "yes" : "no"); 
-         printf("the canary token: %s\n", canary_token);
+        printf("The list: %s\n", trusted_list_value);
+        const int is_there = is_usb_device_in_trust_list(trusted_list_value, "foobar", TRUSTED_LIST_DELIMITER);
+        printf("Is there? %s\n", is_there ? "yes" : "no"); 
+        printf("the canary token: %s\n", canary_token);
 
 
         monitor_usb(udev);
