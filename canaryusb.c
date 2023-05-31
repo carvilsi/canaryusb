@@ -136,8 +136,8 @@ static void canary_usb(struct udev_device *dev)
                 check_memory_allocation(canary_dns_token);
                 build_canary_dns_token(base32_usb_fingprt, canary_dns_token);
 
+                /*TODO: remove this*/
                 /*int canaryrsp = call_the_canary(canary_dns_token);*/
-/*TODO: remove this*/
                 free(canary_dns_token);
                 int canaryrsp = 0;
                 if (canaryrsp != 0) {
