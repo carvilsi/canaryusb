@@ -19,6 +19,8 @@
 #define CANARY_PORT "80"
 #define MAGIC_STRING "G42"
 #define TRUSTED_LIST_DELIMITER ",\n"
+#define REPLACE_THIS ' '
+#define REPLACE_WITH '_' 
 
 #ifdef DEBUG                             
 #define dprintf(...) printf (__VA_ARGS__)
@@ -56,10 +58,22 @@ static int call_the_canary(const char *canary_dns_token)
         return canaryrsp;
 }
 
-static void get_usb_fingerprint(UsbAttrs usbattrs, char *usb_fingprt) 
+static void replace_in_string(char *to_replace)
+{
+        int i = 0;
+        for (i; i <= strlen(to_replace); i++) {
+                if (to_replace[i] == REPLACE_THIS)
+                        to_replace[i] = REPLACE_WITH;
+        }
+}
+
+static char* get_usb_fingerprint(UsbAttrs usbattrs, char *usb_fingprt) 
 {
         sprintf(usb_fingprt, "%s:%s-%s-%s", usbattrs.vendor, usbattrs.product, usbattrs.product_name, usbattrs.serial);
+        if (strchr(usb_fingprt, REPLACE_THIS) != NULL)
+                replace_in_string(usb_fingprt);
         dprintf("usb fingerprint: %s\n", usb_fingprt);
+        return usb_fingprt;
 }
 
 static void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_token) 
@@ -131,10 +145,7 @@ static void canary_usb(struct udev_device *dev)
 {
         UsbAttrs usbattrs = get_usb_attributes(dev);
         size_t fingp_len = strlen(usbattrs.vendor) + strlen(usbattrs.product) + strlen(usbattrs.product_name) + strlen(usbattrs.serial) + 5;
-        char *usb_fingrprnt = (char *) malloc(fingp_len);
-        check_memory_allocation(usb_fingrprnt);
 
-        printf("WTF!!!!!!!!!");
         dprintf("USB device with %s name and vendor/product %s:%s and %s serial. Connected at: %s\n",
                         usbattrs.product_name,
                         usbattrs.vendor,
@@ -142,7 +153,9 @@ static void canary_usb(struct udev_device *dev)
                         usbattrs.serial,
                         udev_device_get_devnode(dev));
        
-        get_usb_fingerprint(usbattrs, usb_fingrprnt);
+        
+        char tmp_usb_fingprt[fingp_len];
+        char *usb_fingrprnt = get_usb_fingerprint(usbattrs, tmp_usb_fingprt);
         char *base32_usb_fingprt = (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
         check_memory_allocation(base32_usb_fingprt);
         get_canary_encoded_usb_fingerprint(usb_fingrprnt, base32_usb_fingprt);
@@ -160,16 +173,13 @@ static void canary_usb(struct udev_device *dev)
                 printf("usb_fingerprint: %s\n", usb_fingrprnt);
                 printf("another: %s\n", base32_usb_fingprt);
         } else {
-                printf("This is the is_in_list: %d\n", is_in_list);
                 if (is_in_list) {
-                        printf("WTFFFFFFFFFF\n");
                         syslog(LOG_NOTICE, "usb device: %s connected, but is at trusted list, not calling canary token", usb_fingrprnt);
                         dprintf("usb device: %s connected, but is at trusted list, not calling canary token", usb_fingrprnt);
                 } else {
                         deal_with_canaries(base32_usb_fingprt, usb_fingrprnt); 
                 }
         }
-        free(usb_fingrprnt);
         free(base32_usb_fingprt);
 }
 
@@ -257,7 +267,6 @@ int main(int argc, char *argv[])
                 switch (c) {
                             case 't':
                                     trusted_list = 1;
-                                    printf("The thingy: %s\n", optarg);
                                     trusted_list_value = (char*) malloc(strlen(optarg)+1);
                                     check_memory_allocation(trusted_list_value);
                                     trusted_list_value = strcpy(trusted_list_value, optarg);
