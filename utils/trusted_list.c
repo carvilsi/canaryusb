@@ -19,6 +19,8 @@ int compare_str(char *sub_list, char *cmp)
 
 int is_usb_device_in_trust_list(char *trusted_list, char *usb_fngprnt, char *delim) 
 {
+        printf("The trusted list: %s\n",trusted_list);
+        printf("The usb_fingerprint: %s\n",usb_fngprnt);
         char *sub_list;
         int is_equal;
 

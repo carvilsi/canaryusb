@@ -117,7 +117,6 @@ static void deal_with_canaries(char *base32_usb_fingprt, char *usb_fingrprnt)
         /*TODO: remove this*/
         /*int canaryrsp = call_the_canary(canary_dns_token);*/
         free(canary_dns_token);
-        printf("WTF!");
         int canaryrsp = 0;
         if (canaryrsp != 0) {
                 dprintf("ERROR canaryusb: When calling canary tokens site, for connected USB: %s, run it on debug mode for more insights", usb_fingrprnt);
@@ -135,6 +134,7 @@ static void canary_usb(struct udev_device *dev)
         char *usb_fingrprnt = (char *) malloc(fingp_len);
         check_memory_allocation(usb_fingrprnt);
 
+        printf("WTF!!!!!!!!!");
         dprintf("USB device with %s name and vendor/product %s:%s and %s serial. Connected at: %s\n",
                         usbattrs.product_name,
                         usbattrs.vendor,
@@ -149,6 +149,7 @@ static void canary_usb(struct udev_device *dev)
 
         // Check if we have a trusted list and the device is in the list.
         int is_in_list = 0;
+        printf("this is the trusted_list: %d\n", trusted_list);
         if (trusted_list) {
                 is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
         }
@@ -159,7 +160,9 @@ static void canary_usb(struct udev_device *dev)
                 printf("usb_fingerprint: %s\n", usb_fingrprnt);
                 printf("another: %s\n", base32_usb_fingprt);
         } else {
+                printf("This is the is_in_list: %d\n", is_in_list);
                 if (is_in_list) {
+                        printf("WTFFFFFFFFFF\n");
                         syslog(LOG_NOTICE, "usb device: %s connected, but is at trusted list, not calling canary token", usb_fingrprnt);
                         dprintf("usb device: %s connected, but is at trusted list, not calling canary token", usb_fingrprnt);
                 } else {
@@ -254,6 +257,7 @@ int main(int argc, char *argv[])
                 switch (c) {
                             case 't':
                                     trusted_list = 1;
+                                    printf("The thingy: %s\n", optarg);
                                     trusted_list_value = (char*) malloc(strlen(optarg)+1);
                                     check_memory_allocation(trusted_list_value);
                                     trusted_list_value = strcpy(trusted_list_value, optarg);
@@ -296,12 +300,6 @@ int main(int argc, char *argv[])
 
         dprintf("%s daemon started\n", _NAME_);
         syslog(LOG_NOTICE, "%s daemon started", _NAME_);
-
-        /*printf("The list: %s\n", trusted_list_value);*/
-        /*const int is_there = is_usb_device_in_trust_list(trusted_list_value, "foobar", TRUSTED_LIST_DELIMITER);*/
-        /*printf("Is there? %s\n", is_there ? "yes" : "no"); */
-        /*printf("the canary token: %s\n", canary_token);*/
-
 
         monitor_usb(udev);
         udev_unref(udev);
