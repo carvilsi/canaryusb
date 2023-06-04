@@ -21,6 +21,7 @@
 #define TRUSTED_LIST_DELIMITER ",\n"
 #define REPLACE_THIS ' '
 #define REPLACE_WITH '_' 
+#define DOT "."
 
 #ifdef DEBUG                             
 #define dprintf(...) printf (__VA_ARGS__)
@@ -67,7 +68,7 @@ static void replace_in_string(char *to_replace)
         }
 }
 
-static char* get_usb_fingerprint(UsbAttrs usbattrs, char *usb_fingprt) 
+static char *get_usb_fingerprint(UsbAttrs usbattrs, char *usb_fingprt) 
 {
         sprintf(usb_fingprt, "%s:%s-%s-%s", usbattrs.vendor, usbattrs.product, usbattrs.product_name, usbattrs.serial);
         if (strchr(usb_fingprt, REPLACE_THIS) != NULL)
@@ -83,16 +84,16 @@ static void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_tok
                 for (i = 0; i < MAX_BASE_32_MESSAGE_LENGTH; i++) {
                         canary_dns_token[i] = buf_sub_fingerptr[i];
                 }
-                strcat(canary_dns_token, ".");
+                strcat(canary_dns_token, DOT);
                 for (i = MAX_BASE_32_MESSAGE_LENGTH + 1; i <= strlen(buf_sub_fingerptr); i++) {
                         canary_dns_token[i] = buf_sub_fingerptr[i - 1];
                 }
         } else {
                 strcpy(canary_dns_token, buf_sub_fingerptr);
         }
-        strcat(canary_dns_token, "."); 
+        strcat(canary_dns_token, DOT); 
         strcat(canary_dns_token, MAGIC_STRING); 
-        strcat(canary_dns_token, ".");
+        strcat(canary_dns_token, DOT);
         strcat(canary_dns_token, canary_token);
         dprintf("canary_dns_token to send: %s\n", canary_dns_token);
 }
