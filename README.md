@@ -1,6 +1,19 @@
 # Canaryusb 
 
-Get a mail notification via, Canary Tokens (DNS) when a USB device is connected on a GNU/Linux computer.
+Get a mail notification via, **Canary Tokens (DNS)** when a **USB** device is connected on a GNU/Linux computer.
+
+**Options**:
+-c, --canary_token [DNS canary token]
+                created token from Canary token site: https://canarytokens.org/generate
+                you'll receive the notification based on the created DNS token
+                to know more about it check: https://docs.canarytokens.org/guide/dns-token.html
+-u, --usb_fingerprint
+                this prints the fingerprint related with a USB device that is plugged into computer
+                and could be used to create the list for trust_list option.
+                In this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.
+-t, --trust_list [comma separated usb_fingerprint list]
+                list of usb fingerprints, comma seprated, to not notify when the related deviced is connected
+                check usb_fingerprint option to retrieve device fingerprint for connected USB device
 
 ## Build
 
@@ -30,8 +43,8 @@ or just:
 ## Notes
 
 - Inspired by [canaryfy](https://github.com/thinkst/canaryfy)
-- Only works on GNU/Linux systems, and by now only tested on a 20/22.04.1-Ubuntu 64, Linux the-arch 6.3.2-arch1-1
-- Contributions are very welcome (Pull requests, issues, comments and even a code review)  
+- Only works on GNU/Linux systems, and by now only tested on a 20/22.04.1-Ubuntu 64 and Linux 6.3.2-arch1-1
+- Contributions are very welcome.
 - Also if you like it, please leave a start I would appreciate it ;)
 
 ## Thinks and things
