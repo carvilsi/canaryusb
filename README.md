@@ -1,6 +1,9 @@
 # Canaryusb 
 
 Get a mail notification via, **Canary Tokens (DNS)** when a **USB** device is connected on a GNU/Linux computer.
+Could be useful when you leave the laptop unatended or for a server on a remote location, will not prevent to being 
+breached, but at least you'll notice; this is the priciple behind [Thinkst Canary](https://canary.tools/#why).
+Here we are thinking about removable media threats like BadUSB or data theft.
 
 **Options**:
 -c, --canary_token [DNS canary token]
