@@ -7,10 +7,10 @@
 #include <getopt.h>
 
 #include "canaryusb.h"
-#include "usbs.h"
-#include "canaries.h"
-#include "trusted_list.h"
-#include "util.h"
+#include "usbs/usbs.h"
+#include "canary/canaries.h"
+#include "utils/trusted_list.h"
+#include "utils/util.h"
 
 int usb_fingerprint = 0;
 int trusted_list = 0;
@@ -46,7 +46,6 @@ static void canary_usb(struct udev_device *dev)
         // else, call canary token
         if (usb_fingerprint) {
                 printf("usb_fingerprint: %s\n", usb_fingrprnt);
-                printf("another: %s\n", base32_usb_fingprt);
         } else {
                 if (is_in_list) {
                         syslog(LOG_NOTICE, "usb device: %s connected, but is at trusted list, not calling canary token", usb_fingrprnt);
@@ -149,7 +148,8 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE); 
         }
 
-        /*TODO: needs to not duplicate daemon*/
+        check_if_running();
+
         pid_t pid;
         pid = fork();
 
@@ -174,3 +174,4 @@ int main(int argc, char *argv[])
         
         return EXIT_SUCCESS;
 }
+

@@ -1,6 +1,9 @@
 # Canaryusb 
 
 Get a mail notification via, **Canary Tokens (DNS)** when a **USB** device is connected on a GNU/Linux computer.
+Could be useful when you leave the laptop unatended or for a server on a remote location, will not prevent to being 
+breached, but at least you'll notice; this is the priciple behind [Thinkst Canary](https://canary.tools/#why).
+Here we are thinking about removable media threats like BadUSB or data theft.
 
 **Options**:
 -c, --canary_token [DNS canary token]
@@ -25,9 +28,20 @@ For debug mode:
 
 ## Run
 
-`$ ./canaryusb <your DNS canary token>`
+`$ ./canaryusb -c <your DNS canary token>`
 
 Here you can create your [DNS canary token](https://canarytokens.org/generate)
+
+### Examples
+
+**Receive a mail for any device that will be connected to USB**
+`$ ./canaryusb -c <your DNS canary token>`
+
+**Receive a mail for any device that is not at the trust list and  will be connected to USB**
+`$ ./canaryusb -c <your DNS canary token> -t <comma separated list of trusted devices fingerprint>`
+
+**Get the fingerprint of devices for trusted list, do not send any mail**
+`$ ./canaryusb -u`
 
 ## Stop the daemon
 
@@ -47,6 +61,8 @@ or just:
 - Contributions are very welcome.
 - Also if you like it, please leave a start I would appreciate it ;)
 
-## Thinks and things
+### Thinks and things
 
 - Exploring possibility of block some rogue devices.
+- Add a config file for list and stuff (ofc at `~/.config/` ;)
+

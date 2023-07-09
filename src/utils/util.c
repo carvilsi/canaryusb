@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "canaryusb.h"
+#include "../canaryusb.h"
 
 void check_memory_allocation(void *check_me)
 {
@@ -41,4 +41,34 @@ void show_help()
         printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
 
         exit(EXIT_SUCCESS);
+}
+
+void check_if_running()
+{
+        char *cmd_pgrep = "pgrep";
+        char *cmd_cnt = "| wc -l";
+        char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(_NAME_) + strlen(cmd_cnt) + 2);
+        check_memory_allocation(cmd);
+        sprintf(cmd, "%s %s %s", cmd_pgrep, _NAME_, cmd_cnt);
+        FILE *fd = popen(cmd, "r");
+        free(cmd);
+
+        if (fd == NULL) {
+                fprintf(stderr, "ERROR not possible to get file descriptor");
+                exit(EXIT_FAILURE);
+        }
+
+        char cmdo[MAX_PID_LEN];
+        fgets(cmdo, MAX_PID_LEN, fd);
+        int nmb_prcss = atoi(cmdo);
+
+        if (pclose(fd) == -1) {
+                fprintf(stderr, "ERROR not possible to close stream");
+                exit(EXIT_FAILURE);
+        }
+
+        if (nmb_prcss > 1) {
+                fprintf(stderr, "there is another instance of canaryusb running\n");
+                exit(EXIT_FAILURE);
+        }
 }
