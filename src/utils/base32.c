@@ -112,4 +112,3 @@ int base32_encode(char *buf, size_t *buflen, const void *data, size_t size)
 	return iout;
 }
 
-
