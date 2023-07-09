@@ -5,10 +5,10 @@
 #include <netdb.h>
 #include <syslog.h>
 
-#include "canaryusb.h"
-#include "usbs.h"
-#include "base32.h"
-#include "util.h"
+#include "../canaryusb.h"
+#include "../usbs/usbs.h"
+#include "../utils/base32.h"
+#include "../utils/util.h"
 
 static int call_the_canary(const char *canary_dns_token) 
 {

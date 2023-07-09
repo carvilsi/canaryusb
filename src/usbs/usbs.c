@@ -3,8 +3,8 @@
 #include <libudev.h>
 
 #include "usbs.h"
-#include "canaryusb.h"
-#include "util.h"
+#include "../canaryusb.h"
+#include "../utils/util.h"
 
 UsbAttrs get_usb_attributes(struct udev_device *dev) 
 {

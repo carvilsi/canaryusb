@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "canaryusb.h"
+#include "../canaryusb.h"
 
 void check_memory_allocation(void *check_me)
 {

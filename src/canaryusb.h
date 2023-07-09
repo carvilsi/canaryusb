@@ -5,7 +5,6 @@
 #define CANARY_PORT "80"
 #define MAGIC_STRING "G42"
 #define TRUSTED_LIST_DELIMITER ","
-//#define TRUSTED_LIST_DELIMITER ",\n"
 #define REPLACE_THIS ' '
 #define REPLACE_WITH '_' 
 #define DOT "."

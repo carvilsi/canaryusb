@@ -7,10 +7,10 @@
 #include <getopt.h>
 
 #include "canaryusb.h"
-#include "usbs.h"
-#include "canaries.h"
-#include "trusted_list.h"
-#include "util.h"
+#include "usbs/usbs.h"
+#include "canary/canaries.h"
+#include "utils/trusted_list.h"
+#include "utils/util.h"
 
 int usb_fingerprint = 0;
 int trusted_list = 0;
