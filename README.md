@@ -6,15 +6,18 @@ breached, but at least you'll notice; this is the priciple behind [Thinkst Canar
 Here we are thinking about removable media threats like BadUSB or data theft.
 
 **Options**:
--c, --canary_token [DNS canary token]
+
+**-c, --canary_token [DNS canary token]**
                 created token from Canary token site: https://canarytokens.org/generate
                 you'll receive the notification based on the created DNS token
                 to know more about it check: https://docs.canarytokens.org/guide/dns-token.html
--u, --usb_fingerprint
+
+**-u, --usb_fingerprint**
                 this prints the fingerprint related with a USB device that is plugged into computer
                 and could be used to create the list for trust_list option.
                 In this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.
--t, --trust_list [comma separated usb_fingerprint list]
+
+**-t, --trust_list [comma separated usb_fingerprint list]**
                 list of usb fingerprints, comma seprated, to not notify when the related deviced is connected
                 check usb_fingerprint option to retrieve device fingerprint for connected USB device
 
