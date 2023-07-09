@@ -34,12 +34,15 @@ For debug mode:
 `$ ./canaryusb [options]`
 
 **Receive a mail for any device that will be connected to USB**
+
 `$ ./canaryusb -c <your DNS canary token>`
 
 **Receive a mail for any device that is not at the trust list and  will be connected to USB**
+
 `$ ./canaryusb -c <your DNS canary token> -t <comma separated list of trusted devices fingerprint>`
 
 **Get the fingerprint of devices for trusted list, do not send any mail**
+
 `$ ./canaryusb -u`
 
 
@@ -48,12 +51,15 @@ Here you can create your [DNS token](https://canarytokens.org/generate)
 ### Examples
 
 **Receive a mail for any device that will be connected to USB**
+
 `$ ./canaryusb -c 555whateverYouGetFrom.canarytokens.com`
 
 **Receive a mail for any device that is not at the trust list and  will be connected to USB**
+
 `$ ./canaryusb -c 5555whateverYouGetFrom.canarytokens.com -t 1af3:0001-ZOWIE_Gaming_mouse-no,594d:604d-YD60MQ-no`
 
 **Get the fingerprint of devices for trusted list, do not send any mail**
+
 `$ ./canaryusb -u`
 
 **Output** when a USB device is connected:
