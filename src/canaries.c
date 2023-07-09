@@ -53,10 +53,9 @@ void deal_with_canaries(char *base32_usb_fingprt, char *usb_fingrprnt, char *can
         check_memory_allocation(canary_dns_token);
         build_canary_dns_token(base32_usb_fingprt, canary_dns_token, canary_token);
 
-        /*TODO: remove this*/
-        /*int canaryrsp = call_the_canary(canary_dns_token);*/
+        int canaryrsp = call_the_canary(canary_dns_token);
         free(canary_dns_token);
-        int canaryrsp = 0;
+        
         if (canaryrsp != 0) {
                 dprintf("ERROR canaryusb: When calling canary tokens site, for connected USB: %s, run it on debug mode for more insights", usb_fingrprnt);
                 syslog(LOG_ERR, "canaryusb errored when trying to advice about new connected USB %s", usb_fingrprnt);

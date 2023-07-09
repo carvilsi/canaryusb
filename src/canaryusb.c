@@ -46,7 +46,6 @@ static void canary_usb(struct udev_device *dev)
         // else, call canary token
         if (usb_fingerprint) {
                 printf("usb_fingerprint: %s\n", usb_fingrprnt);
-                printf("another: %s\n", base32_usb_fingprt);
         } else {
                 if (is_in_list) {
                         syslog(LOG_NOTICE, "usb device: %s connected, but is at trusted list, not calling canary token", usb_fingrprnt);

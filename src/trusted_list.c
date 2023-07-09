@@ -19,17 +19,16 @@ int compare_str(char *sub_list, char *cmp)
 
 int is_usb_device_in_trust_list(char *trusted_list, char *usb_fngprnt, char *delim) 
 {
-        char *sub_list;
-        int is_equal;
+        int is_equal = 0;
+        char *tl = (char*)malloc(strlen(trusted_list));
+        strcpy(tl, trusted_list);
 
-        sub_list = strtok(trusted_list, delim);
-        do {
+        char *sub_list = strtok(tl, delim);
+        while (sub_list != NULL && !is_equal) {
                 is_equal = compare_str(sub_list, usb_fngprnt);
-                if (is_equal) {
-                        return is_equal;
-                        break;
-                }
-        } while (sub_list = strtok(NULL, delim));
+                sub_list = strtok(NULL, delim);
+        }
 
-        return 0;
+        free(tl);
+        return is_equal;
 }
