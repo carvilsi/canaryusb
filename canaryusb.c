@@ -149,7 +149,8 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE); 
         }
 
-        /*TODO: needs to not duplicate daemon*/
+        check_if_running();
+
         pid_t pid;
         pid = fork();
 
@@ -174,3 +175,4 @@ int main(int argc, char *argv[])
         
         return EXIT_SUCCESS;
 }
+

@@ -20,3 +20,5 @@
 
 #define BOLD_TEXT "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
+
+#define MAX_PID_LEN 10
