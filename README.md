@@ -70,10 +70,6 @@ Here you can create your [DNS token](https://canarytokens.org/generate)
 
 `kill $(pgrep canaryusb)`
 
-or just:
-
-`$ kill $(pgrep canaryusb)`
-
 ## Notes
 
 - Inspired by [canaryfy](https://github.com/thinkst/canaryfy)
