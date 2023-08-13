@@ -8,6 +8,8 @@
 #define REPLACE_THIS ' '
 #define REPLACE_WITH '_' 
 #define DOT "."
+#define MAX_CANARY_TOKEN_LENGTH 200
+#define MAX_TRUSTED_LIST_LENGTH 1040
 
 #ifdef DEBUG                             
 #define dprintf(...) printf (__VA_ARGS__)

@@ -72,3 +72,4 @@ void check_if_running()
                 exit(EXIT_FAILURE);
         }
 }
+
