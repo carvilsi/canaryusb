@@ -10,6 +10,8 @@
 #define DOT "."
 #define MAX_CANARY_TOKEN_LENGTH 200
 #define MAX_TRUSTED_LIST_LENGTH 1040
+#define CONFIG_PATH ".config/canaryusb"
+#define CONFIG_FILE "config.toml"
 
 #ifdef DEBUG                             
 #define dprintf(...) printf (__VA_ARGS__)

@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <limits.h>
 
 #include "../canaryusb.h"
 
@@ -54,7 +58,7 @@ void check_if_running()
         free(cmd);
 
         if (fd == NULL) {
-                fprintf(stderr, "ERROR not possible to get file descriptor");
+                fprintf(stderr, "ERROR not possible to get file descriptor\n");
                 exit(EXIT_FAILURE);
         }
 
@@ -63,12 +67,49 @@ void check_if_running()
         int nmb_prcss = atoi(cmdo);
 
         if (pclose(fd) == -1) {
-                fprintf(stderr, "ERROR not possible to close stream");
+                fprintf(stderr, "ERROR not possible to close stream\n");
                 exit(EXIT_FAILURE);
         }
 
         if (nmb_prcss > 1) {
                 fprintf(stderr, "there is another instance of canaryusb running\n");
+                exit(EXIT_FAILURE);
+        }
+}
+
+void config_file_handler()
+{
+        char fp[PATH_MAX];
+        sprintf(fp, "%s/%s", getenv("HOME"), CONFIG_PATH);
+        DIR *dir = opendir(fp);
+        if (dir) {
+                closedir(dir);
+        } else if (ENOENT == errno) {
+                int mdr = mkdir(fp, S_IRWXU);
+                if (mdr != 0) {
+                        fprintf(stderr, "ERROR: %d when creating dir %s\n", errno, fp);
+                        exit(EXIT_FAILURE);
+                } else {
+                        /*TODO: check if config file exists*/
+                        char cf[PATH_MAX];
+                        sprintf(cf, "%s/%s/%s", getenv("HOME"), CONFIG_PATH, CONFIG_FILE);
+                        FILE *fd = fopen(cf, "w");
+                        if (fd == NULL) {
+                                fprintf(stderr, "ERROR: %d when creating config file %s\n", errno, cf);
+                                exit(EXIT_FAILURE);
+                        } else {
+                                fprintf(fd, "[canaryusb]\n");
+                                fprintf(fd, "#uncomment next line and replace with your own DNS canary token; get one at: https://canarytokens.org/generate\n");
+                                fprintf(fd, "#canary_token=555whateverYouGetFrom.canarytokens.com\n");
+                                fprintf(fd, "\n");
+                                fprintf(fd, "#uncomment next line and place your list for trusted devices, check README.md for more info\n");
+                                fprintf(fd, "#trust_list=1af3:0001-ZOWIE_Gaming_mouse-no,594d:604d-YD60MQ-no\n");
+                                fprintf(fd, "\n");
+                                fclose(fd);
+                        }
+                }
+        } else {
+                fprintf(stderr, "ERROR: %d opening dir %s\n", errno, CONFIG_PATH);
                 exit(EXIT_FAILURE);
         }
 }
