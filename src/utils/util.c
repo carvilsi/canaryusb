@@ -7,6 +7,7 @@
 #include <limits.h>
 
 #include "../canaryusb.h"
+#include "./toml.h"
 
 void check_memory_allocation(void *check_me)
 {
@@ -77,40 +78,46 @@ void check_if_running()
         }
 }
 
-void config_file_handler()
+int config_file_handler()
 {
-        char fp[PATH_MAX];
-        sprintf(fp, "%s/%s", getenv("HOME"), CONFIG_PATH);
-        DIR *dir = opendir(fp);
-        if (dir) {
-                closedir(dir);
-        } else if (ENOENT == errno) {
-                int mdr = mkdir(fp, S_IRWXU);
-                if (mdr != 0) {
-                        fprintf(stderr, "ERROR: %d when creating dir %s\n", errno, fp);
-                        exit(EXIT_FAILURE);
-                } else {
-                        /*TODO: check if config file exists*/
-                        char cf[PATH_MAX];
-                        sprintf(cf, "%s/%s/%s", getenv("HOME"), CONFIG_PATH, CONFIG_FILE);
-                        FILE *fd = fopen(cf, "w");
-                        if (fd == NULL) {
-                                fprintf(stderr, "ERROR: %d when creating config file %s\n", errno, cf);
-                                exit(EXIT_FAILURE);
-                        } else {
-                                fprintf(fd, "[canaryusb]\n");
-                                fprintf(fd, "#uncomment next line and replace with your own DNS canary token; get one at: https://canarytokens.org/generate\n");
-                                fprintf(fd, "#canary_token=555whateverYouGetFrom.canarytokens.com\n");
-                                fprintf(fd, "\n");
-                                fprintf(fd, "#uncomment next line and place your list for trusted devices, check README.md for more info\n");
-                                fprintf(fd, "#trust_list=1af3:0001-ZOWIE_Gaming_mouse-no,594d:604d-YD60MQ-no\n");
-                                fprintf(fd, "\n");
-                                fclose(fd);
-                        }
-                }
-        } else {
-                fprintf(stderr, "ERROR: %d opening dir %s\n", errno, CONFIG_PATH);
+        FILE* fp;
+        char errbuf[200];
+
+        fp = fopen(CONFIG_FILE, "r");
+        if (!fp) {
+                dprintf("No config file at %s\n", CONFIG_FILE);
+                show_help();
+        }
+
+        toml_table_t* conf = toml_parse_file(fp, errbuf, sizeof(errbuf));
+        fclose(fp);
+
+        if (!conf) {
+                dprintf("not possible to parse config file\n");
+                show_help();
+        }
+
+        toml_table_t* canary_conf = toml_table_in(conf, _NAME_);
+        if (!canary_conf) {
+                fprintf(stderr, "ERROR: config file exists but is missing [%s] table\n please check README.md", _NAME_);
                 exit(EXIT_FAILURE);
         }
-}
 
+        toml_datum_t canary_token = toml_string_in(canary_conf, "canary_token");
+        if (!canary_token.ok) {
+                fprintf(stderr, "ERROR: no canary_token value at config file\n please check README.md\n");
+                exit(EXIT_FAILURE);
+        } else {
+                dprintf("canary_token config value: %s\n", canary_token.u.s);
+        }
+
+        toml_datum_t trust_list = toml_string_in(canary_conf, "trust_list");
+        if (!trust_list.ok) {
+                dprintf("WARN: no trust_list value at config file\n");
+        } else {
+                dprintf("trust_list config value: %s\n", trust_list.u.s);
+        }
+        free(canary_token.u.s);
+        toml_free(canary_conf);
+        return 0;
+}

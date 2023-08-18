@@ -105,6 +105,9 @@ int main(int argc, char *argv[])
      	int c;
 
         if (argc < 2) {
+                int cfr = config_file_handler();
+                printf("config file res: %d\n", cfr);
+                exit(1);
                 //TODO: check if the config file exists and if it has values
                 //if exists and has values, use these as parameters
                 //otherwise is this error
