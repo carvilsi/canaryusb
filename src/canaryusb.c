@@ -102,15 +102,12 @@ static struct option long_options[] =
 
 int main(int argc, char *argv[])
 {       
-        config_file_handler();
-        exit(0);
      	int c;
 
-        //TODO: On start check if the config file exists, if not create the example one
-	
-        //TODO: if there is no parameters read the values from the config file 
-        //Otherwise use the ones from the command line paras
         if (argc < 2) {
+                //TODO: check if the config file exists and if it has values
+                //if exists and has values, use these as parameters
+                //otherwise is this error
                 fprintf(stderr, "ERROR: missing parameters, check the usage: \n");
                 show_help();
         }
