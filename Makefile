@@ -1,11 +1,31 @@
 CC = gcc
 LIBS = -ludev
 CCFLAGS =
+DEST_BIN = ~/.local/bin/
+DEST_CONF = ~/.config/canaryusb/
+SRC_CONF = ./configuration/config.toml
 
-all: executable
+SRC := $(shell find . -name '*.c') 
+
+all: canaryusb 
 
 debug: CCFLAGS += -DDEBUG 
-debug: executable
+debug: CCFLAGS += -g 
+debug: canaryusb 
+
+install: canaryusb
+	mv canaryusb $(DEST_BIN)
+	mkdir -p $(DEST_CONF)
+	cp $(SRC_CONF) $(DEST_CONF) 
+	source ~/.bashrc
+
+uninstall:
+	rm  $(DEST_BIN)canaryusb
+	rm -rf $(DEST_CONF)
 	
-executable:
-	$(CC) $(CCFLAGS) -o canaryusb src/canaryusb.c src/utils/base32.c src/utils/trusted_list.c src/utils/util.c src/canary/canaries.c src/usbs/usbs.c $(LIBS)
+canaryusb:
+	$(CC) $(CCFLAGS) -o $@ $(SRC) $(LIBS)
+
+clean:
+	rm canaryusb 
+
