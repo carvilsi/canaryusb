@@ -100,6 +100,54 @@ static struct option long_options[] =
        {0, 0 , 0, 0}
 };
 
+static void parse_command_line(int argc, char *argc[], int *trstlst, int *usbfngr, char *ctrstlst, char *cusbfngr, char *cnrytkn)
+{
+        while (1) {
+                int option_index = 0;
+
+                c = getopt_long(argc, argv, "uht:c:", long_options, &option_index);
+                if (c == -1)
+                        break;
+
+                switch (c) {
+                            case 't':
+                                    trusted_list = 1;
+                                    trstlst = 1;
+                                    if ((strlen(optarg)+1) > MAX_TRUSTED_LIST_LENGTH) {
+                                          fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", MAX_TRUSTED_LIST_LENGTH);
+                                          exit(EXIT_FAILURE);
+                                    }
+                                    trusted_list_value = (char*) malloc(strlen(optarg)+1);
+                                    check_memory_allocation(trusted_list_value);
+                                    trusted_list_value = strcpy(trusted_list_value, optarg);
+                                    ctrstlst = trusted_list_value;
+                                    break;
+                            case 'h':
+                                    show_help();
+                                    break;
+                            case 'u':
+                                    usb_fingerprint = 1;
+                                    usbfngr = 1;
+                                    break;
+                            case 'c':
+                                    if ((strlen(optarg)+1) > MAX_CANARY_TOKEN_LENGTH) {
+                                          fprintf(stderr, "The canary token characters exceeds the limit of %d\n", MAX_CANARY_TOKEN_LENGTH);
+                                          exit(EXIT_FAILURE);
+                                    }
+                                    canary_token = (char *) malloc(strlen(optarg)+1);
+                                    check_memory_allocation(canary_token);
+                                    canary_token = strcpy(canary_token, optarg);
+                                    cnrytkn = canary_token;
+                                    break;
+                            case '?':
+                                    show_help();
+                                    break;
+                            default:
+                                    printf("?? getopt returned character code 0%o ??\n", c);
+                }
+        }
+}
+
 int main(int argc, char *argv[])
 {       
      	int c;
@@ -113,48 +161,9 @@ int main(int argc, char *argv[])
                 //otherwise is this error
                 fprintf(stderr, "ERROR: missing parameters, check the usage: \n");
                 show_help();
+        } else {
+                parse_command_line(argc, argv);
         }
-
-    	while (1) {
-                int option_index = 0;
-
-                c = getopt_long(argc, argv, "uht:c:", long_options, &option_index);
-                if (c == -1)
-                        break;
-
-                switch (c) {
-                            case 't':
-                                    trusted_list = 1;
-                                    if ((strlen(optarg)+1) > MAX_TRUSTED_LIST_LENGTH) {
-                                          fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", MAX_TRUSTED_LIST_LENGTH);
-                                          exit(EXIT_FAILURE);
-                                    }
-                                    trusted_list_value = (char*) malloc(strlen(optarg)+1);
-                                    check_memory_allocation(trusted_list_value);
-                                    trusted_list_value = strcpy(trusted_list_value, optarg);
-                                    break;
-                            case 'h':
-                                    show_help();
-                                    break;
-                            case 'u':
-                                    usb_fingerprint = 1;
-                                    break;
-                            case 'c':
-                                    if ((strlen(optarg)+1) > MAX_CANARY_TOKEN_LENGTH) {
-                                          fprintf(stderr, "The canary token characters exceeds the limit of %d\n", MAX_CANARY_TOKEN_LENGTH);
-                                          exit(EXIT_FAILURE);
-                                    }
-                                    canary_token = (char *) malloc(strlen(optarg)+1);
-                                    check_memory_allocation(canary_token);
-                                    canary_token = strcpy(canary_token, optarg);
-                                    break;
-                            case '?':
-                                    show_help();
-                                    break;
-                            default:
-                                    printf("?? getopt returned character code 0%o ??\n", c);
-                }
-        }       
         
         struct udev* udev = udev_new();
         if (!udev) {

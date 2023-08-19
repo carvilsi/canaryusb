@@ -83,9 +83,13 @@ int config_file_handler()
         FILE* fp;
         char errbuf[200];
 
-        fp = fopen(CONFIG_FILE, "r");
+        size_t pthsz = sizeof(getenv("HOME")) + sizeof(CONFIG_FILE) + 1;
+        char config_file[pthsz];
+        sprintf(config_file, "%s/%s", getenv("HOME"), CONFIG_FILE);
+
+        fp = fopen(config_file, "r");
         if (!fp) {
-                dprintf("No config file at %s\n", CONFIG_FILE);
+                dprintf("No config file at %s\n", config_file);
                 show_help();
         }
 
@@ -117,6 +121,7 @@ int config_file_handler()
         } else {
                 dprintf("trust_list config value: %s\n", trust_list.u.s);
         }
+        
         free(canary_token.u.s);
         toml_free(canary_conf);
         return 0;
