@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "ct.h"
 
@@ -6,23 +7,32 @@ int nbr_tst = 0;
 int nbr_ptst = 0;
 int nbr_ftst = 0;
 
+char *fncssrt;
+
 void ct_run(void (*f)())  
 {
         (*f)();
-        nbr_tst++;
 }
 
 void ct_assert(const char *fncn, char *msgssrt, int test)
 {
+        if (fncssrt == NULL || strcmp(fncssrt, fncn) != 0)
+                fncssrt = fncn;
+        else
+                fncn = "";
+
         if (nbr_tst == 0) {
                 printf("\n");
         }
+        nbr_tst++;
+
+        printf(WHT "%s\n" RST, fncn);
 
         if (test) {
-                printf(GRN "%d- " WHT "%s: " GRN "passed" RST "\n", nbr_tst, fncn); 
+                printf("\t%d- " WHT "%s: " GRN "passed" RST, nbr_tst, msgssrt); 
                 nbr_ptst++;
         } else { 
-                printf(RED "%d- " WHT "%s: " RED "failed \n\t" "%s" RST "\n", nbr_tst, fncn, msgssrt);
+                printf("\t%d- " RED "%s: failed" RST, nbr_tst, msgssrt);
                 nbr_ftst++;
         }
         printf("\n");
@@ -30,6 +40,7 @@ void ct_assert(const char *fncn, char *msgssrt, int test)
 
 void ct_print_results()
 {
+      printf("\n");
       printf(YEL "Total excuted tests: %d\n" RST, nbr_tst);
       if (nbr_ptst)
               printf(GRN "\tTotal passed tests: %d\n" RST, nbr_ptst);

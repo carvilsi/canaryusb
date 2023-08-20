@@ -1,3 +1,5 @@
+#include <libudev.h>
+
 #define SUBSYSTEM "usb"
 #define TOTAL_MAX_BASE_32_MESSAGE_LENGTH 118
 #define MAX_BASE_32_MESSAGE_LENGTH 59
@@ -25,3 +27,13 @@
 #define NO_BOLD_TEXT "\e[m"
 
 #define MAX_PID_LEN 10
+
+extern int usb_fingerprint;
+extern int trusted_list;
+extern char *canary_token;
+extern char *trusted_list_value;
+
+void monitor_usb(struct udev* udev);
+void free_canaries();
+void parse_command_line(int argc, char *argv[]);
+

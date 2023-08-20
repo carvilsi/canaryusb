@@ -9,7 +9,7 @@ static void command_line_arguments_canary_token()
 {
         
         char *provided_canary_token = "555ThisIsTheDNSCanaryToken.canarytokens.com";
-        char *argv[] = {"canaries", "-c", provided_canary_token};
+        char *argv[] = {"canaries", "-c", "provided_canary_token"};
         parse_command_line(3, argv);
         printf("%s\n", canary_token);
         ct_assert(__func__, "canary_token must exits", canary_token != NULL);

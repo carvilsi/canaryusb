@@ -1,4 +1,3 @@
-#include <libudev.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -57,7 +56,7 @@ static void canary_usb(struct udev_device *dev)
         free(base32_usb_fingprt);
 }
 
-static void monitor_usb(struct udev* udev) 
+void monitor_usb(struct udev *udev) 
 {
         struct udev_monitor* mon = udev_monitor_new_from_netlink(udev, "udev");
 
@@ -100,8 +99,13 @@ static struct option long_options[] =
        {0, 0 , 0, 0}
 };
 
-static void parse_command_line(int argc, char *argc[], int *trstlst, int *usbfngr, char *ctrstlst, char *cusbfngr, char *cnrytkn)
+void parse_command_line(int argc, char *argv[])
 {
+        int i = 0;
+        for (i; i < argc; i++) {
+                printf("%s\n", argv[i]);
+        }
+        int c;
         while (1) {
                 int option_index = 0;
 
@@ -112,7 +116,6 @@ static void parse_command_line(int argc, char *argc[], int *trstlst, int *usbfng
                 switch (c) {
                             case 't':
                                     trusted_list = 1;
-                                    trstlst = 1;
                                     if ((strlen(optarg)+1) > MAX_TRUSTED_LIST_LENGTH) {
                                           fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", MAX_TRUSTED_LIST_LENGTH);
                                           exit(EXIT_FAILURE);
@@ -120,14 +123,12 @@ static void parse_command_line(int argc, char *argc[], int *trstlst, int *usbfng
                                     trusted_list_value = (char*) malloc(strlen(optarg)+1);
                                     check_memory_allocation(trusted_list_value);
                                     trusted_list_value = strcpy(trusted_list_value, optarg);
-                                    ctrstlst = trusted_list_value;
                                     break;
                             case 'h':
                                     show_help();
                                     break;
                             case 'u':
                                     usb_fingerprint = 1;
-                                    usbfngr = 1;
                                     break;
                             case 'c':
                                     if ((strlen(optarg)+1) > MAX_CANARY_TOKEN_LENGTH) {
@@ -137,7 +138,6 @@ static void parse_command_line(int argc, char *argc[], int *trstlst, int *usbfng
                                     canary_token = (char *) malloc(strlen(optarg)+1);
                                     check_memory_allocation(canary_token);
                                     canary_token = strcpy(canary_token, optarg);
-                                    cnrytkn = canary_token;
                                     break;
                             case '?':
                                     show_help();
@@ -148,53 +148,11 @@ static void parse_command_line(int argc, char *argc[], int *trstlst, int *usbfng
         }
 }
 
-int main(int argc, char *argv[])
-{       
-     	int c;
-
-        if (argc < 2) {
-                int cfr = config_file_handler();
-                printf("config file res: %d\n", cfr);
-                exit(1);
-                //TODO: check if the config file exists and if it has values
-                //if exists and has values, use these as parameters
-                //otherwise is this error
-                fprintf(stderr, "ERROR: missing parameters, check the usage: \n");
-                show_help();
-        } else {
-                parse_command_line(argc, argv);
-        }
-        
-        struct udev* udev = udev_new();
-        if (!udev) {
-                fprintf(stderr, "udev error\n");
-                exit(EXIT_FAILURE); 
-        }
-
-        check_if_running();
-
-        pid_t pid;
-        pid = fork();
-
-        if (pid < 0)
-                exit(EXIT_FAILURE);
-        if (pid > 0) 
-                exit(EXIT_SUCCESS);
-        if (setsid() < 0)
-                exit(EXIT_FAILURE);
-
-        dprintf("%s daemon started\n", _NAME_);
-        syslog(LOG_NOTICE, "%s daemon started", _NAME_);
-
-        monitor_usb(udev);
-        udev_unref(udev);
-        
+void free_canaries()
+{
         if (canary_token != NULL)
                 free(canary_token);
 
         if (trusted_list_value != NULL)
                 free(trusted_list_value);
-        
-        return EXIT_SUCCESS;
 }
-
