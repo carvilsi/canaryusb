@@ -10,6 +10,7 @@
 #include "../canaryusb.h"
 #include "./toml.h"
 
+// this is here just for testing purposes
 char *test_config_file;
 
 void check_memory_allocation(void *check_me)
