@@ -1,4 +1,3 @@
-#include <libudev.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -57,7 +56,7 @@ static void canary_usb(struct udev_device *dev)
         free(base32_usb_fingprt);
 }
 
-static void monitor_usb(struct udev* udev) 
+void monitor_usb(struct udev *udev) 
 {
         struct udev_monitor* mon = udev_monitor_new_from_netlink(udev, "udev");
 
@@ -100,25 +99,13 @@ static struct option long_options[] =
        {0, 0 , 0, 0}
 };
 
-int main(int argc, char *argv[])
-{       
-     	int c;
-
-        if (argc < 2) {
-                int cfr = config_file_handler();
-                printf("config file res: %d\n", cfr);
-                exit(1);
-                //TODO: check if the config file exists and if it has values
-                //if exists and has values, use these as parameters
-                //otherwise is this error
-                fprintf(stderr, "ERROR: missing parameters, check the usage: \n");
-                show_help();
-        }
-
-    	while (1) {
+void parse_command_line(int argc, char *argv[])
+{
+        int c;
+        while (1) {
                 int option_index = 0;
 
-                c = getopt_long(argc, argv, "uht:c:", long_options, &option_index);
+                c = getopt_long(argc, argv, "hut:c:", long_options, &option_index);
                 if (c == -1)
                         break;
 
@@ -131,7 +118,7 @@ int main(int argc, char *argv[])
                                     }
                                     trusted_list_value = (char*) malloc(strlen(optarg)+1);
                                     check_memory_allocation(trusted_list_value);
-                                    trusted_list_value = strcpy(trusted_list_value, optarg);
+                                    strcpy(trusted_list_value, optarg);
                                     break;
                             case 'h':
                                     show_help();
@@ -146,7 +133,7 @@ int main(int argc, char *argv[])
                                     }
                                     canary_token = (char *) malloc(strlen(optarg)+1);
                                     check_memory_allocation(canary_token);
-                                    canary_token = strcpy(canary_token, optarg);
+                                    strcpy(canary_token, optarg);
                                     break;
                             case '?':
                                     show_help();
@@ -154,38 +141,31 @@ int main(int argc, char *argv[])
                             default:
                                     printf("?? getopt returned character code 0%o ??\n", c);
                 }
-        }       
-        
-        struct udev* udev = udev_new();
-        if (!udev) {
-                fprintf(stderr, "udev error\n");
-                exit(EXIT_FAILURE); 
         }
+}
 
-        check_if_running();
-
-        pid_t pid;
-        pid = fork();
-
-        if (pid < 0)
-                exit(EXIT_FAILURE);
-        if (pid > 0) 
-                exit(EXIT_SUCCESS);
-        if (setsid() < 0)
-                exit(EXIT_FAILURE);
-
-        dprintf("%s daemon started\n", _NAME_);
-        syslog(LOG_NOTICE, "%s daemon started", _NAME_);
-
-        monitor_usb(udev);
-        udev_unref(udev);
+void parse_configuration_file()
+{
+        canary_token = (char*) malloc(MAX_CANARY_TOKEN_LENGTH);
+        trusted_list_value = (char*) malloc(MAX_TRUSTED_LIST_LENGTH);
+        check_memory_allocation(canary_token);
+        check_memory_allocation(trusted_list_value);
+        config_file_handler(canary_token, trusted_list_value);
         
+        if (strcmp(trusted_list_value, "") == 0) {
+                trusted_list = 0;
+                trusted_list_value = NULL;
+        } else {
+                trusted_list = 1;
+        }
+}
+
+void free_canaries()
+{
         if (canary_token != NULL)
                 free(canary_token);
 
         if (trusted_list_value != NULL)
                 free(trusted_list_value);
-        
-        return EXIT_SUCCESS;
 }
 

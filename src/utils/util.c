@@ -5,9 +5,13 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <limits.h>
+#include <unistd.h>
 
 #include "../canaryusb.h"
 #include "./toml.h"
+
+// this is here just for testing purposes
+char *test_config_file;
 
 void check_memory_allocation(void *check_me)
 {
@@ -45,7 +49,7 @@ void show_help()
         printf("\t\tlist of usb fingerprints, comma seprated, to not notify when the related deviced is connected\n");
         printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
 
-        exit(EXIT_SUCCESS);
+        exit(EXIT_FAILURE);
 }
 
 void check_if_running()
@@ -78,14 +82,29 @@ void check_if_running()
         }
 }
 
-int config_file_handler()
+void config_file_handler(char *cnrytkn, char *trstdlst)
 {
         FILE* fp;
         char errbuf[200];
+        
+        char config_file[PATH_MAX];
 
-        fp = fopen(CONFIG_FILE, "r");
+#ifdef TESTS
+        char cwd[PATH_MAX];
+        if (getcwd(cwd, sizeof(cwd)) != NULL) {
+                dprintf("Current working dir for testing: %s\n", cwd);
+                sprintf(config_file, "%s/%s", cwd, test_config_file);
+        } else {
+                fprintf(stderr, "TESTING ERROR: not possible to retrieve current directory\n");
+                exit(EXIT_FAILURE);
+        }
+#else
+        sprintf(config_file, "%s/%s", getenv("HOME"), CONFIG_FILE);
+#endif
+
+        fp = fopen(config_file, "r");
         if (!fp) {
-                dprintf("No config file at %s\n", CONFIG_FILE);
+                dprintf("No config file at %s\n", config_file);
                 show_help();
         }
 
@@ -109,15 +128,19 @@ int config_file_handler()
                 exit(EXIT_FAILURE);
         } else {
                 dprintf("canary_token config value: %s\n", canary_token.u.s);
+                strcpy(cnrytkn, canary_token.u.s);
         }
 
         toml_datum_t trust_list = toml_string_in(canary_conf, "trust_list");
         if (!trust_list.ok) {
                 dprintf("WARN: no trust_list value at config file\n");
+                trstdlst = NULL;
         } else {
                 dprintf("trust_list config value: %s\n", trust_list.u.s);
+                strcpy(trstdlst, trust_list.u.s);
         }
+        
         free(canary_token.u.s);
         toml_free(canary_conf);
-        return 0;
 }
+

@@ -1,3 +1,5 @@
+#include <libudev.h>
+
 #define SUBSYSTEM "usb"
 #define TOTAL_MAX_BASE_32_MESSAGE_LENGTH 118
 #define MAX_BASE_32_MESSAGE_LENGTH 59
@@ -10,7 +12,7 @@
 #define DOT "."
 #define MAX_CANARY_TOKEN_LENGTH 200
 #define MAX_TRUSTED_LIST_LENGTH 1040
-#define CONFIG_FILE "~/.config/canaryusb/config.toml"
+#define CONFIG_FILE ".config/canaryusb/config.toml"
 
 #ifdef DEBUG                             
 #define dprintf(...) printf (__VA_ARGS__)
@@ -25,3 +27,15 @@
 #define NO_BOLD_TEXT "\e[m"
 
 #define MAX_PID_LEN 10
+
+//These are only for testing reasons.
+extern int usb_fingerprint;
+extern int trusted_list;
+extern char *canary_token;
+extern char *trusted_list_value;
+
+void monitor_usb(struct udev* udev);
+void free_canaries();
+void parse_command_line(int argc, char *argv[]);
+void parse_configuration_file();
+

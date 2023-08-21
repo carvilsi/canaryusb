@@ -1,11 +1,11 @@
 CC = gcc
 LIBS = -ludev
-CCFLAGS =
+CCFLAGS = -Werror
 DEST_BIN = ~/.local/bin/
 DEST_CONF = ~/.config/canaryusb/
 SRC_CONF = ./configuration/config.toml
 
-SRC := $(shell find . -name '*.c') 
+SRC := $(shell find ./src/ -name '*.c') 
 
 all: canaryusb 
 
