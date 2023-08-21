@@ -9,20 +9,10 @@
 
 int main(int argc, char *argv[])
 {       
-        int i = 0;
-        for (i; i < argc; i++) {
-                printf("%s\n", argv[i]);
-        } 
-
+        check_if_running();
+        
         if (argc < 2) {
-                int cfr = config_file_handler();
-                printf("config file res: %d\n", cfr);
-                exit(1);
-                //TODO: check if the config file exists and if it has values
-                //if exists and has values, use these as parameters
-                //otherwise is this error
-                fprintf(stderr, "ERROR: missing parameters, check the usage: \n");
-                show_help();
+                parse_configuration_file(); 
         } else {
                 parse_command_line(argc, argv);
         }
@@ -32,8 +22,6 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "udev error\n");
                 exit(EXIT_FAILURE); 
         }
-
-        check_if_running();
 
         pid_t pid;
         pid = fork();

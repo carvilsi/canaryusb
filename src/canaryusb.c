@@ -101,15 +101,11 @@ static struct option long_options[] =
 
 void parse_command_line(int argc, char *argv[])
 {
-        int i = 0;
-        for (i; i < argc; i++) {
-                printf("%s\n", argv[i]);
-        }
         int c;
         while (1) {
                 int option_index = 0;
 
-                c = getopt_long(argc, argv, "uht:c:", long_options, &option_index);
+                c = getopt_long(argc, argv, "hut:c:", long_options, &option_index);
                 if (c == -1)
                         break;
 
@@ -122,7 +118,7 @@ void parse_command_line(int argc, char *argv[])
                                     }
                                     trusted_list_value = (char*) malloc(strlen(optarg)+1);
                                     check_memory_allocation(trusted_list_value);
-                                    trusted_list_value = strcpy(trusted_list_value, optarg);
+                                    strcpy(trusted_list_value, optarg);
                                     break;
                             case 'h':
                                     show_help();
@@ -137,7 +133,7 @@ void parse_command_line(int argc, char *argv[])
                                     }
                                     canary_token = (char *) malloc(strlen(optarg)+1);
                                     check_memory_allocation(canary_token);
-                                    canary_token = strcpy(canary_token, optarg);
+                                    strcpy(canary_token, optarg);
                                     break;
                             case '?':
                                     show_help();
@@ -145,6 +141,22 @@ void parse_command_line(int argc, char *argv[])
                             default:
                                     printf("?? getopt returned character code 0%o ??\n", c);
                 }
+        }
+}
+
+void parse_configuration_file()
+{
+        canary_token = (char*) malloc(MAX_CANARY_TOKEN_LENGTH);
+        trusted_list_value = (char*) malloc(MAX_TRUSTED_LIST_LENGTH);
+        check_memory_allocation(canary_token);
+        check_memory_allocation(trusted_list_value);
+        config_file_handler(canary_token, trusted_list_value);
+        
+        if (strcmp(trusted_list_value, "") == 0) {
+                trusted_list = 0;
+                trusted_list_value = NULL;
+        } else {
+                trusted_list = 1;
         }
 }
 
@@ -156,3 +168,4 @@ void free_canaries()
         if (trusted_list_value != NULL)
                 free(trusted_list_value);
 }
+
