@@ -21,6 +21,10 @@ Here we are thinking about removable media threats like BadUSB or data theft.
                 list of usb fingerprints, comma seprated, to not notify when the related deviced is connected
                 check usb_fingerprint option to retrieve device fingerprint for connected USB device
 
+**Note:**
+If any option is not provided the default behaviour is try to retrieve the options from the a config file located at `~/.config/canaryusb/config.toml`.
+An example of this configuration file is under `configuration/` directory at the repo.
+
 ## Build
 
 `$ make`
@@ -47,6 +51,17 @@ For debug mode:
 
 
 Here you can create your [DNS token](https://canarytokens.org/generate)
+
+## Install
+
+`$ make install`
+
+This will build it and install the binary at `~/.local/bin/` and the example configuration file at `~/.config/canaryusb/config.toml`
+
+In order to run:
+
+`$ canaryusb [options]`
+
 
 ### Examples
 
@@ -80,5 +95,4 @@ Here you can create your [DNS token](https://canarytokens.org/generate)
 ### Thinks and things
 
 - Exploring possibility of block some rogue devices.
-- Add a config file for list and stuff (ofc at `~/.config/` ;)
 

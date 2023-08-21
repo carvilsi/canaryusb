@@ -48,7 +48,12 @@ void show_help()
         printf(BOLD_TEXT "-t, --trust_list [comma separated usb_fingerprint list]\n" NO_BOLD_TEXT);
         printf("\t\tlist of usb fingerprints, comma seprated, to not notify when the related deviced is connected\n");
         printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
-
+        printf("\n");
+        printf(BOLD_TEXT "Note:\n" NO_BOLD_TEXT);
+        printf("If any option is not provided the default behaviour is try to retrieve the options from the a config file located at " BOLD_TEXT "~/.config/canaryusb/config.toml\n" NO_BOLD_TEXT);
+        printf("An example of this configuration file is under " BOLD_TEXT "configuration/ " NO_BOLD_TEXT "directory at the repo.\n");
+        printf("\n");
+        
         exit(EXIT_FAILURE);
 }
 
@@ -118,14 +123,14 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
 
         toml_table_t* canary_conf = toml_table_in(conf, _NAME_);
         if (!canary_conf) {
-                fprintf(stderr, "ERROR: config file exists but is missing [%s] table\n please check README.md", _NAME_);
-                exit(EXIT_FAILURE);
+                fprintf(stderr, "ERROR: config file exists but is missing [%s] table please check README.md", _NAME_);
+                show_help();
         }
 
         toml_datum_t canary_token = toml_string_in(canary_conf, "canary_token");
         if (!canary_token.ok) {
-                fprintf(stderr, "ERROR: no canary_token value at config file\n please check README.md\n");
-                exit(EXIT_FAILURE);
+                fprintf(stderr, "ERROR: no canary_token value at config file please check README.md\n");
+                show_help();
         } else {
                 dprintf("canary_token config value: %s\n", canary_token.u.s);
                 strcpy(cnrytkn, canary_token.u.s);
