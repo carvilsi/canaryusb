@@ -78,6 +78,13 @@ If you already installed canaryusb, you can uninstall it with:
 
 `$ make uninstall`
 
+## Tests
+
+The tests should be run from the `tests/` directory.
+
+`$ cd tests/`
+`$ make clean; make test`
+
 ## Examples
 
 **Receive a mail for any device that will be connected to USB**
