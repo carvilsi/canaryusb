@@ -40,7 +40,7 @@ extern int trusted_list;
 extern char *canary_token;
 extern char *trusted_list_value;
 
-void monitor_usb(struct udev* udev);
+void monitor_usb(struct udev *udev);
 void free_canaries();
 void parse_command_line(int argc, char *argv[]);
 void parse_configuration_file();

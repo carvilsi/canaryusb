@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
                 parse_command_line(argc, argv);
         }
         
-        struct udev* udev = udev_new();
+        struct udev *udev = udev_new();
         if (!udev) {
                 fprintf(stderr, "udev error\n");
                 exit(EXIT_FAILURE); 
@@ -43,3 +43,4 @@ int main(int argc, char *argv[])
         
         return EXIT_SUCCESS;
 }
+

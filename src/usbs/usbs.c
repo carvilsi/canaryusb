@@ -11,16 +11,16 @@ UsbAttrs get_usb_attributes(struct udev_device *dev)
         UsbAttrs usbattr = {"0000", "0000", "no", "no"};
         const char *vendor = udev_device_get_sysattr_value(dev, "idVendor");
         if (vendor)
-                usbattr.vendor = (char*)vendor;
+                usbattr.vendor = (char *)vendor;
         const char *product = udev_device_get_sysattr_value(dev, "idProduct");
         if (product)
-                usbattr.product = (char*)product; 
+                usbattr.product = (char *)product; 
         const char *product_name = udev_device_get_sysattr_value(dev, "product");
         if (product_name)
-                usbattr.product_name = (char*)product_name;
+                usbattr.product_name = (char *)product_name;
         const char *serial = udev_device_get_sysattr_value(dev, "serial");
         if (serial)
-                usbattr.serial = (char*)serial;
+                usbattr.serial = (char *)serial;
         return usbattr;
 }
 

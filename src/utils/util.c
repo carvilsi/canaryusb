@@ -109,7 +109,7 @@ void check_argument_length(char *arg, int type)
 
 void config_file_handler(char *cnrytkn, char *trstdlst)
 {
-        FILE* fp;
+        FILE *fp;
         char errbuf[200];
         
         char config_file[PATH_MAX];
@@ -133,7 +133,7 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
                 show_help();
         }
 
-        toml_table_t* conf = toml_parse_file(fp, errbuf, sizeof(errbuf));
+        toml_table_t *conf = toml_parse_file(fp, errbuf, sizeof(errbuf));
         fclose(fp);
 
         if (!conf) {
@@ -141,7 +141,7 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
                 show_help();
         }
 
-        toml_table_t* canary_conf = toml_table_in(conf, _NAME_);
+        toml_table_t *canary_conf = toml_table_in(conf, _NAME_);
         if (!canary_conf) {
                 fprintf(stderr, "ERROR: config file exists but is missing [%s] table please check README.md", _NAME_);
                 show_help();
