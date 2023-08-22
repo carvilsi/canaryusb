@@ -21,6 +21,12 @@ Here we are thinking about removable media threats like BadUSB or data theft.
                 list of usb fingerprints, comma seprated, to not notify when the related deviced is connected
                 check usb_fingerprint option to retrieve device fingerprint for connected USB device
 
+**Note:**
+If any option is not provided the default behaviour is try to retrieve the options from the a config file located at `~/.config/canaryusb/config.toml`.
+An example of this configuration file is under `configuration/` directory at the repo.
+
+The canaryusb uses the system logger for logging purposes.
+
 ## Build
 
 `$ make`
@@ -28,6 +34,14 @@ Here we are thinking about removable media threats like BadUSB or data theft.
 For debug mode:
 
 `$ make debug`
+
+Special build mode called `silence` allows to edebug without calling canarytokens service:
+
+`$ make silence`
+
+Note that in general you can run `make clean` before any make option, e.g.
+
+`$ make clean; make`
 
 ## Run
 
@@ -48,7 +62,30 @@ For debug mode:
 
 Here you can create your [DNS token](https://canarytokens.org/generate)
 
-### Examples
+## Install
+
+`$ make clean; make install`
+
+This will install the binary at `~/.local/bin/` and the example configuration file at `~/.config/canaryusb/config.toml`
+
+In order to run:
+
+`$ canaryusb [options]`
+
+### Uninstall
+
+If you already installed canaryusb, you can uninstall it with:
+
+`$ make uninstall`
+
+## Tests
+
+The tests should be run from the `tests/` directory.
+
+`$ cd tests/`
+`$ make clean; make test`
+
+## Examples
 
 **Receive a mail for any device that will be connected to USB**
 
@@ -66,6 +103,10 @@ Here you can create your [DNS token](https://canarytokens.org/generate)
 
 `usb_fingerprint: 1af3:0001-ZOWIE_Gaming_mouse-no`
 
+**Execute installed and use config file**
+
+`$ canaryusb`
+
 ## Stop the daemon
 
 `kill $(pgrep canaryusb)`
@@ -80,5 +121,4 @@ Here you can create your [DNS token](https://canarytokens.org/generate)
 ### Thinks and things
 
 - Exploring possibility of block some rogue devices.
-- Add a config file for list and stuff (ofc at `~/.config/` ;)
 

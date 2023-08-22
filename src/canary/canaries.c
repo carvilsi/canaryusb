@@ -10,7 +10,7 @@
 #include "../utils/base32.h"
 #include "../utils/util.h"
 
-static int call_the_canary(const char *canary_dns_token) 
+static int call_the_canary(const char *canary_dns_token)
 {
         int canaryrsp;
         struct addrinfo hints_1, *res_1;
@@ -19,7 +19,7 @@ static int call_the_canary(const char *canary_dns_token)
         return canaryrsp;
 }
 
-static void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_token, char *canary_token) 
+void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_token, char *canary_token)
 {
         if (strlen(buf_sub_fingerptr) > MAX_BASE_32_MESSAGE_LENGTH) {
                 int i;
@@ -53,14 +53,22 @@ void deal_with_canaries(char *base32_usb_fingprt, char *usb_fingrprnt, char *can
         check_memory_allocation(canary_dns_token);
         build_canary_dns_token(base32_usb_fingprt, canary_dns_token, canary_token);
 
-        int canaryrsp = call_the_canary(canary_dns_token);
+        int canaryrsp = 0; 
+#ifdef SILENCE
+        canaryrsp = -1;
+#else        
+        canaryrsp = call_the_canary(canary_dns_token);
+#endif
         free(canary_dns_token);
         
-        if (canaryrsp != 0) {
+        if (canaryrsp > 0) {
                 dprintf("ERROR canaryusb: When calling canary tokens site, for connected USB: %s, run it on debug mode for more insights", usb_fingrprnt);
                 syslog(LOG_ERR, "canaryusb errored when trying to advice about new connected USB %s", usb_fingrprnt);
+        } else if (canaryrsp == -1) {
+                dprintf("Executing on SILENCE and DEBUG mode do NOT call to canary site\n"); 
         } else {
                 syslog(LOG_NOTICE, "canary token sent for connected USB device: %s", usb_fingrprnt);
                 dprintf("canary token sent\n");
         }
 }
+

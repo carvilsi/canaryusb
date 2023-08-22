@@ -26,9 +26,14 @@ UsbAttrs get_usb_attributes(struct udev_device *dev)
 
 char *get_usb_fingerprint(UsbAttrs usbattrs, char *usb_fingprt) 
 {
+        dprintf("usbattrs vendor: %s\n", usbattrs.vendor);
+        dprintf("usbattrs product: %s\n", usbattrs.product);
+        dprintf("usbattrs product name: %s\n", usbattrs.product_name);
+        dprintf("usbattrs.serial: %s\n", usbattrs.serial);
         sprintf(usb_fingprt, "%s:%s-%s-%s", usbattrs.vendor, usbattrs.product, usbattrs.product_name, usbattrs.serial);
         if (strchr(usb_fingprt, REPLACE_THIS) != NULL)
                 replace_in_string(usb_fingprt, REPLACE_THIS, REPLACE_WITH);
         dprintf("usb fingerprint: %s\n", usb_fingprt);
         return usb_fingprt;
 }
+

@@ -1,8 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <limits.h>
+#include <unistd.h>
 
 #include "../canaryusb.h"
+#include "./toml.h"
+
+// this is here just for testing purposes
+char *test_config_file;
 
 void check_memory_allocation(void *check_me)
 {
@@ -39,8 +48,13 @@ void show_help()
         printf(BOLD_TEXT "-t, --trust_list [comma separated usb_fingerprint list]\n" NO_BOLD_TEXT);
         printf("\t\tlist of usb fingerprints, comma seprated, to not notify when the related deviced is connected\n");
         printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
-
-        exit(EXIT_SUCCESS);
+        printf("\n");
+        printf(BOLD_TEXT "Note:\n" NO_BOLD_TEXT);
+        printf("If any option is not provided the default behaviour is try to retrieve the options from the a config file located at " BOLD_TEXT "~/.config/canaryusb/config.toml\n" NO_BOLD_TEXT);
+        printf("An example of this configuration file is under " BOLD_TEXT "configuration/ " NO_BOLD_TEXT "directory at the repo.\n");
+        printf("\n");
+        
+        exit(EXIT_FAILURE);
 }
 
 void check_if_running()
@@ -54,7 +68,7 @@ void check_if_running()
         free(cmd);
 
         if (fd == NULL) {
-                fprintf(stderr, "ERROR not possible to get file descriptor");
+                fprintf(stderr, "ERROR not possible to get file descriptor\n");
                 exit(EXIT_FAILURE);
         }
 
@@ -63,7 +77,7 @@ void check_if_running()
         int nmb_prcss = atoi(cmdo);
 
         if (pclose(fd) == -1) {
-                fprintf(stderr, "ERROR not possible to close stream");
+                fprintf(stderr, "ERROR not possible to close stream\n");
                 exit(EXIT_FAILURE);
         }
 
@@ -72,3 +86,88 @@ void check_if_running()
                 exit(EXIT_FAILURE);
         }
 }
+
+void check_argument_length(char *arg, int type)
+{ 
+        size_t len = strlen(arg) + 1;
+        if (type == TRUSTEDLIST) {
+                dprintf("the length of trusted list is %ld\n", len);
+                if (len > MAX_TRUSTED_LIST_LENGTH) {
+                        fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", MAX_TRUSTED_LIST_LENGTH);
+                        exit(EXIT_FAILURE);
+                }
+        }
+
+        if (type == CANARYTOKEN) {
+                dprintf("the length of canary tokeb is %ld\n", len);
+                if (len > MAX_CANARY_TOKEN_LENGTH) {
+                        fprintf(stderr, "The canary token characters exceeds the limit of %d\n", MAX_CANARY_TOKEN_LENGTH);
+                        exit(EXIT_FAILURE);
+                }
+        }
+}
+
+void config_file_handler(char *cnrytkn, char *trstdlst)
+{
+        FILE* fp;
+        char errbuf[200];
+        
+        char config_file[PATH_MAX];
+
+#ifdef TESTS
+        char cwd[PATH_MAX];
+        if (getcwd(cwd, sizeof(cwd)) != NULL) {
+                dprintf("Current working dir for testing: %s\n", cwd);
+                sprintf(config_file, "%s/%s", cwd, test_config_file);
+        } else {
+                fprintf(stderr, "TESTING ERROR: not possible to retrieve current directory\n");
+                exit(EXIT_FAILURE);
+        }
+#else
+        sprintf(config_file, "%s/%s", getenv("HOME"), CONFIG_FILE);
+#endif
+
+        fp = fopen(config_file, "r");
+        if (!fp) {
+                dprintf("No config file at %s\n", config_file);
+                show_help();
+        }
+
+        toml_table_t* conf = toml_parse_file(fp, errbuf, sizeof(errbuf));
+        fclose(fp);
+
+        if (!conf) {
+                dprintf("not possible to parse config file\n");
+                show_help();
+        }
+
+        toml_table_t* canary_conf = toml_table_in(conf, _NAME_);
+        if (!canary_conf) {
+                fprintf(stderr, "ERROR: config file exists but is missing [%s] table please check README.md", _NAME_);
+                show_help();
+        }
+
+        toml_datum_t canary_token = toml_string_in(canary_conf, "canary_token");
+        if (!canary_token.ok) {
+                fprintf(stderr, "ERROR: no canary_token value at config file please check README.md\n");
+                show_help();
+        } else {
+                dprintf("canary_token config value: %s\n", canary_token.u.s);
+                check_argument_length(canary_token.u.s, CANARYTOKEN);
+                strcpy(cnrytkn, canary_token.u.s);
+        }
+
+        toml_datum_t trust_list = toml_string_in(canary_conf, "trust_list");
+        if (!trust_list.ok) {
+                dprintf("WARN: no trust_list value at config file\n");
+                trstdlst = NULL;
+        } else {
+                dprintf("trust_list config value: %s\n", trust_list.u.s);
+                check_argument_length(trust_list.u.s, TRUSTEDLIST);
+                strcpy(trstdlst, trust_list.u.s);
+        }
+        
+        free(canary_token.u.s);
+        toml_free(canary_conf);
+}
+
