@@ -112,10 +112,7 @@ void parse_command_line(int argc, char *argv[])
                 switch (c) {
                             case 't':
                                     trusted_list = 1;
-                                    if ((strlen(optarg)+1) > MAX_TRUSTED_LIST_LENGTH) {
-                                          fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", MAX_TRUSTED_LIST_LENGTH);
-                                          exit(EXIT_FAILURE);
-                                    }
+                                    check_argument_length(optarg, TRUSTEDLIST);
                                     trusted_list_value = (char*) malloc(strlen(optarg)+1);
                                     check_memory_allocation(trusted_list_value);
                                     strcpy(trusted_list_value, optarg);
@@ -127,10 +124,7 @@ void parse_command_line(int argc, char *argv[])
                                     usb_fingerprint = 1;
                                     break;
                             case 'c':
-                                    if ((strlen(optarg)+1) > MAX_CANARY_TOKEN_LENGTH) {
-                                          fprintf(stderr, "The canary token characters exceeds the limit of %d\n", MAX_CANARY_TOKEN_LENGTH);
-                                          exit(EXIT_FAILURE);
-                                    }
+                                    check_argument_length(optarg, CANARYTOKEN);
                                     canary_token = (char *) malloc(strlen(optarg)+1);
                                     check_memory_allocation(canary_token);
                                     strcpy(canary_token, optarg);

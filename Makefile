@@ -9,14 +9,17 @@ SRC := $(shell find ./src/ -name '*.c')
 
 all: canaryusb 
 
-debug: CCFLAGS += -DDEBUG 
-debug: CCFLAGS += -g 
+debug: CCFLAGS += -DDEBUG -g 
 debug: canaryusb 
+
+# debug and do not call the canary token 
+silence: CCFLAGS += -DSILENCE -DDEBUG 
+silence: canaryusb
 
 install: canaryusb
 	mv canaryusb $(DEST_BIN)
 	mkdir -p $(DEST_CONF)
-	cp $(SRC_CONF) $(DEST_CONF) 
+	-cp -n $(SRC_CONF) $(DEST_CONF) 
 	source ~/.bashrc
 
 uninstall:

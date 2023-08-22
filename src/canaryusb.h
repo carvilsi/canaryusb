@@ -14,6 +14,12 @@
 #define MAX_TRUSTED_LIST_LENGTH 1040
 #define CONFIG_FILE ".config/canaryusb/config.toml"
 
+// Argument check types
+#define CANARYTOKEN 0
+#define TRUSTEDLIST 1
+
+#define val_name(v)#v
+
 #ifdef DEBUG                             
 #define dprintf(...) printf (__VA_ARGS__)
 #else                                    
@@ -21,7 +27,7 @@
 #endif                                   
 
 #define _NAME_ "canaryusb" 
-#define _VERSION_ "2.1.0"
+#define _VERSION_ "2.1.1"
 
 #define BOLD_TEXT "\e[1m"
 #define NO_BOLD_TEXT "\e[m"

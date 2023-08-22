@@ -25,6 +25,8 @@ Here we are thinking about removable media threats like BadUSB or data theft.
 If any option is not provided the default behaviour is try to retrieve the options from the a config file located at `~/.config/canaryusb/config.toml`.
 An example of this configuration file is under `configuration/` directory at the repo.
 
+The canaryusb uses the system logger for logging purposes.
+
 ## Build
 
 `$ make`
@@ -32,6 +34,14 @@ An example of this configuration file is under `configuration/` directory at the
 For debug mode:
 
 `$ make debug`
+
+Special build mode called `silence` allows to edebug without calling canarytokens service:
+
+`$ make silence`
+
+Note that in general you can run `make clean` before any make option, e.g.
+
+`$ make clean; make`
 
 ## Run
 
@@ -54,16 +64,27 @@ Here you can create your [DNS token](https://canarytokens.org/generate)
 
 ## Install
 
+First build it:
+
+`$ make build`
+
+And then:
+
 `$ make install`
 
-This will build it and install the binary at `~/.local/bin/` and the example configuration file at `~/.config/canaryusb/config.toml`
+This will install the binary at `~/.local/bin/` and the example configuration file at `~/.config/canaryusb/config.toml`
 
 In order to run:
 
 `$ canaryusb [options]`
 
+### Uninstall
 
-### Examples
+If you already installed canaryusb, you can uninstall it with:
+
+`$ make uninstall`
+
+## Examples
 
 **Receive a mail for any device that will be connected to USB**
 
@@ -80,6 +101,10 @@ In order to run:
 **Output** when a USB device is connected:
 
 `usb_fingerprint: 1af3:0001-ZOWIE_Gaming_mouse-no`
+
+**Execute installed and use config file**
+
+`$ canaryusb`
 
 ## Stop the daemon
 
