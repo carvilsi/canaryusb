@@ -7,6 +7,7 @@
 #include "./../src/canaryusb.h"
 #include "./../src/utils/util.h"
 #include "./../src/canary/canaries.h"
+#include "./../src/usbs/usbs.h"
 #include "./../src/utils/trusted_list.h"
 
 #define PROVIDED_CANARY_TOKEN "555whateverYouGetFrom.canarytokens.com"
@@ -15,6 +16,11 @@
 #define CONFIGURED_TRUSTED_LIST "1af3:0001-ZOWIE_Gaming_mouse-no,594d:604d-YD60MQ-no"
 #define BASE32_ENCODED_USB_FINGERPRINT "GFQWMMZ2GAYDAMJNLJHVOSKFL5DWC3LJNZTV63LPOVZWKLLON4"
 #define CANARY_DNS_TOKEN "GFQWMMZ2GAYDAMJNLJHVOSKFL5DWC3LJNZTV63LPOVZWKLLON4.G42.555whateverYouGetFrom.canarytokens.com" 
+#define ID_VENDOR "1af3"
+#define ID_PRODUCT "0001"
+#define PRODUCT_NAME "ZOWIE Gaming mouse"
+#define SERIAL "no"
+#define USB_FINGERPRINT "1af3:0001-ZOWIE_Gaming_mouse-no"
 
 static void config_file_reading_only_canary_token()
 {
@@ -106,6 +112,19 @@ static void canaries()
         free(canary_dns_token);
 }
 
+static void fingerprint_usb()
+{
+        UsbAttrs usbattr = {"0000", "0000", "no", "no"};
+        usbattr.vendor = ID_VENDOR;
+        usbattr.product = ID_PRODUCT;
+        usbattr.product_name = PRODUCT_NAME;
+        usbattr.serial = SERIAL;
+        size_t fingp_len = strlen(usbattr.vendor) + strlen(usbattr.product) + strlen(usbattr.product_name) + strlen(usbattr.serial) + 5;
+        char tmp_usb_fingprt[fingp_len];
+        char *usb_fingrprnt = get_usb_fingerprint(usbattr, tmp_usb_fingprt);
+        ct_assert(__func__, "should build the usb fingerprint", strcmp(usb_fingrprnt, USB_FINGERPRINT) == 0);
+} 
+
 static void all_tests()
 {
         ct_run(config_file_reading_only_canary_token);
@@ -116,6 +135,7 @@ static void all_tests()
         ct_run(get_canary_encoded_usb_fingerprint_test);
         ct_run(usb_fingerprint_and_trusted_list);
         ct_run(canaries);
+        ct_run(fingerprint_usb);
 }
 
 int main(void)  
