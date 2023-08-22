@@ -27,7 +27,6 @@ static void canary_usb(struct udev_device *dev)
                         usbattrs.product,
                         usbattrs.serial,
                         udev_device_get_devnode(dev));
-       
         
         char tmp_usb_fingprt[fingp_len];
         char *usb_fingrprnt = get_usb_fingerprint(usbattrs, tmp_usb_fingprt);

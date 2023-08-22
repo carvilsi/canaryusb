@@ -10,7 +10,7 @@
 #include "../utils/base32.h"
 #include "../utils/util.h"
 
-static int call_the_canary(const char *canary_dns_token) 
+static int call_the_canary(const char *canary_dns_token)
 {
         int canaryrsp;
         struct addrinfo hints_1, *res_1;
@@ -19,7 +19,7 @@ static int call_the_canary(const char *canary_dns_token)
         return canaryrsp;
 }
 
-static void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_token, char *canary_token) 
+void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_token, char *canary_token)
 {
         if (strlen(buf_sub_fingerptr) > MAX_BASE_32_MESSAGE_LENGTH) {
                 int i;
