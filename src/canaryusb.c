@@ -57,7 +57,7 @@ static void canary_usb(struct udev_device *dev)
 
 void monitor_usb(struct udev *udev) 
 {
-        struct udev_monitor* mon = udev_monitor_new_from_netlink(udev, "udev");
+        struct udev_monitor *mon = udev_monitor_new_from_netlink(udev, "udev");
 
         udev_monitor_filter_add_match_subsystem_devtype(mon, SUBSYSTEM, NULL);
         udev_monitor_enable_receiving(mon);
@@ -74,10 +74,10 @@ void monitor_usb(struct udev *udev)
                         break;
 
                 if (FD_ISSET(fd, &fds)) {
-                        struct udev_device* dev = udev_monitor_receive_device(mon);
+                        struct udev_device *dev = udev_monitor_receive_device(mon);
                         if (dev) {
                                 if (udev_device_get_devnode(dev)) {
-                                        const char* action = udev_device_get_action(dev);
+                                        const char *action = udev_device_get_action(dev);
                                         if (action != NULL) {
                                                 if (strcmp(action,CANARY_ON_ACTION) == 0) 
                                                         canary_usb(dev);
@@ -112,7 +112,7 @@ void parse_command_line(int argc, char *argv[])
                             case 't':
                                     trusted_list = 1;
                                     check_argument_length(optarg, TRUSTEDLIST);
-                                    trusted_list_value = (char*) malloc(strlen(optarg)+1);
+                                    trusted_list_value = (char *) malloc(strlen(optarg)+1);
                                     check_memory_allocation(trusted_list_value);
                                     strcpy(trusted_list_value, optarg);
                                     break;
@@ -139,8 +139,8 @@ void parse_command_line(int argc, char *argv[])
 
 void parse_configuration_file()
 {
-        canary_token = (char*) malloc(MAX_CANARY_TOKEN_LENGTH);
-        trusted_list_value = (char*) malloc(MAX_TRUSTED_LIST_LENGTH);
+        canary_token = (char *) malloc(MAX_CANARY_TOKEN_LENGTH);
+        trusted_list_value = (char *) malloc(MAX_TRUSTED_LIST_LENGTH);
         check_memory_allocation(canary_token);
         check_memory_allocation(trusted_list_value);
         config_file_handler(canary_token, trusted_list_value);
