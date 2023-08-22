@@ -64,13 +64,7 @@ Here you can create your [DNS token](https://canarytokens.org/generate)
 
 ## Install
 
-First build it:
-
-`$ make build`
-
-And then:
-
-`$ make install`
+`$ make clean; make install`
 
 This will install the binary at `~/.local/bin/` and the example configuration file at `~/.config/canaryusb/config.toml`
 

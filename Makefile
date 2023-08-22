@@ -17,18 +17,21 @@ silence: CCFLAGS += -DSILENCE -DDEBUG
 silence: canaryusb
 
 install: canaryusb
-	mv canaryusb $(DEST_BIN)
-	mkdir -p $(DEST_CONF)
-	-cp -n $(SRC_CONF) $(DEST_CONF) 
-	source ~/.bashrc
+	@echo 'canaryusb compiled'
+	@mv canaryusb $(DEST_BIN)
+	@echo 'canaryusb copied at: $(DEST_BIN)'
+	@mkdir -p $(DEST_CONF)
+	@-cp -n $(SRC_CONF) $(DEST_CONF) ||:
+	@source ~/.bashrc
+	@echo 'canaryusb installed'
 
 uninstall:
 	rm  $(DEST_BIN)canaryusb
 	rm -rf $(DEST_CONF)
-	
+
 canaryusb:
-	$(CC) $(CCFLAGS) -o $@ $(SRC) $(LIBS)
+	@$(CC) $(CCFLAGS) -o $@ $(SRC) $(LIBS)
 
 clean:
-	rm canaryusb 
+	@-rm canaryusb ||:
 
