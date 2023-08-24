@@ -1,5 +1,5 @@
 <p align="center">
-    ![tests](https://github.com/carvilsi/canaryusb/actions/workflows/c.yml/badge.svg)
+    [tests](https://github.com/carvilsi/canaryusb/actions/workflows/c.yml/badge.svg)
 </p>
 
 # Canaryusb 
