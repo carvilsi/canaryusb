@@ -1,3 +1,7 @@
+<p align="center">
+    ![tests](https://github.com/carvilsi/canaryusb/actions/workflows/c.yml/badge.svg)
+</p>
+
 # Canaryusb 
 
 Get a mail notification via, **Canary Tokens (DNS)** when a **USB** device is connected on a GNU/Linux computer.
@@ -42,6 +46,15 @@ Special build mode called `silence` allows to edebug without calling canarytoken
 Note that in general you can run `make clean` before any make option, e.g.
 
 `$ make clean; make`
+
+### Dependencies
+
+Depending on your system is quite possible that you'll need to add **libudev-dev**. 
+Please check how to install it for your distribution.
+
+For Ubuntu should be:
+
+`$ sudo apt install libudev-dev`
 
 ## Run
 
