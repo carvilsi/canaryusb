@@ -9,6 +9,7 @@
 
 #include "../canaryusb.h"
 #include "./toml.h"
+#include "./util.h"
 
 // this is here just for testing purposes
 char *test_config_file;
