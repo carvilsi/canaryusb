@@ -1,6 +1,5 @@
-<p align="center">
-    [tests](https://github.com/carvilsi/canaryusb/actions/workflows/c.yml/badge.svg)
-</p>
+
+![tests](https://github.com/carvilsi/canaryusb/actions/workflows/c.yml/badge.svg?branch=main)
 
 # Canaryusb 
 
