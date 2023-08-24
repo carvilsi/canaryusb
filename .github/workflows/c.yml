@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: dependencies
+      run: apt install libudev-dev
     - name: tests
       run: cd tests/
     - name: make
