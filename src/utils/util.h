@@ -1,3 +1,9 @@
+#ifdef TESTS
+        #define TESTS 1
+#else
+        #define TESTS 0
+#endif
+
 //for testing
 extern char *test_config_file;
 

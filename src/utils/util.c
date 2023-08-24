@@ -114,18 +114,18 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
         
         char config_file[PATH_MAX];
 
-#ifdef TESTS
-        char cwd[PATH_MAX];
-        if (getcwd(cwd, sizeof(cwd)) != NULL) {
-                dprintf("Current working dir for testing: %s\n", cwd);
-                sprintf(config_file, "%s/%s", cwd, test_config_file);
+        if (TESTS) {
+                char cwd[PATH_MAX];
+                if (getcwd(cwd, sizeof(cwd)) != NULL) {
+                        dprintf("Current working dir for testing: %s\n", cwd);
+                        sprintf(config_file, "%s/%s", cwd, test_config_file);
+                } else {
+                        fprintf(stderr, "TESTING ERROR: not possible to retrieve current directory\n");
+                        exit(EXIT_FAILURE);
+                }
         } else {
-                fprintf(stderr, "TESTING ERROR: not possible to retrieve current directory\n");
-                exit(EXIT_FAILURE);
+                sprintf(config_file, "%s/%s", getenv("HOME"), CONFIG_FILE);
         }
-#else
-        sprintf(config_file, "%s/%s", getenv("HOME"), CONFIG_FILE);
-#endif
 
         fp = fopen(config_file, "r");
         if (!fp) {
