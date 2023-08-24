@@ -1,6 +1,6 @@
 CC = gcc
 LIBS = -ludev
-CCFLAGS = -Werror -Wno-discarded-qualifiers -DTESTS -DSILENCE
+CCFLAGS = -Werror -Wno-discarded-qualifiers -Wno-format-overflow -DTESTS -DSILENCE
 
 SRC := $(shell find ./../src/ -type f -name '*.c' ! -name 'main.c') 
 
