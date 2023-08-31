@@ -39,6 +39,7 @@ extern int usb_fingerprint;
 extern int trusted_list;
 extern char *canary_token;
 extern char *trusted_list_value;
+extern int kill_canaryusb;
 
 void monitor_usb(struct udev *udev);
 void free_canaries();

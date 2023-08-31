@@ -9,13 +9,16 @@
 
 int main(int argc, char *argv[])
 {       
-        check_if_running();
-        
         if (argc < 2) {
                 parse_configuration_file(); 
         } else {
                 parse_command_line(argc, argv);
         }
+        
+        if (!kill_canaryusb)
+                check_if_running();
+        else
+                kill_canaryusb_inst();
         
         struct udev *udev = udev_new();
         if (!udev) {

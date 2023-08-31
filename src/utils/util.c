@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <limits.h>
 #include <unistd.h>
+#include <syslog.h>
 
 #include "../canaryusb.h"
 #include "./toml.h"
@@ -58,6 +59,27 @@ void show_help()
         exit(EXIT_FAILURE);
 }
 
+FILE *command_file_descriptor_exec(char *cmnd)
+{
+        FILE *fd = popen(cmnd, "r");
+        free(cmnd);
+
+        if (fd == NULL) {
+                fprintf(stderr, "ERROR not possible to get file descriptor\n");
+                exit(EXIT_FAILURE);
+        }
+
+        return fd;
+}
+
+static void close_file_descriptor(FILE *fd)
+{
+        if (pclose(fd) == -1) {
+                fprintf(stderr, "ERROR not possible to close stream\n");
+                exit(EXIT_FAILURE);
+        }
+}
+
 void check_if_running()
 {
         char *cmd_pgrep = "pgrep";
@@ -65,27 +87,37 @@ void check_if_running()
         char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(_NAME_) + strlen(cmd_cnt) + 2);
         check_memory_allocation(cmd);
         sprintf(cmd, "%s %s %s", cmd_pgrep, _NAME_, cmd_cnt);
-        FILE *fd = popen(cmd, "r");
-        free(cmd);
 
-        if (fd == NULL) {
-                fprintf(stderr, "ERROR not possible to get file descriptor\n");
-                exit(EXIT_FAILURE);
-        }
-
+        FILE *fd = command_file_descriptor_exec(cmd);
+        
         char cmdo[MAX_PID_LEN];
         fgets(cmdo, MAX_PID_LEN, fd);
-        int nmb_prcss = atoi(cmdo);
+        int nprcss = atoi(cmdo);
 
-        if (pclose(fd) == -1) {
-                fprintf(stderr, "ERROR not possible to close stream\n");
-                exit(EXIT_FAILURE);
-        }
+        close_file_descriptor(fd);    
 
-        if (nmb_prcss > 1) {
+        if (nprcss > 1) {
                 fprintf(stderr, "there is another instance of canaryusb running\n");
                 exit(EXIT_FAILURE);
         }
+}
+
+void kill_canaryusb_inst()
+{
+        char *cmd_pgrep = "kill $(pgrep";
+        char *cmd_cnt = "| head -1)";
+        char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(_NAME_) + strlen(cmd_cnt) + 2);
+        check_memory_allocation(cmd);
+        sprintf(cmd, "%s %s %s", cmd_pgrep, _NAME_, cmd_cnt);
+
+        FILE *fd = command_file_descriptor_exec(cmd);
+        
+        char cmdo[MAX_PID_LEN];
+        fgets(cmdo, MAX_PID_LEN, fd);
+        close_file_descriptor(fd);    
+
+        syslog(LOG_NOTICE, "%s daemon stopped", _NAME_);
+        exit(EXIT_SUCCESS);
 }
 
 void check_argument_length(char *arg, int type)
