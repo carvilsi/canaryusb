@@ -1,0 +1,10 @@
+[Unit]
+Description=Service for canaryusb
+Requires=network.target
+
+[Service]
+ExecStart=$HOME/.local/bin/canaryusb
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
