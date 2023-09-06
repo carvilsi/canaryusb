@@ -100,7 +100,7 @@ void check_argument_length(char *arg, int type)
         }
 
         if (type == CANARYTOKEN) {
-                dprintf("the length of canary tokeb is %ld\n", len);
+                dprintf("the length of canary token is %ld\n", len);
                 if (len > MAX_CANARY_TOKEN_LENGTH) {
                         fprintf(stderr, "The canary token characters exceeds the limit of %d\n", MAX_CANARY_TOKEN_LENGTH);
                         exit(EXIT_FAILURE);

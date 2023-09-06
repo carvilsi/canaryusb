@@ -126,7 +126,7 @@ The tests should be run from the `tests/` directory.
 ## Notes
 
 - Inspired by [canaryfy](https://github.com/thinkst/canaryfy)
-- Only works on GNU/Linux systems, and by now only tested on a 20/22.04.1-Ubuntu 64 and Linux 6.3.2-arch1-1
+- Only works on Linux systems, and by now only tested on a 20/22.04.1-Ubuntu 64 and Arch Linux
 - Contributions are very welcome.
 - Also if you like it, please leave a start I would appreciate it ;)
 
