@@ -7,28 +7,33 @@
 
 UsbAttrs get_usb_attributes(sd_device *dev) 
 {
-        UsbAttrs usbattr = {"0000", "0000", "no", "no"};
+        UsbAttrs usbattr = {"0000", "0000", "no", "no", "no-path"};
 
+        int res;
         const char *syspath;
-        sd_device_get_syspath(dev, &syspath);
-        printf("syspath: %s\n", syspath);
+        res = sd_device_get_syspath(dev, &syspath);
+        if (res >= 0)
+                usbattr.syspath= (char *)syspath;
 
         const char *vendor;
-        sd_device_get_sysattr_value(dev, "idVendor", &vendor);
-        usbattr.vendor = (char *)vendor;
+        res = sd_device_get_sysattr_value(dev, "idVendor", &vendor);
+        if (res >= 0)
+                usbattr.vendor = (char *)vendor;
 
         const char *product;
-        sd_device_get_sysattr_value(dev, "idProduct", &product);
-        usbattr.product = (char *)product; 
+        res = sd_device_get_sysattr_value(dev, "idProduct", &product);
+        if (res >= 0)
+                usbattr.product = (char *)product; 
 
         const char *product_name;
-        sd_device_get_sysattr_value(dev, "product", &product_name);
-        usbattr.product_name = (char *)product_name;
+        res = sd_device_get_sysattr_value(dev, "product", &product_name);
+        if (res >= 0)
+                usbattr.product_name = (char *)product_name;
         
         const char *serial;
-        sd_device_get_sysattr_value(dev, "serial", &serial);
-        printf("Tha serial: %s\n", serial);
-        usbattr.serial = (char *)serial;
+        res = sd_device_get_sysattr_value(dev, "serial", &serial);
+        if (res >= 0)
+                usbattr.serial = (char *)serial;
         
         return usbattr;
 }

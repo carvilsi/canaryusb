@@ -31,11 +31,13 @@ static int usb_monitor_handler(sd_device_monitor *m, sd_device *dev, void *userd
                         strlen(usbattrs.product_name) + 
                         strlen(usbattrs.serial) + 5;
 
-                dprintf("USB device with %s name and vendor/product %s:%s and %s serial.\n",
+                dprintf("USB device with %s name and vendor/product %s:%s and %s serial. \
+                                Connected at: %s\n",
                                 usbattrs.product_name,
                                 usbattrs.vendor,
                                 usbattrs.product,
-                                usbattrs.serial);
+                                usbattrs.serial,
+                                usbattrs.syspath);
                 
                 char tmp_usb_fingprt[fingp_len];
                 char *usb_fingrprnt = get_usb_fingerprint(usbattrs, tmp_usb_fingprt);
