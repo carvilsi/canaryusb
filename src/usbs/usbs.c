@@ -1,26 +1,35 @@
 #include <stdio.h>
 #include <string.h>
-#include <libudev.h>
 
 #include "usbs.h"
 #include "../canaryusb.h"
 #include "../utils/util.h"
 
-UsbAttrs get_usb_attributes(struct udev_device *dev) 
+UsbAttrs get_usb_attributes(sd_device *dev) 
 {
         UsbAttrs usbattr = {"0000", "0000", "no", "no"};
-        const char *vendor = udev_device_get_sysattr_value(dev, "idVendor");
-        if (vendor)
-                usbattr.vendor = (char *)vendor;
-        const char *product = udev_device_get_sysattr_value(dev, "idProduct");
-        if (product)
-                usbattr.product = (char *)product; 
-        const char *product_name = udev_device_get_sysattr_value(dev, "product");
-        if (product_name)
-                usbattr.product_name = (char *)product_name;
-        const char *serial = udev_device_get_sysattr_value(dev, "serial");
-        if (serial)
-                usbattr.serial = (char *)serial;
+
+        const char *syspath;
+        sd_device_get_syspath(dev, &syspath);
+        printf("syspath: %s\n", syspath);
+
+        const char *vendor;
+        sd_device_get_sysattr_value(dev, "idVendor", &vendor);
+        usbattr.vendor = (char *)vendor;
+
+        const char *product;
+        sd_device_get_sysattr_value(dev, "idProduct", &product);
+        usbattr.product = (char *)product; 
+
+        const char *product_name;
+        sd_device_get_sysattr_value(dev, "product", &product_name);
+        usbattr.product_name = (char *)product_name;
+        
+        const char *serial;
+        sd_device_get_sysattr_value(dev, "serial", &serial);
+        printf("Tha serial: %s\n", serial);
+        usbattr.serial = (char *)serial;
+        
         return usbattr;
 }
 
