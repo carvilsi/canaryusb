@@ -3,6 +3,7 @@
 # [v3.0.0](2023-09-08)
 
 * Replaced *libudev* by *libsystemd* 
+* Added test about calling CanaryToken
 
 # [v2.1.2](2023-08-25)
 

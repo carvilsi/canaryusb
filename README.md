@@ -125,10 +125,12 @@ The tests should be run from the `tests/` directory.
 
 - Inspired by [canaryfy](https://github.com/thinkst/canaryfy)
 - Only works on GNU/Linux systems, and by now only tested on a 23.04 Ubuntu and Arch Linux.
-- Contributions are very welcome.
-- Also if you like it, please leave a start I would appreciate it ;)
 
-### Thinks and things
+---
 
-- Exploring possibility of block some rogue devices.
+Feedback from usage and contributions are very welcome.
+Also if you like it, please leave a start I would appreciate it ;)
+
+Cheers and hack the planet!
+
 

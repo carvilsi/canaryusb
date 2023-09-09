@@ -1,4 +1,5 @@
 #include <systemd/sd-device.h>
+
 typedef struct 
 {
         char *vendor;
@@ -9,3 +10,4 @@ typedef struct
 } UsbAttrs;
 UsbAttrs get_usb_attributes(sd_device *dev);
 char *get_usb_fingerprint(UsbAttrs usbattrs, char *usb_fingprt);
+
