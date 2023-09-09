@@ -10,12 +10,12 @@
 #include "../utils/base32.h"
 #include "../utils/util.h"
 
-static int call_the_canary(const char *canary_dns_token)
+int call_the_canary(const char *canary_dns_token)
 {
         int canaryrsp;
-        struct addrinfo hints_1, *res_1;
-        memset(&hints_1, '\0', sizeof(hints_1));
-        canaryrsp = getaddrinfo(canary_dns_token, CANARY_PORT, &hints_1, &res_1);
+        struct addrinfo hints, *res;
+        memset(&hints, 0, sizeof(hints));
+        canaryrsp = getaddrinfo(canary_dns_token, CANARY_PORT, &hints, &res);
         return canaryrsp;
 }
 
