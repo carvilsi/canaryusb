@@ -1,5 +1,5 @@
 CC = gcc
-LIBS = -ludev
+LDFLAGS = `pkg-config --cflags --libs libsystemd`
 CCFLAGS = -Werror
 DEST_BIN = ~/.local/bin/
 DEST_CONF = ~/.config/canaryusb/
@@ -30,7 +30,7 @@ uninstall:
 	rm -rf $(DEST_CONF)
 
 canaryusb:
-	@$(CC) $(CCFLAGS) -o $@ $(SRC) $(LIBS)
+	@$(CC) $(CCFLAGS) -o $@ $(SRC) $(LDFLAGS)
 
 clean:
 	@-rm canaryusb ||:

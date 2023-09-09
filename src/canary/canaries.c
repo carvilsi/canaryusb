@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
-#include <libudev.h>
 #include <stdio.h>
 #include <netdb.h>
 #include <syslog.h>
+#include <systemd/sd-device.h>
 
 #include "../canaryusb.h"
 #include "../usbs/usbs.h"
