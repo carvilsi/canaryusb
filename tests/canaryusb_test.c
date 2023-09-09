@@ -110,6 +110,11 @@ static void canaries()
         ct_assert(__func__, "should create a canary dns token",
                         strcmp(canary_dns_token, CANARY_DNS_TOKEN) == 0);
         free(canary_dns_token);
+        int rsp;
+        rsp = call_the_canary("google.com");
+        ct_assert(__func__, "should do a correct call", rsp == 0);
+        rsp = call_the_canary("google.orc");
+        ct_assert(__func__, "should do a fail call", rsp != 0);
 }
 
 static void fingerprint_usb()

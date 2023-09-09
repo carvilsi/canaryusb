@@ -1,4 +1,3 @@
-
 ![tests](https://github.com/carvilsi/canaryusb/actions/workflows/c.yml/badge.svg?branch=main)
 
 # Canaryusb 
@@ -38,7 +37,7 @@ For debug mode:
 
 `$ make debug`
 
-Special build mode called `silence` allows to edebug without calling canarytokens service:
+Special build mode called `silence` allows to debug without calling canarytokens service:
 
 `$ make silence`
 
@@ -48,12 +47,11 @@ Note that in general you can run `make clean` before any make option, e.g.
 
 ### Dependencies
 
-Depending on your system is quite possible that you'll need to add **libudev-dev**. 
-Please check how to install it for your distribution.
+It's quite possible that on **Ubuntu** you'll need to install the `libsystem-dev` package. At least was my case for **Ubuntu 23.04** (lunar)
 
-For Ubuntu should be:
+`sudo apt install libsystemd-dev`
 
-`$ sudo apt install libudev-dev`
+Seems that on **Arch Linux** is already installed.
 
 ## Run
 
@@ -126,11 +124,12 @@ The tests should be run from the `tests/` directory.
 ## Notes
 
 - Inspired by [canaryfy](https://github.com/thinkst/canaryfy)
-- Only works on Linux systems, and by now only tested on a 20/22.04.1-Ubuntu 64 and Arch Linux
-- Contributions are very welcome.
-- Also if you like it, please leave a start I would appreciate it ;)
+- Only works on Linux systems, and by now only tested on a 23.04 Ubuntu and Arch Linux.
 
-### Thinks and things
+---
 
-- Exploring possibility of block some rogue devices.
+Feedback from usage and contributions are very welcome.
+Also if you like it, please leave a start I would appreciate it ;)
+
+Cheers and hack the planet!
 
