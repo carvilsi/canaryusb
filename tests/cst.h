@@ -3,7 +3,7 @@
   MIT License
 
   Copyright (c) carvilsi [char] 
-  ct
+  cst
   https://github.com/carvilsi
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,11 +39,15 @@
 #define CHK "\u2714"
 #define CRS "\u2718"
 
-extern int nbr_tst;
-extern int nbr_ptst;
-extern int nbr_ftst;
-extern int nbr_shld;
+#define cst_assert(f, m, t, r, e, y) if (nbr_tst == 0) { printf("\n"); } nbr_tst++; if (fncssrt == NULL || strcmp(fncssrt, f) != 0) { printf("\n"); fncssrt = f; printf(BLD "%d- " RST WHT "%s\n" RST, nbr_shld, f); } if (t) { printf(WHT "\t%d- " GRN  "%s " RST BLD "%s %" #y RST, nbr_tst, CHK, m, e); nbr_ptst++; } else { printf(WHT "\t%d- " RED "%s " "%s %" #y RST GRY "\n\t\t actual: " GRN "%" #y GRY " - expected: " RED "%" #y RST, nbr_tst, CRS, m, e, r, e); nbr_ftst++; } printf("\n");
 
-void ct_run(void (*f)()); 
-void ct_assert(const char *fncn, char *msgssrt, int test);
-void ct_print_results();
+#define cst_i(a, b, c) cst_i_(a, b, c, __func__)
+#define cst_i_ne(a, b, c) cst_i_ne_(a, b, c, __func__)
+#define cst_s(a, b, c) cst_s_(a, b, c, __func__)
+
+void cst_run(void (*f)()); 
+void cst_results();
+void cst_i_(const int actual, const char *msgssrt, const int expect, const char *fncn);
+void cst_i_ne_(const int actual, const char *msgssrt, const int expect, const char *fncn);
+void cst_s_(const char *actual, const char *msgssrt, const char *expect, const char *fncn);
+
