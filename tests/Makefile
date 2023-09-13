@@ -7,7 +7,7 @@ SRC := $(shell find ./../src/ -type f -name '*.c' ! -name 'main.c')
 all: test 
 
 test:
-	$(CC) $(CCFLAGS) -o $@ $(SRC) ct.c canaryusb_test.c $(LDFLAGS)
+	$(CC) $(CCFLAGS) -o $@ $(SRC) cst.c canaryusb_test.c $(LDFLAGS)
 	./test
 
 clean:
