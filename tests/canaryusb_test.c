@@ -28,10 +28,10 @@ static void config_file_reading_only_canary_token()
         
         cst_i(trusted_list, "variable should be", 0);
         parse_configuration_file();
-        cst_a("canary_token must exits", canary_token != NULL);
+        cst_a("canary_token must exists", canary_token != NULL);
         cst_s(canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
         cst_i(trusted_list, "variable should be", 0);
-        cst_a("trusted list must not exits", trusted_list_value == NULL);
+        cst_a("trusted list must not exists", trusted_list_value == NULL);
 }
 
 static void config_file_reading_canary_token_and_trusted_list()
@@ -40,10 +40,10 @@ static void config_file_reading_canary_token_and_trusted_list()
         
         cst_i(trusted_list, "variable should be", 0);
         parse_configuration_file();
-        cst_a("canary_token must exits", canary_token != NULL);
+        cst_a("canary_token must exists", canary_token != NULL);
         cst_s(canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
         cst_i(trusted_list, "variable should be", 1);
-        cst_a("trusted list must exits", trusted_list_value != NULL);
+        cst_a("trusted list must exists", trusted_list_value != NULL);
         cst_s(trusted_list_value, "must be equal to the one at the config file", CONFIGURED_TRUSTED_LIST);
         
         //reseting trusted_list var
@@ -54,7 +54,7 @@ static void command_line_arguments_canary_token()
 {
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN};
         parse_command_line(3, argv);
-        cst_a("canary_token must exits", canary_token != NULL);
+        cst_a("canary_token must exists", canary_token != NULL);
         cst_s(canary_token, "must be equal to the one provided", PROVIDED_CANARY_TOKEN);
 }
 
@@ -63,7 +63,7 @@ static void command_line_arguments_canary_token_and_trusted_list()
         cst_i(trusted_list, "should be", 0);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST};
         parse_command_line(5, argv);
-        cst_a("trusted list must exits", trusted_list_value != NULL);
+        cst_a("trusted list must exists", trusted_list_value != NULL);
         cst_s(trusted_list_value, "must be equal to the one provided list", PROVIDED_TRUSTED_LIST);
         cst_i(trusted_list, "should be", 1);
 }
