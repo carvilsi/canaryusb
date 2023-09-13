@@ -22,101 +22,90 @@
 #define SERIAL "no"
 #define USB_FINGERPRINT "1af3:0001-ZOWIE_Gaming_mouse-no"
 
-/*static void config_file_reading_only_canary_token()*/
-/*{*/
-        /*test_config_file = "configurations/config_canary_token.toml";*/
+static void config_file_reading_only_canary_token()
+{
+        test_config_file = "configurations/config_canary_token.toml";
         
-        /*ct_assert( "trusted_list variable should be 0", trusted_list == 0);*/
-        /*parse_configuration_file();*/
-        /*ct_assert( "canary_token must exits", canary_token != NULL);*/
-        /*ct_assert( "canary_token must be equal to the one at the config file", */
-                        /*strcmp(canary_token, CONFIGURED_CANARY_TOKEN) == 0);*/
-        /*ct_assert( "trusted_list variable should be 0, since there is not trusted list at config file", */
-                        /*trusted_list == 0);*/
-        /*ct_assert( "trusted list must not exits",trusted_list_value == NULL);*/
-/*}*/
+        cst_i(trusted_list, "variable should be", 0);
+        parse_configuration_file();
+        cst_a("canary_token must exits", canary_token != NULL);
+        cst_s(canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
+        cst_i(trusted_list, "variable should be", 0);
+        cst_a("trusted list must not exits", trusted_list_value == NULL);
+}
 
-/*static void config_file_reading_canary_token_and_trusted_list()*/
-/*{*/
-        /*test_config_file = "configurations/config_canary_token_trusted_list.toml";*/
+static void config_file_reading_canary_token_and_trusted_list()
+{
+        test_config_file = "configurations/config_canary_token_trusted_list.toml";
         
-        /*ct_assert( "trusted_list variable should be 0", trusted_list == 0);*/
-        /*parse_configuration_file();*/
-        /*ct_assert( "canary_token must exits", canary_token != NULL);*/
-        /*ct_assert( "canary_token must be equal to the one at the config file", */
-                        /*strcmp(canary_token, CONFIGURED_CANARY_TOKEN) == 0);*/
-        /*ct_assert( "trusted_list variable should be 1", trusted_list == 1);*/
-        /*ct_assert( "trusted list must exits", trusted_list_value != NULL);*/
-        /*ct_assert( "trusted_list must be equal to the one at the config file", */
-                        /*strcmp(trusted_list_value, CONFIGURED_TRUSTED_LIST) == 0);*/
+        cst_i(trusted_list, "variable should be", 0);
+        parse_configuration_file();
+        cst_a("canary_token must exits", canary_token != NULL);
+        cst_s(canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
+        cst_i(trusted_list, "variable should be", 1);
+        cst_a("trusted list must exits", trusted_list_value != NULL);
+        cst_s(trusted_list_value, "must be equal to the one at the config file", CONFIGURED_TRUSTED_LIST);
         
-        /*//reseting trusted_list var*/
-        /*trusted_list = 0;*/
-/*}*/
+        //reseting trusted_list var
+        trusted_list = 0;
+}
 
-/*static void command_line_arguments_canary_token()*/
-/*{*/
-        /*char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN};*/
-        /*parse_command_line(3, argv);*/
-        /*ct_assert( "canary_token must exits", canary_token != NULL);*/
-        /*ct_assert( "canary_token must be equal to the one provided", */
-                        /*strcmp(canary_token, PROVIDED_CANARY_TOKEN) == 0);*/
-/*}*/
+static void command_line_arguments_canary_token()
+{
+        char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN};
+        parse_command_line(3, argv);
+        cst_a("canary_token must exits", canary_token != NULL);
+        cst_s(canary_token, "must be equal to the one provided", PROVIDED_CANARY_TOKEN);
+}
 
-/*static void command_line_arguments_canary_token_and_trusted_list()*/
-/*{*/
-        /*ct_assert( "trusted_list variable should be 0", trusted_list == 0);*/
-        /*char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST};*/
-        /*parse_command_line(5, argv);*/
-        /*ct_assert( "trusted list must exits", trusted_list_value != NULL);*/
-        /*ct_assert( "trusted_list must be equal to the one provided list", */
-                        /*strcmp(trusted_list_value, PROVIDED_TRUSTED_LIST) == 0);*/
-        /*ct_assert( "trusted_list variable should be 1", trusted_list == 1);*/
-/*}*/
+static void command_line_arguments_canary_token_and_trusted_list()
+{
+        cst_i(trusted_list, "should be", 0);
+        char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST};
+        parse_command_line(5, argv);
+        cst_a("trusted list must exits", trusted_list_value != NULL);
+        cst_s(trusted_list_value, "must be equal to the one provided list", PROVIDED_TRUSTED_LIST);
+        cst_i(trusted_list, "should be", 1);
+}
 
-/*static void command_list_arguments_usb_fingerprint()*/
-/*{*/
-        /*ct_assert( "usb_fingerprint variable should be 0", usb_fingerprint == 0);*/
-        /*char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-u"};*/
-        /*parse_command_line(6, argv);*/
-        /*ct_assert( "usb_fingerprint variable should be 1", usb_fingerprint == 1);*/
-/*}*/
+static void command_list_arguments_usb_fingerprint()
+{
+        cst_i(usb_fingerprint, "should be", 0);
+        char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-u"};
+        parse_command_line(6, argv);
+        cst_i(usb_fingerprint, "variable should be", 1);
+}
 
-/*static void get_canary_encoded_usb_fingerprint_test() {*/
-        /*char *usb_fingerprint = "1af3:0001-ZOWIE_Gaming_mouse-no";*/
-        /*char *base32_usb_fingerprint= (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);*/
-        /*get_canary_encoded_usb_fingerprint(usb_fingerprint, base32_usb_fingerprint);*/
-        /*ct_assert( "usb should be base32 encoded", */
-                        /*strcmp(base32_usb_fingerprint, BASE32_ENCODED_USB_FINGERPRINT) == 0); */
-        /*free(base32_usb_fingerprint);*/
-/*}*/
+static void get_canary_encoded_usb_fingerprint_test() {
+        char *usb_fingerprint = "1af3:0001-ZOWIE_Gaming_mouse-no";
+        char *base32_usb_fingerprint= (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
+        get_canary_encoded_usb_fingerprint(usb_fingerprint, base32_usb_fingerprint);
+        cst_s(base32_usb_fingerprint, "should be base32 encoded", BASE32_ENCODED_USB_FINGERPRINT); 
+        free(base32_usb_fingerprint);
+}
 
-/*static void usb_fingerprint_and_trusted_list()*/
-/*{*/
-        /*char *usb_fingrprnt = "foobar";*/
-        /*int is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);*/
-        /*ct_assert( "should ignore usb fingerprint if is at trusted list",*/
-                        /*is_in_list == 1);*/
-        /*usb_fingrprnt = "tar";*/
-        /*is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);*/
-        /*ct_assert( "should not ignore usb fingerprint if is not at trusted list",*/
-                        /*is_in_list == 0);*/
-/*}*/
+static void usb_fingerprint_and_trusted_list()
+{
+        char *usb_fingrprnt = "foobar";
+        int is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        cst_a("should ignore usb fingerprint if is at trusted list", is_in_list == 1);
+        usb_fingrprnt = "tar";
+        is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        cst_a("should not ignore usb fingerprint if is not at trusted list", is_in_list == 0);
+}
 
 static void build_canary_dns_token_()
 {
         char *canary_dns_token = (char *) malloc(strlen(BASE32_ENCODED_USB_FINGERPRINT) + strlen(MAGIC_STRING) + 2 + strlen(canary_token));
         build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT, canary_dns_token, canary_token);
-        
         cst_s(canary_dns_token, "should give", CANARY_DNS_TOKEN);
         free(canary_dns_token);
-        
 }
 
 static void call_the_canary_() 
 {
-        cst_i(call_the_canary("google.com"), "should return a non-error value", 0);
-        cst_i_ne(call_the_canary("google.orc"), "should return a nonzero error different than", 0);
+        cst_a("should return a non-error value", call_the_canary("google.com") == 0);
+        cst_a("should return a nonzero error different than", call_the_canary("google.orc") != 0);
 }
 
 static void get_usb_fingerprint_()
@@ -135,14 +124,14 @@ static void get_usb_fingerprint_()
 
 static void all_tests()
 {
-        /*cst_run(config_file_reading_only_canary_token);*/
-        /*cst_run(config_file_reading_canary_token_and_trusted_list);*/
-        /*cst_run(command_line_arguments_canary_token);*/
-        /*cst_run(command_line_arguments_canary_token_and_trusted_list);*/
-        /*cst_run(command_list_arguments_usb_fingerprint);*/
-        /*cst_run(get_canary_encoded_usb_fingerprint_test);*/
-        /*cst_run(usb_fingerprint_and_trusted_list);*/
-        /*cst_run(build_canary_dns_token_);*/
+        cst_run(config_file_reading_only_canary_token);
+        cst_run(config_file_reading_canary_token_and_trusted_list);
+        cst_run(command_line_arguments_canary_token);
+        cst_run(command_line_arguments_canary_token_and_trusted_list);
+        cst_run(command_list_arguments_usb_fingerprint);
+        cst_run(get_canary_encoded_usb_fingerprint_test);
+        cst_run(usb_fingerprint_and_trusted_list);
+        cst_run(build_canary_dns_token_);
         cst_run(call_the_canary_);
         cst_run(get_usb_fingerprint_);
 }
@@ -150,6 +139,6 @@ static void all_tests()
 int main(void)  
 {
         all_tests();
-        cst_results(__FILE__);
+        cst_results();
 }
 

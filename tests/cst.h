@@ -39,15 +39,22 @@
 #define CHK "\u2714"
 #define CRS "\u2718"
 
-#define cst_assert(f, m, t, r, e, y) if (nbr_tst == 0) { printf("\n"); } nbr_tst++; if (fncssrt == NULL || strcmp(fncssrt, f) != 0) { printf("\n"); fncssrt = f; printf(BLD "%d- " RST WHT "%s\n" RST, nbr_shld, f); } if (t) { printf(WHT "\t%d- " GRN  "%s " RST BLD "%s %" #y RST, nbr_tst, CHK, m, e); nbr_ptst++; } else { printf(WHT "\t%d- " RED "%s " "%s %" #y RST GRY "\n\t\t actual: " GRN "%" #y GRY " - expected: " RED "%" #y RST, nbr_tst, CRS, m, e, r, e); nbr_ftst++; } printf("\n");
+#define cst_assert(f, m, t, r, e, y) if (nbr_tst == 0) { printf("\n"); } nbr_tst++; if (fncssrt == NULL || strcmp(fncssrt, f) != 0) { printf("\n"); fncssrt = f; printf(BLD "%d- " RST WHT "%s\n" RST, nbr_shld, f); } if (t) { printf(WHT "\t%d- " GRN  "%s " RST BLD "%s: %" #y RST, nbr_tst, CHK, m, e); nbr_ptst++; } else { printf(WHT "\t%d- " RED "%s " "%s: %" #y RST GRY "\n\t\t actual: " GRN "%" #y GRY " - expected: " RED "%" #y RST, nbr_tst, CRS, m, e, r, e); nbr_ftst++; } printf("\n");
 
-#define cst_i(a, b, c) cst_i_(a, b, c, __func__)
-#define cst_i_ne(a, b, c) cst_i_ne_(a, b, c, __func__)
-#define cst_s(a, b, c) cst_s_(a, b, c, __func__)
+#define cst_true_assert(f, m, t) if (nbr_tst == 0) { printf("\n"); } nbr_tst++; if (fncssrt == NULL || strcmp(fncssrt, f) != 0) { printf("\n"); fncssrt = f; printf(BLD "%d- " RST WHT "%s\n" RST, nbr_shld, f); } if (t) { printf(WHT "\t%d- " GRN "%s " RST BLD "%s" RST, nbr_tst, CHK, m); nbr_ptst++; } else { printf(WHT "\t%d- " RED "%s " "%s " RST, nbr_tst, CRS, m); nbr_ftst++; } printf("\n");
+
+
+
+#define cst_i(a, b, c) cst_i_(a, b, c, __func__, 1)
+#define cst_i_ne(a, b, c) cst_i_(a, b, c, __func__, 0)
+#define cst_s(a, b, c) cst_s_(a, b, c, __func__, 1)
+#define cst_s_ne(a, b, c) cst_s_(a, b, c, __func__, 0)
+#define cst_a(a, b) cst_a_(a, b, __func__)
+#define cst_results() cst_results_(__FILE__)
 
 void cst_run(void (*f)()); 
-void cst_results();
-void cst_i_(const int actual, const char *msgssrt, const int expect, const char *fncn);
-void cst_i_ne_(const int actual, const char *msgssrt, const int expect, const char *fncn);
-void cst_s_(const char *actual, const char *msgssrt, const char *expect, const char *fncn);
+void cst_results_(const char *flnm);
+void cst_i_(const int actual, const char *msgssrt, const int expect, const char *fncn, const int b);
+void cst_s_(const char *actual, const char *msgssrt, const char *expect, const char *fncn, const int b);
+void cst_a_(const char *msgssrt, const int test, const char *fncn);
 

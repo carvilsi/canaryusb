@@ -45,26 +45,37 @@ void cst_run(void (*f)())
         nbr_shld++;
 }
 
-// TODO: improve this with more parameter flexibility
-void cst_i_(const int actual, const char *msgssrt, const int expect, const char *fncn)
+void cst_i_(const int actual, const char *msgssrt, const int expect, const char *fncn, const int b)
 {
-        cst_assert(fncn, msgssrt, actual == expect, actual, expect, d);
+        int test;
+        if (b)
+                test = actual == expect;
+        else
+                test = actual != expect;
+
+        cst_assert(fncn, msgssrt, test, actual, expect, d);
 }
 
-void cst_i_ne_(const int actual, const char *msgssrt, const int expect, const char *fncn)
+void cst_s_(const char *actual, const char *msgssrt, const char *expect, const char *fncn, const int b)
 {
-        cst_assert(fncn, msgssrt, actual != expect, actual, expect, d);
+        int test;
+        if (b)
+                test = strcmp(actual, expect) == 0;
+        else
+                test = strcmp(actual, expect) != 0;
+
+        cst_assert(fncn, msgssrt, test, actual, expect, s);
 }
 
-void cst_s_(const char *actual, const char *msgssrt, const char *expect, const char *fncn)
+void cst_a_(const char *msgssrt, const int test, const char *fncn)
 {
-        cst_assert(fncn, msgssrt, strcmp(actual, expect) == 0, actual, expect, s);
+        cst_true_assert(fncn, msgssrt, test);
 }
 
-void cst_results(char *tstn)
+void cst_results_(const char *tstnm)
 {
         printf("\n");
-        printf(GRY "Tests %s %s %s resume:\n" RST, tstn, __DATE__, __TIME__);
+        printf(GRY "Tests %s %s %s resume:\n" RST, tstnm, __DATE__, __TIME__);
         printf(YEL "Total excuted tests: %d\n" RST, nbr_tst);
         if (nbr_ptst)
                 printf(GRN "\tTotal passed tests: %d\n" RST, nbr_ptst);
