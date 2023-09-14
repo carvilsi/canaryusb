@@ -54,6 +54,7 @@ void show_help()
         printf(BOLD_TEXT "Note:\n" NO_BOLD_TEXT);
         printf("If any option is not provided the default behaviour is try to retrieve the options from the a config file located at " BOLD_TEXT "~/.config/canaryusb/config.toml\n" NO_BOLD_TEXT);
         printf("An example of this configuration file is under " BOLD_TEXT "configuration/ " NO_BOLD_TEXT "directory at the repo.\n");
+        printf("https://github.com/carvilsi/canaryusb");
         printf("\n");
         
         exit(EXIT_FAILURE);
@@ -132,7 +133,7 @@ void check_argument_length(char *arg, int type)
         }
 
         if (type == CANARYTOKEN) {
-                dprintf("the length of canary tokeb is %ld\n", len);
+                dprintf("the length of canary token is %ld\n", len);
                 if (len > MAX_CANARY_TOKEN_LENGTH) {
                         fprintf(stderr, "The canary token characters exceeds the limit of %d\n", MAX_CANARY_TOKEN_LENGTH);
                         exit(EXIT_FAILURE);

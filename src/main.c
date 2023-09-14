@@ -1,7 +1,6 @@
 #include <syslog.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <libudev.h>
 #include <unistd.h>
 
 #include "canaryusb.h"
@@ -19,13 +18,7 @@ int main(int argc, char *argv[])
                 check_if_running();
         else
                 kill_canaryusb_inst();
-        
-        struct udev *udev = udev_new();
-        if (!udev) {
-                fprintf(stderr, "udev error\n");
-                exit(EXIT_FAILURE); 
-        }
-
+       
         pid_t pid;
         pid = fork();
 
@@ -39,9 +32,7 @@ int main(int argc, char *argv[])
         dprintf("%s daemon started\n", _NAME_);
         syslog(LOG_NOTICE, "%s daemon started", _NAME_);
 
-        monitor_usb(udev);
-        udev_unref(udev);
-
+        monitor_usb();
         free_canaries();
         
         return EXIT_SUCCESS;

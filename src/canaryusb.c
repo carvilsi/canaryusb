@@ -4,6 +4,9 @@
 #include <syslog.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <systemd/sd-event.h>
+#include <systemd/sd-device.h>
+#include <errno.h>
 
 #include "canaryusb.h"
 #include "usbs/usbs.h"
@@ -17,77 +20,94 @@ int kill_canaryusb = 0;
 char *canary_token;
 char *trusted_list_value;
 
-static void canary_usb(struct udev_device *dev) 
+static int usb_monitor_handler(sd_device_monitor *m, sd_device *dev, void *userdata) 
 {
-        UsbAttrs usbattrs = get_usb_attributes(dev);
-        size_t fingp_len = strlen(usbattrs.vendor) + strlen(usbattrs.product) + strlen(usbattrs.product_name) + strlen(usbattrs.serial) + 5;
+        sd_device_action_t actions;
+        sd_device_get_action(dev, &actions);
 
-        dprintf("USB device with %s name and vendor/product %s:%s and %s serial. Connected at: %s\n",
-                        usbattrs.product_name,
-                        usbattrs.vendor,
-                        usbattrs.product,
-                        usbattrs.serial,
-                        udev_device_get_devnode(dev));
-        
-        char tmp_usb_fingprt[fingp_len];
-        char *usb_fingrprnt = get_usb_fingerprint(usbattrs, tmp_usb_fingprt);
-        char *base32_usb_fingprt = (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
-        check_memory_allocation(base32_usb_fingprt);
-        get_canary_encoded_usb_fingerprint(usb_fingrprnt, base32_usb_fingprt);
+        if (actions == SD_DEVICE_ADD) {
+                UsbAttrs usbattrs = get_usb_attributes(dev);
+                size_t fingp_len = strlen(usbattrs.vendor) + 
+                        strlen(usbattrs.product) + 
+                        strlen(usbattrs.product_name) + 
+                        strlen(usbattrs.serial) + 5;
 
-        // Check if we have a trusted list and the device is in the list.
-        int is_in_list = 0;
-        if (trusted_list) {
-                is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
-        }
+                dprintf("USB device with %s name and vendor/product %s:%s and %s serial. \
+                                Connected at: %s\n",
+                                usbattrs.product_name,
+                                usbattrs.vendor,
+                                usbattrs.product,
+                                usbattrs.serial,
+                                usbattrs.syspath);
+                
+                char tmp_usb_fingprt[fingp_len];
+                char *usb_fingrprnt = get_usb_fingerprint(usbattrs, tmp_usb_fingprt);
+                char *base32_usb_fingprt = (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
+                check_memory_allocation(base32_usb_fingprt);
+                get_canary_encoded_usb_fingerprint(usb_fingrprnt, base32_usb_fingprt);
 
-        // if we want to the related fingerprint with the connected usb, print it!
-        // else, call canary token
-        if (usb_fingerprint) {
-                printf("usb_fingerprint: %s\n", usb_fingrprnt);
-        } else {
-                if (is_in_list) {
-                        syslog(LOG_NOTICE, "usb device: %s connected, but is at trusted list, not calling canary token", usb_fingrprnt);
-                        dprintf("usb device: %s connected, but is at trusted list, not calling canary token\n", usb_fingrprnt);
-                } else {
-                        deal_with_canaries(base32_usb_fingprt, usb_fingrprnt, canary_token); 
+                // Check if we have a trusted list and the device is in the list.
+                int is_in_list = 0;
+                if (trusted_list) {
+                        is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, 
+                                        TRUSTED_LIST_DELIMITER);
                 }
-        }
-        free(base32_usb_fingprt);
-}
 
-void monitor_usb(struct udev *udev) 
-{
-        struct udev_monitor *mon = udev_monitor_new_from_netlink(udev, "udev");
-
-        udev_monitor_filter_add_match_subsystem_devtype(mon, SUBSYSTEM, NULL);
-        udev_monitor_enable_receiving(mon);
-
-        int fd = udev_monitor_get_fd(mon);
-
-        while (1) {
-                fd_set fds;
-                FD_ZERO(&fds);
-                FD_SET(fd, &fds);
-
-                int ret = select(fd+1, &fds, NULL, NULL, NULL);
-                if (ret <= 0)
-                        break;
-
-                if (FD_ISSET(fd, &fds)) {
-                        struct udev_device *dev = udev_monitor_receive_device(mon);
-                        if (dev) {
-                                if (udev_device_get_devnode(dev)) {
-                                        const char *action = udev_device_get_action(dev);
-                                        if (action != NULL) {
-                                                if (strcmp(action,CANARY_ON_ACTION) == 0) 
-                                                        canary_usb(dev);
-                                        }
-
-                                }
+                // if we want to the related fingerprint with the connected usb, print it!
+                // else, call canary token
+                if (usb_fingerprint) {
+                        printf("usb_fingerprint: %s\n", usb_fingrprnt);
+                } else {
+                        if (is_in_list) {
+                                syslog(LOG_NOTICE, 
+                                                "usb device: %s connected, but is at trusted list, not calling canary token", 
+                                                usb_fingrprnt);
+                                dprintf("usb device: %s connected, but is at trusted list, not calling canary token\n", 
+                                                usb_fingrprnt);
+                        } else {
+                                deal_with_canaries(base32_usb_fingprt, usb_fingrprnt, canary_token); 
                         }
                 }
+                free(base32_usb_fingprt);
+                
         }
+
+        return 0;
+}
+
+void monitor_usb() 
+{
+        int r;
+        sd_device_monitor *sddm = NULL;
+        r = sd_device_monitor_new(&sddm);
+        if (r < 0) 
+                goto finish;
+
+        r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, SUBSYSTEM, DEVICE_TYPE);
+        if (r < 0)
+                goto finish;
+
+        r = sd_device_monitor_start(sddm, usb_monitor_handler, NULL);
+        if (r < 0) 
+                goto finish;
+
+        sd_event *event = sd_device_monitor_get_event(sddm);
+        r = sd_event_loop(event);
+        if (r < 0)
+                goto finish;
+
+finish:
+        if (r < 0) {
+                errno = -r;
+                fprintf(stderr, "Error: %m\n");
+        }
+        sd_device_monitor_stop(sddm);
+        sd_device_monitor_unref(sddm);
+        sd_event_unref(event);
+        if (r < 0) 
+                exit(EXIT_FAILURE);
+        else
+                exit(EXIT_SUCCESS);
 }
 
 static struct option long_options[] = 

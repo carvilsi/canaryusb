@@ -3,7 +3,7 @@
   MIT License
 
   Copyright (c) carvilsi [char] 
-  ct
+  cst
   https://github.com/carvilsi
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,8 +28,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-#include "ct.h"
+#include "cst.h"
 
 int nbr_tst = 0;
 int nbr_ptst = 0;
@@ -38,44 +39,49 @@ int nbr_shld = 0;
 
 char *fncssrt;
 
-void ct_run(void (*f)())  
+void cst_run(void (*f)())  
 {
         (*f)();
         nbr_shld++;
 }
 
-void ct_assert(const char *fncn, char *msgssrt, int test)
-{       
-        if (nbr_tst == 0) {
-                printf("\n");
-        }
-        nbr_tst++;
+void cst_i_(const int actual, const char *msgssrt, const int expect, const char *fncn, const int b)
+{
+        int test;
+        if (b)
+                test = actual == expect;
+        else
+                test = actual != expect;
 
-        if (fncssrt == NULL || strcmp(fncssrt, fncn) != 0) {
-                printf("\n");
-                fncssrt = fncn;
-                printf(WHT "%d- " RST BLD "%s\n" RST, nbr_shld, fncn);
-        } 
-       
-        if (test) {
-                printf(WHT "\t%d- " GRN  "%s " WHT "%s" RST, nbr_tst, CHK, msgssrt); 
-                nbr_ptst++;
-        } else { 
-                printf(WHT "\t%d- " RED "%s " "%s" RST, nbr_tst, CRS, msgssrt);
-                nbr_ftst++;
-        }
-        printf("\n");
+        cst_assert(fncn, msgssrt, test, actual, expect, d);
 }
 
-void ct_print_results(char *tstn)
+void cst_s_(const char *actual, const char *msgssrt, const char *expect, const char *fncn, const int b)
 {
-      printf("\n");
-      printf(MAG "Tests %s resume:\n\n" RST, tstn);
-      printf(YEL "Total excuted tests: %d\n" RST, nbr_tst);
-      if (nbr_ptst)
-              printf(GRN "\tTotal passed tests: %d\n" RST, nbr_ptst);
-      if (nbr_ftst != 0)
-              printf(RED "\tTotal failed tests: %d\n" RST, nbr_ftst);
-      printf("\n");
+        int test;
+        if (b)
+                test = strcmp(actual, expect) == 0;
+        else
+                test = strcmp(actual, expect) != 0;
+
+        cst_assert(fncn, msgssrt, test, actual, expect, s);
+}
+
+void cst_a_(const char *msgssrt, const int test, const char *fncn)
+{
+        cst_true_assert(fncn, msgssrt, test);
+}
+
+void cst_results_(const char *tstnm)
+{
+        printf("\n");
+        printf(GRY "Tests %s %s %s resume:\n" RST, tstnm, __DATE__, __TIME__);
+        printf(YEL "Total excuted tests: %d\n" RST, nbr_tst);
+        if (nbr_ptst)
+                printf(GRN "\tTotal passed tests: %d\n" RST, nbr_ptst);
+        if (nbr_ftst != 0)
+                printf(RED "\tTotal failed tests: %d\n" RST, nbr_ftst);
+        printf("\n");
+        exit(nbr_ftst == 0 ? 0 : 1);
 }
 

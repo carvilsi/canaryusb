@@ -1,6 +1,5 @@
-#include <libudev.h>
-
 #define SUBSYSTEM "usb"
+#define DEVICE_TYPE "usb_device"
 #define TOTAL_MAX_BASE_32_MESSAGE_LENGTH 118
 #define MAX_BASE_32_MESSAGE_LENGTH 59
 #define CANARY_ON_ACTION "add"
@@ -27,7 +26,7 @@
 #endif                                   
 
 #define _NAME_ "canaryusb" 
-#define _VERSION_ "2.1.2"
+#define _VERSION_ "3.0.0"
 
 #define BOLD_TEXT "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
@@ -41,7 +40,7 @@ extern char *canary_token;
 extern char *trusted_list_value;
 extern int kill_canaryusb;
 
-void monitor_usb(struct udev *udev);
+void monitor_usb();
 void free_canaries();
 void parse_command_line(int argc, char *argv[]);
 void parse_configuration_file();
