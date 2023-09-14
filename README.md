@@ -47,6 +47,12 @@ Note that in general you can run `make clean` before any make option, e.g.
 
 ### Dependencies
 
+In general you'll need:
+
+* gcc
+* make
+* pkg-config
+
 It's quite possible that on **Ubuntu** you'll need to install the `libsystem-dev` package. At least was my case for **Ubuntu 23.04** (lunar)
 
 `sudo apt install libsystemd-dev`
