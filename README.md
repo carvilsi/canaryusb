@@ -137,5 +137,5 @@ The tests should be run from the `tests/` directory.
 Feedback from usage and contributions are very welcome.
 Also if you like it, please leave a start I would appreciate it ;)
 
-Cheers and hack the planet!
+<3 & Hack the Planet!
 

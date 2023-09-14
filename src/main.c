@@ -14,10 +14,15 @@ int main(int argc, char *argv[])
                 parse_command_line(argc, argv);
         }
         
-        if (!kill_canaryusb)
-                check_if_running();
-        else
+        if (!kill_canaryusb) {
+                if (is_running()) {
+                        fprintf(stderr, "there is another instance of %s running\n"
+                                "you can stop it with '%s -k'\n", _NAME_, _NAME_);
+                        exit(EXIT_FAILURE);
+                }
+        } else {
                 kill_canaryusb_inst();
+        }
        
         pid_t pid;
         pid = fork();
