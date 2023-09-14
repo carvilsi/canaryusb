@@ -60,3 +60,8 @@ cexec:
 clean:
 	@-rm $(NAM) ||:
 
+# to remove also files generated for releases
+clean_all: clean 
+	@-rm $(NAM)_* ||: 
+	@-rm $(SHASUM_FL) ||:
+
