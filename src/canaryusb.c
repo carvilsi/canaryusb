@@ -116,6 +116,7 @@ static struct option long_options[] =
        {"usb_fingerprint", no_argument, 0, 'u'},
        {"canary_token", required_argument, 0, 'c'},
        {"help", no_argument, 0, 'h'},
+       {"kill", no_argument, 0, 'k'},
        {0, 0 , 0, 0}
 };
 

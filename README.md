@@ -23,6 +23,9 @@ Here we are thinking about removable media threats like BadUSB or physical attac
                 list of usb fingerprints, comma seprated, to not notify when the related deviced is connected
                 check usb_fingerprint option to retrieve device fingerprint for connected USB device
 
+**-k, --kill**
+                kills the daemon, if it's running
+
 **Note:**
 If any option is not provided the default behaviour is try to retrieve the options from the a config file located at `~/.config/canaryusb/config.toml`.
 An example of this configuration file is under `configuration/` directory at the repo.
