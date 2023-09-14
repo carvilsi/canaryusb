@@ -2,3 +2,5 @@
 canaryusb
 tags
 .vscode/
+canaryusb_*_linux_x86_64
+sha256sum.txt
