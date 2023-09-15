@@ -50,6 +50,8 @@ void show_help()
         printf(BOLD_TEXT "-t, --trust_list [comma separated usb_fingerprint list]\n" NO_BOLD_TEXT);
         printf("\t\tlist of usb fingerprints, comma seprated, to not notify when the related deviced is connected\n");
         printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
+        printf(BOLD_TEXT "-k, --kill\n" NO_BOLD_TEXT);
+        printf("\t\tkills the daemon, if it's running\n");
         printf("\n");
         printf(BOLD_TEXT "Note:\n" NO_BOLD_TEXT);
         printf("If any option is not provided the default behaviour is try to retrieve the options from the a config file located at " BOLD_TEXT "~/.config/canaryusb/config.toml\n" NO_BOLD_TEXT);

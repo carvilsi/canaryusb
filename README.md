@@ -97,6 +97,27 @@ If you already installed canaryusb, you can uninstall it with:
 
 `$ make uninstall`
 
+### Install from binary
+
+You can download the binary file at [repo releases](https://github.com/carvilsi/canaryusb/releases)
+Notice that if you want to run *canaryusb* with config file, it will expect that this is at: `~/.config/canaryusb/config.toml`. I guess that be able to config with cli params the location for the config file would it be something to add (TODO). 
+Also the *make* commands like *uninstall, add_service* expects that the binary is at `~/.local/bin/`, change this is just edit the binary location of *canaryusb.service* under *configuration* directory though.
+
+## Install as a service
+
+`$ make clean; make add_service`
+
+This will install canaryusb and enable a service for the **current user**
+If is not an update you'll need to set the right configuration at `~/.config/canaryusb/config.toml` before start the service:
+
+`$ systemctl --user start canaryusb.service` 
+
+### Remove the service
+
+`$ make remove_service`
+
+Will remove the canaryusb service, this will **not** uninstall canaryusb.
+
 ## Tests
 
 The tests should be run from the `tests/` directory.
@@ -106,15 +127,19 @@ The tests should be run from the `tests/` directory.
 
 ## Examples
 
-**Receive a mail for any device that will be connected to USB**
+* Receive a mail for any device that will be connected to USB
 
 `$ ./canaryusb -c 555whateverYouGetFrom.canarytokens.com`
 
-**Receive a mail for any device that is not at the trust list and  will be connected to USB**
+* Receive a mail for any device that is not at the trust list and  will be connected to USB
 
 `$ ./canaryusb -c 5555whateverYouGetFrom.canarytokens.com -t 1af3:0001-ZOWIE_Gaming_mouse-no,594d:604d-YD60MQ-no`
 
-**Get the fingerprint of devices for trusted list, do not send any mail**
+* Kill the daemon (if it's already running)
+
+`$ ./canaryusb -k`
+
+* Get the fingerprint of devices for trusted list, do not send any mail
 
 `$ ./canaryusb -u`
 
@@ -122,7 +147,7 @@ The tests should be run from the `tests/` directory.
 
 `usb_fingerprint: 1af3:0001-ZOWIE_Gaming_mouse-no`
 
-**Execute installed and use config file**
+* Execute installed and use config file
 
 `$ canaryusb`
 
