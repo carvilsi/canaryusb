@@ -1,10 +1,15 @@
 [Unit]
 Description=Service for canaryusb
-Requires=network.target
+Wants=network.target
+After=network.target
 
 [Service]
-ExecStart=$HOME/.local/bin/canaryusb
-Type=simple
+Type=forking
+ExecStart=%h/.local/bin/canaryusb
+ExecStop=%h/.local/bin/canaryusb -k
+Restart=always
+RestartMode=direct
+
 
 [Install]
 WantedBy=multi-user.target
