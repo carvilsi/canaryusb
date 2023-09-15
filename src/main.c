@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
                 dprintf("%s daemon started\n", _NAME_);
                 syslog(LOG_NOTICE, "%s daemon started", _NAME_);
         } else {
-                printf("%s in usb_fingerprint mode\n");
-                printf("waiting for a new USB device connections, ctrl+c\n");
+                printf("%s in usb_fingerprint mode\n", _NAME_);
+                printf("waiting for a new USB device connections, ctrl+c to stop it\n");
         }
 
         monitor_usb();
