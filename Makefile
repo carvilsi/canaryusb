@@ -7,6 +7,8 @@ SRC_CONF = ./configuration/config.toml
 REL_PR =canaryusb_v
 REL_SUF =_linux_x86_64
 SHASUM_FL = sha256sum.txt
+DEST_SERVICE = ~/.config/systemd/user/
+SRC_SERVICE = ./configuration/canaryusb.service
 
 SRC := $(shell find ./src/ -name '*.c') 
 NAM := $(shell awk '/_NAME_/ { gsub("\"", "", $$3); print $$3 }' src/canaryusb.h)
@@ -33,7 +35,7 @@ install: cexec
 	@echo '$(NAM) copied at: $(DEST_BIN)...'
 	@mkdir -p $(DEST_CONF)
 	@-cp -n $(SRC_CONF) $(DEST_CONF) ||:
-	@source ~/.bashrc
+	@. ~/.bashrc
 	@echo '$(NAM) installed'
 
 uninstall:
@@ -41,6 +43,17 @@ uninstall:
 	rm  $(DEST_BIN)$(NAM)
 	rm -rf $(DEST_CONF)
 	@echo '$(NAM) uninstalled OK'
+
+# installs and add a suser service
+add_service: install
+	@echo 'going to create a service for $(NAM)...'
+	@mkdir -p $(DEST_SERVICE)
+	@-cp -n $(SRC_SERVICE) $(DEST_SERVICE) ||:
+	systemctl --user daemon-reload
+	systemctl --user enable canaryusb.service
+	@echo '$(NAM) serive enabled in order to start it'
+	@echo 'first set correct $(NAM) configuration at $(DEST_CONF)$(SRC_CONF) and run:'
+	@echo 'systemctl --user start canaryusb.service'
 
 release: cexec
 	@echo '$(NAM) compiled...'
