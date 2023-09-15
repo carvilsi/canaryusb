@@ -16,18 +16,23 @@ int main(int argc, char *argv[])
                 parse_command_line(argc, argv);
         }
 
-        pid_t pid;
-        pid = fork();
+        if (!usb_fingerprint) {
+                pid_t pid;
+                pid = fork();
 
-        if (pid < 0)
-                exit(EXIT_FAILURE);
-        if (pid > 0) 
-                exit(EXIT_SUCCESS);
-        if (setsid() < 0)
-                exit(EXIT_FAILURE);
+                if (pid < 0)
+                        exit(EXIT_FAILURE);
+                if (pid > 0) 
+                        exit(EXIT_SUCCESS);
+                if (setsid() < 0)
+                        exit(EXIT_FAILURE);
 
-        dprintf("%s daemon started\n", _NAME_);
-        syslog(LOG_NOTICE, "%s daemon started", _NAME_);
+                dprintf("%s daemon started\n", _NAME_);
+                syslog(LOG_NOTICE, "%s daemon started", _NAME_);
+        } else {
+                printf("%s in usb_fingerprint mode\n");
+                printf("waiting for a new USB device connections, ctrl+c\n");
+        }
 
         monitor_usb();
         free_canaries();
