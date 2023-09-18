@@ -32,11 +32,10 @@
 
 int main(int argc, char *argv[])
 {       
-        if (argc < 2) {
+        if (argc < 2)
                 parse_configuration_file(); 
-        } else {
+        else
                 parse_command_line(argc, argv);
-        }
 
         if (!kill_canaryusb) {
                 if (is_running()) {
@@ -45,7 +44,7 @@ int main(int argc, char *argv[])
                         exit(EXIT_FAILURE);
                 }
         } else {
-                kill_canaryusb_inst();
+                kill_canaryusb_instance();
         }
 
         if (!usb_fingerprint) {

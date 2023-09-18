@@ -106,7 +106,7 @@ int is_running()
                 return 0;
 }
 
-void kill_canaryusb_inst()
+void kill_canaryusb_instance()
 {
        if (is_running()) {
                char *cmd_pgrep = "kill $(pgrep";
