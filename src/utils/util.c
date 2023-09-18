@@ -34,7 +34,7 @@ void replace_in_string(char *to_replace, char replace_this, char replace_with)
 
 void show_help()
 {
-        printf(BOLD_TEXT "%s v%s\n" NO_BOLD_TEXT, _NAME_, _VERSION_);
+        printf(BOLD_TEXT "%s v%s by char 2023\n" NO_BOLD_TEXT, _NAME_, _VERSION_);
         printf("\n");
         printf("Sends email notification when a USB device is plugged into your computer, powered by Canary Tokens\n");
         printf("\n");
@@ -47,6 +47,7 @@ void show_help()
         printf("\t\tthis prints the fingerprint related with a USB device that is plugged into computer\n");
         printf("\t\tand could be used to create the list for " BOLD_TEXT "trust_list" NO_BOLD_TEXT " option.\n");
         printf("\t\tIn this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.\n");
+        printf("\t\tAlso will not start a daemon, to quit" BOLD_TEXT " ctrl+c\n" NO_BOLD_TEXT);
         printf(BOLD_TEXT "-t, --trust_list [comma separated usb_fingerprint list]\n" NO_BOLD_TEXT);
         printf("\t\tlist of usb fingerprints, comma seprated, to not notify when the related deviced is connected\n");
         printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
@@ -57,7 +58,7 @@ void show_help()
         printf("If any option is not provided the default behaviour is try to retrieve the options from the a config file located at " BOLD_TEXT "~/.config/canaryusb/config.toml\n" NO_BOLD_TEXT);
         printf("An example of this configuration file is under " BOLD_TEXT "configuration/ " NO_BOLD_TEXT "directory at the repo.\n");
         printf("https://github.com/carvilsi/canaryusb");
-        printf("\n");
+        printf("\n\n");
         
         exit(EXIT_FAILURE);
 }
