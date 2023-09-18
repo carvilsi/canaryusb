@@ -154,7 +154,17 @@ The tests should be run from the `tests/` directory.
 
 ## Stop the daemon
 
-`kill $(pgrep canaryusb)`
+If **installed**:
+
+`$ canaryusb -k`
+
+If is a **service**:
+
+`$ systemctl --user stop canaryusb.service`
+
+If **running from src**:
+
+`$ ./canaryusb -k`
 
 ## Notes
 
