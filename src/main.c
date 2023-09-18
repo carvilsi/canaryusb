@@ -8,12 +8,20 @@
 
 int main(int argc, char *argv[])
 {       
-        check_if_running();
-        
         if (argc < 2) {
                 parse_configuration_file(); 
         } else {
                 parse_command_line(argc, argv);
+        }
+
+        if (!kill_canaryusb) {
+                if (is_running()) {
+                        fprintf(stderr, "there is another instance of %s running\n"
+                                "you can stop it with '%s -k'\n", _NAME_, _NAME_);
+                        exit(EXIT_FAILURE);
+                }
+        } else {
+                kill_canaryusb_inst();
         }
 
         if (!usb_fingerprint) {

@@ -16,6 +16,7 @@
 
 int usb_fingerprint = 0;
 int trusted_list = 0;
+int kill_canaryusb = 0;
 char *canary_token;
 char *trusted_list_value;
 
@@ -115,6 +116,7 @@ static struct option long_options[] =
        {"usb_fingerprint", no_argument, 0, 'u'},
        {"canary_token", required_argument, 0, 'c'},
        {"help", no_argument, 0, 'h'},
+       {"kill", no_argument, 0, 'k'},
        {0, 0 , 0, 0}
 };
 
@@ -124,7 +126,7 @@ void parse_command_line(int argc, char *argv[])
         while (1) {
                 int option_index = 0;
 
-                c = getopt_long(argc, argv, "hut:c:", long_options, &option_index);
+                c = getopt_long(argc, argv, "hukt:c:", long_options, &option_index);
                 if (c == -1)
                         break;
 
@@ -141,6 +143,9 @@ void parse_command_line(int argc, char *argv[])
                                     break;
                             case 'u':
                                     usb_fingerprint = 1;
+                                    break;
+                            case 'k':
+                                    kill_canaryusb = 1;
                                     break;
                             case 'c':
                                     check_argument_length(optarg, CANARYTOKEN);

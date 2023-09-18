@@ -26,7 +26,7 @@
 #endif                                   
 
 #define _NAME_ "canaryusb" 
-#define _VERSION_ "3.0.0"
+#define _VERSION_ "3.1.0"
 
 #define BOLD_TEXT "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
@@ -38,6 +38,7 @@ extern int usb_fingerprint;
 extern int trusted_list;
 extern char *canary_token;
 extern char *trusted_list_value;
+extern int kill_canaryusb;
 
 void monitor_usb();
 void free_canaries();

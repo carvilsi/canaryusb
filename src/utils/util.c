@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <limits.h>
 #include <unistd.h>
+#include <syslog.h>
 
 #include "../canaryusb.h"
 #include "./toml.h"
@@ -49,6 +50,8 @@ void show_help()
         printf(BOLD_TEXT "-t, --trust_list [comma separated usb_fingerprint list]\n" NO_BOLD_TEXT);
         printf("\t\tlist of usb fingerprints, comma seprated, to not notify when the related deviced is connected\n");
         printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
+        printf(BOLD_TEXT "-k, --kill\n" NO_BOLD_TEXT);
+        printf("\t\tkills the daemon, if it's running\n");
         printf("\n");
         printf(BOLD_TEXT "Note:\n" NO_BOLD_TEXT);
         printf("If any option is not provided the default behaviour is try to retrieve the options from the a config file located at " BOLD_TEXT "~/.config/canaryusb/config.toml\n" NO_BOLD_TEXT);
@@ -59,34 +62,71 @@ void show_help()
         exit(EXIT_FAILURE);
 }
 
-void check_if_running()
+FILE *command_file_descriptor_exec(char *cmnd)
 {
-        char *cmd_pgrep = "pgrep";
-        char *cmd_cnt = "| wc -l";
-        char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(_NAME_) + strlen(cmd_cnt) + 2);
-        check_memory_allocation(cmd);
-        sprintf(cmd, "%s %s %s", cmd_pgrep, _NAME_, cmd_cnt);
-        FILE *fd = popen(cmd, "r");
-        free(cmd);
+        FILE *fd = popen(cmnd, "r");
+        free(cmnd);
 
         if (fd == NULL) {
                 fprintf(stderr, "ERROR not possible to get file descriptor\n");
                 exit(EXIT_FAILURE);
         }
 
-        char cmdo[MAX_PID_LEN];
-        fgets(cmdo, MAX_PID_LEN, fd);
-        int nmb_prcss = atoi(cmdo);
+        return fd;
+}
 
+static void close_file_descriptor(FILE *fd)
+{
         if (pclose(fd) == -1) {
                 fprintf(stderr, "ERROR not possible to close stream\n");
                 exit(EXIT_FAILURE);
         }
+}
 
-        if (nmb_prcss > 1) {
-                fprintf(stderr, "there is another instance of canaryusb running\n");
-                exit(EXIT_FAILURE);
-        }
+int is_running()
+{
+        char *cmd_pgrep = "pgrep";
+        char *cmd_cnt = "| wc -l";
+        char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(_NAME_) + strlen(cmd_cnt) + 2);
+        check_memory_allocation(cmd);
+        sprintf(cmd, "%s %s %s", cmd_pgrep, _NAME_, cmd_cnt);
+
+        FILE *fd = command_file_descriptor_exec(cmd);
+
+        char cmdo[MAX_PID_LEN];
+        fgets(cmdo, MAX_PID_LEN, fd);
+        int nprcss = atoi(cmdo);
+
+        close_file_descriptor(fd);    
+
+        if (nprcss > 1)
+                return 1;
+        else
+                return 0;
+}
+
+void kill_canaryusb_inst()
+{
+       if (is_running()) {
+               char *cmd_pgrep = "kill $(pgrep";
+               char *cmd_cnt = "| head -1)";
+               char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(_NAME_) + strlen(cmd_cnt) + 2);
+               check_memory_allocation(cmd);
+               sprintf(cmd, "%s %s %s", cmd_pgrep, _NAME_, cmd_cnt);
+
+               FILE *fd = command_file_descriptor_exec(cmd);
+               
+               char cmdo[MAX_PID_LEN];
+               fgets(cmdo, MAX_PID_LEN, fd);
+               close_file_descriptor(fd);    
+
+               syslog(LOG_NOTICE, "%s daemon stopped", _NAME_);
+               printf("%s daemon stopped\n", _NAME_);
+       } else {
+               printf("no %s daemon running, nothing to stop\n", _NAME_);
+       }
+       
+       exit(EXIT_SUCCESS);
 }
 
 void check_argument_length(char *arg, int type)

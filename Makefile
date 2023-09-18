@@ -7,6 +7,9 @@ SRC_CONF = ./configuration/config.toml
 REL_PR =canaryusb_v
 REL_SUF =_linux_x86_64
 SHASUM_FL = sha256sum.txt
+DEST_SERVICE = ~/.config/systemd/user/
+SRC_SERVICE = ./configuration/canaryusb.service
+NAM_SERVICE = canaryusb.service
 
 SRC := $(shell find ./src/ -name '*.c') 
 NAM := $(shell awk '/_NAME_/ { gsub("\"", "", $$3); print $$3 }' src/canaryusb.h)
@@ -33,7 +36,7 @@ install: cexec
 	@echo '$(NAM) copied at: $(DEST_BIN)...'
 	@mkdir -p $(DEST_CONF)
 	@-cp -n $(SRC_CONF) $(DEST_CONF) ||:
-	@source ~/.bashrc
+	@. ~/.bashrc
 	@echo '$(NAM) installed'
 
 uninstall:
@@ -41,6 +44,27 @@ uninstall:
 	rm  $(DEST_BIN)$(NAM)
 	rm -rf $(DEST_CONF)
 	@echo '$(NAM) uninstalled OK'
+
+# installs and creates a user service
+add_service: install 
+	@echo 'going to create the $(NAM_SERVICE)...'
+	@mkdir -p $(DEST_SERVICE)
+	@-cp -n $(SRC_SERVICE) $(DEST_SERVICE) ||:
+	@systemctl --user daemon-reload
+	@systemctl --user enable $(NAM_SERVICE) 
+	@echo '$(NAM_SERVICE) enabled in order to start it'
+	@echo 'first set correct $(NAM) configuration at $(DEST_CONF)$(SRC_CONF) and run:' 
+	@echo 'systemctl --user start $(NAM_SERVICE)'
+
+# only removes the user service
+remove_service: 
+	@echo 'going to remove the service: $(NAM_SERVICE)...'
+	@systemctl --user stop $(NAM_SERVICE) 
+	systemctl --user disable $(NAM_SERVICE)
+	@rm $(DEST_SERVICE)$(NAM_SERVICE)
+	@systemctl --user daemon-reload
+	@echo '$(NAM_SERVICE) removed'
+	@echo 'notice that $(NAM) still installed, to uninstall it (make uninsntall)'
 
 release: cexec
 	@echo '$(NAM) compiled...'
