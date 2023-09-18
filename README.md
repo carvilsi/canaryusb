@@ -18,13 +18,14 @@ Here we are thinking about removable media threats like BadUSB or physical attac
                 this prints the fingerprint related with a USB device that is plugged into computer
                 and could be used to create the list for trust_list option.
                 In this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.
+                Also will not start a daemon, to quit **ctrl+c**.
 
 **-t, --trust_list [comma separated usb_fingerprint list]**
                 list of usb fingerprints, comma seprated, to not notify when the related deviced is connected
-                check usb_fingerprint option to retrieve device fingerprint for connected USB device
+                check usb_fingerprint option to retrieve device fingerprint for connected USB device.
 
 **-k, --kill**
-                kills the daemon, if it's running
+                kills the daemon, if it's running.
 
 **Note:**
 If any option is not provided the default behaviour is try to retrieve the options from the a config file located at `~/.config/canaryusb/config.toml`.
