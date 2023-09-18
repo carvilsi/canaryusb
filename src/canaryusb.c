@@ -1,3 +1,28 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2023 Carlos Villanueva <char@omg.lol> 
+ * https://github.com/carvilsi/canaryusb
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -16,6 +41,7 @@
 
 int usb_fingerprint = 0;
 int trusted_list = 0;
+int kill_canaryusb = 0;
 char *canary_token;
 char *trusted_list_value;
 
@@ -115,6 +141,7 @@ static struct option long_options[] =
        {"usb_fingerprint", no_argument, 0, 'u'},
        {"canary_token", required_argument, 0, 'c'},
        {"help", no_argument, 0, 'h'},
+       {"kill", no_argument, 0, 'k'},
        {0, 0 , 0, 0}
 };
 
@@ -124,7 +151,7 @@ void parse_command_line(int argc, char *argv[])
         while (1) {
                 int option_index = 0;
 
-                c = getopt_long(argc, argv, "hut:c:", long_options, &option_index);
+                c = getopt_long(argc, argv, "hukt:c:", long_options, &option_index);
                 if (c == -1)
                         break;
 
@@ -141,6 +168,9 @@ void parse_command_line(int argc, char *argv[])
                                     break;
                             case 'u':
                                     usb_fingerprint = 1;
+                                    break;
+                            case 'k':
+                                    kill_canaryusb = 1;
                                     break;
                             case 'c':
                                     check_argument_length(optarg, CANARYTOKEN);

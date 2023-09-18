@@ -1,0 +1,15 @@
+[Unit]
+Description=Service for canaryusb
+Wants=network.target
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=%h/.local/bin/canaryusb
+ExecStop=%h/.local/bin/canaryusb -k
+Restart=always
+RestartMode=direct
+
+
+[Install]
+WantedBy=default.target
