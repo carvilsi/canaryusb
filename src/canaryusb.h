@@ -35,7 +35,7 @@
 #define REPLACE_WITH '_' 
 #define DOT "."
 #define MAX_CANARY_TOKEN_LENGTH 200
-#define MAX_TRUSTED_LIST_LENGTH 1040
+#define MAX_TRUSTED_LIST_LENGTH 2040
 #define CONFIG_FILE ".config/canaryusb/config.toml"
 
 // Argument check types
