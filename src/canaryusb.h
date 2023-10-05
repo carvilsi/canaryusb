@@ -23,8 +23,10 @@
  * SOFTWARE.
  */
 
-#define SUBSYSTEM "usb"
-#define DEVICE_TYPE "usb_device"
+#define USB_SUBSYSTEM "usb"
+#define USB_DEVICE_TYPE "usb_device"
+#define SDCARD_SUBSYSTEM "block"
+#define SDCARD_DEVICE_TYPE "disk"
 #define TOTAL_MAX_BASE_32_MESSAGE_LENGTH 118
 #define MAX_BASE_32_MESSAGE_LENGTH 59
 #define CANARY_ON_ACTION "add"
@@ -65,7 +67,7 @@ extern char *canary_token;
 extern char *trusted_list_value;
 extern int kill_canaryusb;
 
-void monitor_usb();
+void monitor_devices();
 void free_canaries();
 void parse_command_line(int argc, char *argv[]);
 void parse_configuration_file();

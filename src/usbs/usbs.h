@@ -7,7 +7,19 @@ typedef struct
         char *product_name;
         char *serial;
         char *syspath;
-} UsbAttrs;
+}UsbAttrs;
+
+typedef struct
+{
+        char *id_name;
+        char *id_serial;
+        char *size;
+        char *blcksz_prtbltype;
+        char *syspath;
+}SDCardAttrs;
+
 UsbAttrs get_usb_attributes(sd_device *dev);
-char *get_usb_fingerprint(UsbAttrs usbattrs, char *usb_fingprt);
+char *get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt);
+SDCardAttrs get_sdcard_attributes(sd_device *dev);
+char *get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt);
 
