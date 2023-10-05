@@ -1,6 +1,6 @@
 CC = gcc
 LDFLAGS = `pkg-config --cflags --libs libsystemd`
-CCFLAGS = -Werror
+CCFLAGS = -Werror -Wall
 DEST_BIN = ~/.local/bin/
 DEST_CONF = ~/.config/canaryusb/
 SRC_CONF = ./configuration/config.toml
@@ -27,7 +27,7 @@ debug: CCFLAGS += -DDEBUG -g
 debug: cexec 
 
 # debug and do not call the canary token 
-silence: CCFLAGS += -DSILENCE -DDEBUG 
+silence: CCFLAGS += -DSILENCE -DDEBUG -g 
 silence: cexec
 
 install: cexec 

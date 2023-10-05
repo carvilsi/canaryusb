@@ -47,7 +47,7 @@ char *trusted_list_value;
 
 static char *get_device_fingerprint(sd_device *dev, const char *subsystem)
 {
-        char *dev_fngrprnt;
+        char *fngrprnt = NULL;
         
         if (strcmp(USB_SUBSYSTEM, subsystem) == 0) {
                 UsbAttrs usb_attrs = get_usb_attributes(dev);
@@ -56,7 +56,7 @@ static char *get_device_fingerprint(sd_device *dev, const char *subsystem)
                         strlen(usb_attrs.product_name) + 
                         strlen(usb_attrs.serial) + 5;
                 char tmp_usb_fngrp[usb_fngrp_len];
-                dev_fngrprnt = get_usb_fingerprint(usb_attrs, tmp_usb_fngrp);
+                fngrprnt = get_usb_fingerprint(usb_attrs, tmp_usb_fngrp);
         } 
  
         if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {
@@ -66,10 +66,11 @@ static char *get_device_fingerprint(sd_device *dev, const char *subsystem)
                         strlen(sdcrd_attrs.size) +
                         strlen(sdcrd_attrs.blcksz_prtbltype) + 5;
                 char tmp_sdcrd_fngrp[sdcrd_fngrp_len];
-                dev_fngrprnt = get_sdcard_fingerprint(sdcrd_attrs, tmp_sdcrd_fngrp);
-        } 
+                fngrprnt = get_sdcard_fingerprint(sdcrd_attrs, tmp_sdcrd_fngrp);
+        }
+        printf("WTF: %s\n", fngrprnt);
 
-        return dev_fngrprnt;
+        return fngrprnt;
 }
 
 static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *userdata) 
@@ -81,12 +82,18 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 const char *subsystem;
                 sd_device_get_subsystem(dev, &subsystem);
 
-                char *dev_fngrprnt;
-                dev_fngrprnt = get_device_fingerprint(dev, subsystem);
+                /*char *dev_fngrprnt = NULL;*/
+                char *dev_fngrprnt = get_device_fingerprint(dev, subsystem);
+        
+
+                printf("lol-0--> %s\n", dev_fngrprnt);
 
                 char *base32_fngrprnt = (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
+                        printf("lol0--> %s\n", dev_fngrprnt);
                 check_memory_allocation(base32_fngrprnt);
+                        printf("lol1--> %s\n", dev_fngrprnt);
                 get_canary_encoded_usb_fingerprint(dev_fngrprnt, base32_fngrprnt);
+                        printf("lol2--> %s\n", dev_fngrprnt);
 
                 // Check if we have a trusted list and the device is in the list.
                 int is_in_list = 0;
@@ -98,6 +105,7 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 // if we want to the related fingerprint with the connected usb, print it!
                 // else, call canary token
                 if (dev_fingerprint) {
+                        printf("lol--> %s\n", dev_fngrprnt);
                         printf("%s fingerprint: %s\n", strcmp(subsystem, SDCARD_SUBSYSTEM) == 0 ? "SDCard" : subsystem, dev_fngrprnt);
                 } else {
                         if (is_in_list) {

@@ -7,8 +7,8 @@ int compare_str(char *sub_list, char *cmp)
         int res = 0;
         if (strlen(sub_list) != strlen(cmp))
                         return res;
-        int i = 0;
-        for (i; i < strlen(cmp); i++) {
+        int i;
+        for (i=0; i < strlen(cmp); i++) {
                 if (sub_list[i] == cmp[i])
                         res = 1;
                 else
@@ -17,7 +17,7 @@ int compare_str(char *sub_list, char *cmp)
         return res;
 }
 
-int is_device_in_trust_list(char *trusted_list, char *dev_fngrprnt, char *delim) 
+int is_device_in_trust_list(char *trusted_list, char *fingrprnt, char *delim) 
 {
         int is_equal = 0;
         char *tl = (char*)malloc(strlen(trusted_list));
@@ -25,7 +25,7 @@ int is_device_in_trust_list(char *trusted_list, char *dev_fngrprnt, char *delim)
 
         char *sub_list = strtok(tl, delim);
         while (sub_list != NULL && !is_equal) {
-                is_equal = compare_str(sub_list, dev_fngrprnt);
+                is_equal = compare_str(sub_list, fingrprnt);
                 sub_list = strtok(NULL, delim);
         }
 

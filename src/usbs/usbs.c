@@ -49,12 +49,12 @@ SDCardAttrs get_sdcard_attributes(sd_device *dev)
                 sdcrd_attrs.syspath = (char *)syspath;
 
         const char *name;
-        res = sd_device_get_sysattr_value(dev, "ID_NAME", &name);
+        res = sd_device_get_property_value(dev, "ID_NAME", &name);
         if (res >= 0)
                 sdcrd_attrs.id_name= (char *)name;
 
         const char *serial;
-        res = sd_device_get_sysattr_value(dev, "ID_SERIAL", &serial);
+        res = sd_device_get_property_value(dev, "ID_SERIAL", &serial);
         if (res >= 0)
                 sdcrd_attrs.id_serial= (char *)serial; 
 
@@ -64,10 +64,10 @@ SDCardAttrs get_sdcard_attributes(sd_device *dev)
                 sdcrd_attrs.size= (char *)size;
         
         const char *blcksz_prtbltype;
-        res = sd_device_get_sysattr_value(dev, "ID_FS_BLOCKSIZE", &blcksz_prtbltype);
+        res = sd_device_get_property_value(dev, "ID_FS_BLOCKSIZE", &blcksz_prtbltype);
         if (res >= 0)
                 sdcrd_attrs.blcksz_prtbltype = (char *)blcksz_prtbltype;
-        else if (sd_device_get_sysattr_value(dev, "ID_PART_TABLE_TYPE:", &blcksz_prtbltype) >= 0)
+        else if (sd_device_get_property_value(dev, "ID_PART_TABLE_TYPE:", &blcksz_prtbltype) >= 0)
                 sdcrd_attrs.blcksz_prtbltype = (char *)blcksz_prtbltype;
         
         return sdcrd_attrs;

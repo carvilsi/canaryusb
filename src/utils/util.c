@@ -25,8 +25,8 @@ void check_memory_allocation(void *check_me)
 
 void replace_in_string(char *to_replace, char replace_this, char replace_with)
 {
-        int i = 0;
-        for (i; i <= strlen(to_replace); i++) {
+        int i;
+        for (i=0; i <= strlen(to_replace); i++) {
                 if (to_replace[i] == replace_this)
                         to_replace[i] = replace_with;
         }
