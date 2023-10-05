@@ -45,34 +45,6 @@ int kill_canaryusb = 0;
 char *canary_token;
 char *trusted_list_value;
 
-static char *get_device_fingerprint(sd_device *dev, const char *subsystem)
-{
-        char *fngrprnt;
-        if (strcmp(USB_SUBSYSTEM, subsystem) == 0) {
-                UsbAttrs usb_attrs = get_usb_attributes(dev);
-                size_t usb_fngrp_len = strlen(usb_attrs.vendor) + 
-                        strlen(usb_attrs.product) + 
-                        strlen(usb_attrs.product_name) + 
-                        strlen(usb_attrs.serial) + 5;
-                fngrprnt = (char*) malloc(usb_fngrp_len);
-                check_memory_allocation(fngrprnt);
-                get_usb_fingerprint(usb_attrs, fngrprnt);
-        } 
- 
-        if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {
-                SDCardAttrs sdcrd_attrs = get_sdcard_attributes(dev);
-                size_t sdcrd_fngrp_len = strlen(sdcrd_attrs.id_name) +
-                        strlen(sdcrd_attrs.id_serial) +
-                        strlen(sdcrd_attrs.size) +
-                        strlen(sdcrd_attrs.blcksz_prtbltype) + 5;
-                fngrprnt = (char*) malloc(sdcrd_fngrp_len);
-                check_memory_allocation(fngrprnt);
-                get_sdcard_fingerprint(sdcrd_attrs, fngrprnt);
-        }
-
-        return fngrprnt;
-}
-
 static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *userdata) 
 {
         sd_device_action_t actions;

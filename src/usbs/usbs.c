@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "usbs.h"
 #include "../canaryusb.h"
@@ -101,5 +102,33 @@ void get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt)
         if (strchr(sdcrd_fingprt, REPLACE_THIS) != NULL)
                 replace_in_string(sdcrd_fingprt, REPLACE_THIS, REPLACE_WITH);
         dprintf("sdcard fingerprint: %s\n", sdcrd_fingprt);
+}
+
+char *get_device_fingerprint(sd_device *dev, const char *subsystem)
+{
+        char *fngrprnt;
+        if (strcmp(USB_SUBSYSTEM, subsystem) == 0) {
+                UsbAttrs usb_attrs = get_usb_attributes(dev);
+                size_t usb_fngrp_len = strlen(usb_attrs.vendor) + 
+                        strlen(usb_attrs.product) + 
+                        strlen(usb_attrs.product_name) + 
+                        strlen(usb_attrs.serial) + 5;
+                fngrprnt = (char*) malloc(usb_fngrp_len);
+                check_memory_allocation(fngrprnt);
+                get_usb_fingerprint(usb_attrs, fngrprnt);
+        } 
+ 
+        if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {
+                SDCardAttrs sdcrd_attrs = get_sdcard_attributes(dev);
+                size_t sdcrd_fngrp_len = strlen(sdcrd_attrs.id_name) +
+                        strlen(sdcrd_attrs.id_serial) +
+                        strlen(sdcrd_attrs.size) +
+                        strlen(sdcrd_attrs.blcksz_prtbltype) + 5;
+                fngrprnt = (char*) malloc(sdcrd_fngrp_len);
+                check_memory_allocation(fngrprnt);
+                get_sdcard_fingerprint(sdcrd_attrs, fngrprnt);
+        }
+
+        return fngrprnt;
 }
 
