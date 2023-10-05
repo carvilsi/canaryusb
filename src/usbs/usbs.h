@@ -19,7 +19,7 @@ typedef struct
 }SDCardAttrs;
 
 UsbAttrs get_usb_attributes(sd_device *dev);
-char *get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt);
+void get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt);
 SDCardAttrs get_sdcard_attributes(sd_device *dev);
-char *get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt);
+void get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt);
 

@@ -73,7 +73,7 @@ SDCardAttrs get_sdcard_attributes(sd_device *dev)
         return sdcrd_attrs;
 }
 
-char *get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt) 
+void get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt) 
 {
         dprintf("\n-- USB device connected --\n");
         dprintf("\tattributes vendor: %s\n", usb_attrs.vendor);
@@ -86,10 +86,9 @@ char *get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt)
         if (strchr(usb_fingprt, REPLACE_THIS) != NULL)
                 replace_in_string(usb_fingprt, REPLACE_THIS, REPLACE_WITH);
         dprintf("usb fingerprint: %s\n", usb_fingprt);
-        return usb_fingprt;
 }
 
-char *get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt) 
+void get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt) 
 {
         dprintf("\n-- SDCard connected --\n");
         dprintf("\tid_name: %s\n", sdcrd_attrs.id_name);
@@ -102,6 +101,5 @@ char *get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt)
         if (strchr(sdcrd_fingprt, REPLACE_THIS) != NULL)
                 replace_in_string(sdcrd_fingprt, REPLACE_THIS, REPLACE_WITH);
         dprintf("sdcard fingerprint: %s\n", sdcrd_fingprt);
-        return sdcrd_fingprt;
 }
 
