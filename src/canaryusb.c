@@ -39,13 +39,13 @@
 #include "utils/trusted_list.h"
 #include "utils/util.h"
 
-int usb_fingerprint = 0;
+int dev_fingerprint = 0;
 int trusted_list = 0;
 int kill_canaryusb = 0;
 char *canary_token;
 char *trusted_list_value;
 
-static char *get_device_fingerprint(sd_device *dev, char *subsystem)
+static char *get_device_fingerprint(sd_device *dev, const char *subsystem)
 {
         char *dev_fngrprnt;
         
@@ -58,9 +58,9 @@ static char *get_device_fingerprint(sd_device *dev, char *subsystem)
                 char tmp_usb_fngrp[usb_fngrp_len];
                 dev_fngrprnt = get_usb_fingerprint(usb_attrs, tmp_usb_fngrp);
         } 
-        
+ 
         if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {
-                SDCardAttrs dscrd_attrs = get_sdcard_attributes(dev);
+                SDCardAttrs sdcrd_attrs = get_sdcard_attributes(dev);
                 size_t sdcrd_fngrp_len = strlen(sdcrd_attrs.id_name) +
                         strlen(sdcrd_attrs.id_serial) +
                         strlen(sdcrd_attrs.size) +
@@ -81,7 +81,7 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 const char *subsystem;
                 sd_device_get_subsystem(dev, &subsystem);
 
-                const char *dev_fngrprnt;
+                char *dev_fngrprnt;
                 dev_fngrprnt = get_device_fingerprint(dev, subsystem);
 
                 char *base32_fngrprnt = (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
@@ -91,14 +91,14 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 // Check if we have a trusted list and the device is in the list.
                 int is_in_list = 0;
                 if (trusted_list) {
-                        is_in_list = is_usb_device_in_trust_list(trusted_list_value, dev_fngrprnt, 
+                        is_in_list = is_device_in_trust_list(trusted_list_value, dev_fngrprnt, 
                                         TRUSTED_LIST_DELIMITER);
                 }
 
                 // if we want to the related fingerprint with the connected usb, print it!
                 // else, call canary token
-                if (usb_fingerprint) {
-                        printf("%s fingerprint: %s\n", strcmp(subsystem, SDCARD_SUBSYSTEM) == 0 ? "sdcard" : subsystem, dev_fngrprnt);
+                if (dev_fingerprint) {
+                        printf("%s fingerprint: %s\n", strcmp(subsystem, SDCARD_SUBSYSTEM) == 0 ? "SDCard" : subsystem, dev_fngrprnt);
                 } else {
                         if (is_in_list) {
                                 syslog(LOG_NOTICE, 
@@ -188,7 +188,7 @@ void parse_command_line(int argc, char *argv[])
                                     show_help();
                                     break;
                             case 'u':
-                                    usb_fingerprint = 1;
+                                    dev_fingerprint = 1;
                                     break;
                             case 'k':
                                     kill_canaryusb = 1;

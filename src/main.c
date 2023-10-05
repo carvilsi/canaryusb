@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
                 kill_canaryusb_instance();
         }
 
-        if (!usb_fingerprint) {
+        if (!dev_fingerprint) {
                 pid_t pid;
                 pid = fork();
 
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
                 printf("waiting for a new USB device connections, ctrl+c to stop it\n");
         }
 
-        monitor_usb();
+        monitor_devices();
         free_canaries();
         
         return EXIT_SUCCESS;

@@ -70,10 +70,10 @@ static void command_line_arguments_canary_token_and_trusted_list()
 
 static void command_list_arguments_usb_fingerprint()
 {
-        cst_i(usb_fingerprint, "should be", 0);
+        cst_i(dev_fingerprint, "should be", 0);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-u"};
         parse_command_line(6, argv);
-        cst_i(usb_fingerprint, "variable should be", 1);
+        cst_i(dev_fingerprint, "variable should be", 1);
 }
 
 static void get_canary_encoded_usb_fingerprint_test() {
@@ -87,16 +87,17 @@ static void get_canary_encoded_usb_fingerprint_test() {
 static void usb_fingerprint_and_trusted_list()
 {
         char *usb_fingrprnt = "foobar";
-        int is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        int is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
         cst_a("should ignore usb fingerprint if is at trusted list", is_in_list == 1);
         usb_fingrprnt = "tar";
-        is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
         cst_a("should not ignore usb fingerprint if is not at trusted list", is_in_list == 0);
 }
 
 static void build_canary_dns_token_()
 {
-        char *canary_dns_token = (char *) malloc(strlen(BASE32_ENCODED_USB_FINGERPRINT) + strlen(MAGIC_STRING) + 2 + strlen(canary_token));
+        char *canary_dns_token = (char *) malloc(strlen(BASE32_ENCODED_USB_FINGERPRINT) + 
+                        strlen(MAGIC_STRING) + 2 + strlen(canary_token));
         build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT, canary_dns_token, canary_token);
         cst_s(canary_dns_token, "should give", CANARY_DNS_TOKEN);
         free(canary_dns_token);
@@ -110,14 +111,15 @@ static void call_the_canary_()
 
 static void get_usb_fingerprint_()
 {
-        UsbAttrs usbattr = {"0000", "0000", "no", "no"};
-        usbattr.vendor = ID_VENDOR;
-        usbattr.product = ID_PRODUCT;
-        usbattr.product_name = PRODUCT_NAME;
-        usbattr.serial = SERIAL;
-        size_t fingp_len = strlen(usbattr.vendor) + strlen(usbattr.product) + strlen(usbattr.product_name) + strlen(usbattr.serial) + 5;
+        UsbAttrs usb_attrs = {"0000", "0000", "no", "no"};
+        usb_attrs.vendor = ID_VENDOR;
+        usb_attrs.product = ID_PRODUCT;
+        usb_attrs.product_name = PRODUCT_NAME;
+        usb_attrs.serial = SERIAL;
+        size_t fingp_len = strlen(usb_attrs.vendor) + strlen(usb_attrs.product) + 
+                strlen(usb_attrs.product_name) + strlen(usb_attrs.serial) + 5;
         char tmp_usb_fingprt[fingp_len];
-        char *usb_fingrprnt = get_usb_fingerprint(usbattr, tmp_usb_fingprt);
+        char *usb_fingrprnt = get_usb_fingerprint(usb_attrs, tmp_usb_fingprt);
 
         cst_s(usb_fingrprnt, "should build and retieve", USB_FINGERPRINT);
 } 

@@ -61,7 +61,7 @@
 #define MAX_PID_LEN 10
 
 //These are only for testing reasons.
-extern int usb_fingerprint;
+extern int dev_fingerprint;
 extern int trusted_list;
 extern char *canary_token;
 extern char *trusted_list_value;

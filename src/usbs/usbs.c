@@ -51,31 +51,31 @@ SDCardAttrs get_sdcard_attributes(sd_device *dev)
         const char *name;
         res = sd_device_get_sysattr_value(dev, "ID_NAME", &name);
         if (res >= 0)
-                sdcrd_attr.id_name= (char *)name;
+                sdcrd_attrs.id_name= (char *)name;
 
         const char *serial;
         res = sd_device_get_sysattr_value(dev, "ID_SERIAL", &serial);
         if (res >= 0)
-                sdcrd_attr.id_serial= (char *)serial; 
+                sdcrd_attrs.id_serial= (char *)serial; 
 
         const char *size;
         res = sd_device_get_sysattr_value(dev, "size", &size);
         if (res >= 0)
-                sdcrd_attr.size= (char *)size;
+                sdcrd_attrs.size= (char *)size;
         
         const char *blcksz_prtbltype;
         res = sd_device_get_sysattr_value(dev, "ID_FS_BLOCKSIZE", &blcksz_prtbltype);
         if (res >= 0)
-                sdcrd_attr.blcksz_prtbltype = (char *)blcksz_prtbltype;
+                sdcrd_attrs.blcksz_prtbltype = (char *)blcksz_prtbltype;
         else if (sd_device_get_sysattr_value(dev, "ID_PART_TABLE_TYPE:", &blcksz_prtbltype) >= 0)
-                sdcrd_attr.blcksz_prtbltype = (char *)blcksz_prtbltype;
+                sdcrd_attrs.blcksz_prtbltype = (char *)blcksz_prtbltype;
         
-        return sdcrd_attr;
+        return sdcrd_attrs;
 }
 
 char *get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt) 
 {
-        dprintf("-- USB device connected --\n");
+        dprintf("\n-- USB device connected --\n");
         dprintf("\tattributes vendor: %s\n", usb_attrs.vendor);
         dprintf("\tattributes product: %s\n", usb_attrs.product);
         dprintf("\tattributes product name: %s\n", usb_attrs.product_name);
@@ -91,7 +91,7 @@ char *get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt)
 
 char *get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt) 
 {
-        dprintf("-- SDCard connected --\n");
+        dprintf("\n-- SDCard connected --\n");
         dprintf("\tid_name: %s\n", sdcrd_attrs.id_name);
         dprintf("\tid_serial: %s\n", sdcrd_attrs.id_serial);
         dprintf("\tsize: %s\n", sdcrd_attrs.size);
