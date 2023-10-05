@@ -79,6 +79,7 @@ static void command_list_arguments_usb_fingerprint()
 static void get_canary_encoded_usb_fingerprint_test() {
         char *usb_fingerprint = "1af3:0001-ZOWIE_Gaming_mouse-no";
         char *base32_usb_fingerprint= (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
+        check_memory_allocation(base32_usb_fingerprint);
         get_canary_encoded_usb_fingerprint(usb_fingerprint, base32_usb_fingerprint);
         cst_s(base32_usb_fingerprint, "should be base32 encoded", BASE32_ENCODED_USB_FINGERPRINT); 
         free(base32_usb_fingerprint);
@@ -118,8 +119,9 @@ static void get_usb_fingerprint_()
         usb_attrs.serial = SERIAL;
         size_t fingp_len = strlen(usb_attrs.vendor) + strlen(usb_attrs.product) + 
                 strlen(usb_attrs.product_name) + strlen(usb_attrs.serial) + 5;
-        char tmp_usb_fingprt[fingp_len];
-        char *usb_fingrprnt = get_usb_fingerprint(usb_attrs, tmp_usb_fingprt);
+        char *usb_fingrprnt = (char*) malloc(fingp_len);
+        check_memory_allocation(usb_fingrprnt);
+        get_usb_fingerprint(usb_attrs, usb_fingrprnt);
 
         cst_s(usb_fingrprnt, "should build and retieve", USB_FINGERPRINT);
 } 
