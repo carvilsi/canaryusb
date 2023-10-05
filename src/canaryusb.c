@@ -45,74 +45,47 @@ int kill_canaryusb = 0;
 char *canary_token;
 char *trusted_list_value;
 
-/*static char *get_device_fingerprint(sd_device *dev, const char *subsystem)*/
-/*{*/
-        /*char *fngrprnt = NULL;*/
-        
-        /*if (strcmp(USB_SUBSYSTEM, subsystem) == 0) {*/
-                /*UsbAttrs usb_attrs = get_usb_attributes(dev);*/
-                /*size_t usb_fngrp_len = strlen(usb_attrs.vendor) + */
-                        /*strlen(usb_attrs.product) + */
-                        /*strlen(usb_attrs.product_name) + */
-                        /*strlen(usb_attrs.serial) + 5;*/
-                /*char tmp_usb_fngrp[usb_fngrp_len];*/
-                /*fngrprnt = get_usb_fingerprint(usb_attrs, tmp_usb_fngrp);*/
-        /*} */
+static char *get_device_fingerprint(sd_device *dev, const char *subsystem)
+{
+        char *fngrprnt;
+        if (strcmp(USB_SUBSYSTEM, subsystem) == 0) {
+                UsbAttrs usb_attrs = get_usb_attributes(dev);
+                size_t usb_fngrp_len = strlen(usb_attrs.vendor) + 
+                        strlen(usb_attrs.product) + 
+                        strlen(usb_attrs.product_name) + 
+                        strlen(usb_attrs.serial) + 5;
+                fngrprnt = (char*) malloc(usb_fngrp_len);
+                check_memory_allocation(fngrprnt);
+                get_usb_fingerprint(usb_attrs, fngrprnt);
+        } 
  
-        /*if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {*/
-                /*SDCardAttrs sdcrd_attrs = get_sdcard_attributes(dev);*/
-                /*size_t sdcrd_fngrp_len = strlen(sdcrd_attrs.id_name) +*/
-                        /*strlen(sdcrd_attrs.id_serial) +*/
-                        /*strlen(sdcrd_attrs.size) +*/
-                        /*strlen(sdcrd_attrs.blcksz_prtbltype) + 5;*/
-                /*char tmp_sdcrd_fngrp[sdcrd_fngrp_len];*/
-                /*fngrprnt = get_sdcard_fingerprint(sdcrd_attrs, tmp_sdcrd_fngrp);*/
-        /*}*/
-        /*printf("WTF: %s\n", fngrprnt);*/
+        if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {
+                SDCardAttrs sdcrd_attrs = get_sdcard_attributes(dev);
+                size_t sdcrd_fngrp_len = strlen(sdcrd_attrs.id_name) +
+                        strlen(sdcrd_attrs.id_serial) +
+                        strlen(sdcrd_attrs.size) +
+                        strlen(sdcrd_attrs.blcksz_prtbltype) + 5;
+                fngrprnt = (char*) malloc(sdcrd_fngrp_len);
+                check_memory_allocation(fngrprnt);
+                get_sdcard_fingerprint(sdcrd_attrs, fngrprnt);
+        }
 
-        /*return fngrprnt;*/
-/*}*/
+        return fngrprnt;
+}
 
 static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *userdata) 
 {
         sd_device_action_t actions;
         sd_device_get_action(dev, &actions);
-        
         if (actions == SD_DEVICE_ADD) {
                 const char *subsystem;
                 sd_device_get_subsystem(dev, &subsystem);
 
-                char *dev_fngrprnt = NULL;
-                if (strcmp(USB_SUBSYSTEM, subsystem) == 0) {
-                        UsbAttrs usb_attrs = get_usb_attributes(dev);
-                        size_t usb_fngrp_len = strlen(usb_attrs.vendor) + 
-                                strlen(usb_attrs.product) + 
-                                strlen(usb_attrs.product_name) + 
-                                strlen(usb_attrs.serial) + 5;
-                        dev_fngrprnt = (char*) malloc(usb_fngrp_len);
-                        check_memory_allocation(dev_fngrprnt);
-                        get_usb_fingerprint(usb_attrs, dev_fngrprnt);
-                } 
- 
-                if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {
-                        SDCardAttrs sdcrd_attrs = get_sdcard_attributes(dev);
-                        size_t sdcrd_fngrp_len = strlen(sdcrd_attrs.id_name) +
-                                strlen(sdcrd_attrs.id_serial) +
-                                strlen(sdcrd_attrs.size) +
-                                strlen(sdcrd_attrs.blcksz_prtbltype) + 5;
-                        dev_fngrprnt = (char*) malloc(sdcrd_fngrp_len);
-                        check_memory_allocation(dev_fngrprnt);
-                        get_sdcard_fingerprint(sdcrd_attrs, dev_fngrprnt);
-                }
-
-                printf("lol-0--> %s\n", dev_fngrprnt);
+                char *dev_fngrprnt = get_device_fingerprint(dev, subsystem);
 
                 char *base32_fngrprnt = (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
-                        printf("lol0--> %s\n", dev_fngrprnt);
                 check_memory_allocation(base32_fngrprnt);
-                        printf("lol1--> %s\n", dev_fngrprnt);
                 get_canary_encoded_usb_fingerprint(dev_fngrprnt, base32_fngrprnt);
-                        printf("lol2--> %s\n", dev_fngrprnt);
 
                 // Check if we have a trusted list and the device is in the list.
                 int is_in_list = 0;
@@ -124,7 +97,6 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 // if we want to the related fingerprint with the connected usb, print it!
                 // else, call canary token
                 if (dev_fingerprint) {
-                        printf("lol--> %s\n", dev_fngrprnt);
                         printf("%s fingerprint: %s\n", strcmp(subsystem, SDCARD_SUBSYSTEM) == 0 ? "SDCard" : subsystem, dev_fngrprnt);
                 } else {
                         if (is_in_list) {
@@ -139,6 +111,7 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 }
 
                 free(base32_fngrprnt);
+                free(dev_fngrprnt);
         }
 
         return 0;
