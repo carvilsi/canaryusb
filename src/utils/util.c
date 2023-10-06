@@ -186,18 +186,20 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
 
         toml_table_t *canary_conf = toml_table_in(conf, _NAME_);
         if (!canary_conf) {
-                fprintf(stderr, "ERROR: config file exists but is missing [%s] table please check README.md", _NAME_);
+                fprintf(stderr, "ERROR: config file exists but is missing [%s] "
+                                "table please check README.md", _NAME_);
                 show_help();
         }
 
-        toml_datum_t canary_token = toml_string_in(canary_conf, "canary_token");
-        if (!canary_token.ok) {
-                fprintf(stderr, "ERROR: no canary_token value at config file please check README.md\n");
+        toml_datum_t cnry_tkn = toml_string_in(canary_conf, "canary_token");
+        if (!cnry_tkn.ok) {
+                fprintf(stderr, "ERROR: no canary_token value at config file "
+                                "please check README.md\n");
                 show_help();
         } else {
-                dprintf("canary_token config value: %s\n", canary_token.u.s);
-                check_argument_length(canary_token.u.s, CANARYTOKEN);
-                strcpy(cnrytkn, canary_token.u.s);
+                dprintf("canary_token config value: %s\n", cnry_tkn.u.s);
+                check_argument_length(cnry_tkn.u.s, CANARYTOKEN);
+                strcpy(cnrytkn, cnry_tkn.u.s);
         }
 
         toml_datum_t trust_list = toml_string_in(canary_conf, "trust_list");
@@ -210,7 +212,7 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
                 strcpy(trstdlst, trust_list.u.s);
         }
         
-        free(canary_token.u.s);
+        free(cnry_tkn.u.s);
         toml_free(canary_conf);
 }
 

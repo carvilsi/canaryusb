@@ -69,13 +69,17 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 // if we want to the related fingerprint with the connected usb, print it!
                 // else, call canary token
                 if (dev_fingerprint) {
-                        printf("%s fingerprint: %s\n", strcmp(subsystem, SDCARD_SUBSYSTEM) == 0 ? "SDCard" : subsystem, dev_fngrprnt);
+                        printf("%s fingerprint: %s\n", 
+                                        strcmp(subsystem, SDCARD_SUBSYSTEM) == 0 ? "SDCard" : 
+                                        subsystem, dev_fngrprnt);
                 } else {
                         if (is_in_list) {
                                 syslog(LOG_NOTICE, 
-                                                "%s device: %s connected, but is at trusted list, not calling canary token", 
+                                                "%s device: %s connected, but is at trusted " 
+                                                "list, not calling canary token", 
                                                 subsystem, dev_fngrprnt);
-                                dprintf("%s device: %s connected, but is at trusted list, not calling canary token\n", 
+                                dprintf("%s device: %s connected, but is at trusted list, "
+                                                "not calling canary token\n", 
                                                 subsystem, dev_fngrprnt);
                         } else {
                                 deal_with_canaries(base32_fngrprnt, dev_fngrprnt, canary_token); 
@@ -97,11 +101,13 @@ void monitor_devices()
         if (r < 0) 
                 goto finish;
 
-        r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, USB_SUBSYSTEM, USB_DEVICE_TYPE);
+        r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
+                        USB_SUBSYSTEM, USB_DEVICE_TYPE);
         if (r < 0)
                 goto finish;
 
-        r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, SDCARD_SUBSYSTEM, SDCARD_DEVICE_TYPE);
+        r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
+                        SDCARD_SUBSYSTEM, SDCARD_DEVICE_TYPE);
         if (r < 0)
                 goto finish;
 

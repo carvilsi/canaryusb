@@ -49,25 +49,32 @@ void get_canary_encoded_usb_fingerprint(char *usb_fingprt, char *buf_sub_fingerp
 
 void deal_with_canaries(char *base32_usb_fingprt, char *usb_fingrprnt, char *canary_token)
 {
-        char *canary_dns_token = (char *) malloc(strlen(base32_usb_fingprt) + strlen(MAGIC_STRING) + 2 + strlen(canary_token));
+        char *canary_dns_token = (char*) malloc(strlen(base32_usb_fingprt) + 
+                        strlen(MAGIC_STRING) + 2 + strlen(canary_token));
         check_memory_allocation(canary_dns_token);
         build_canary_dns_token(base32_usb_fingprt, canary_dns_token, canary_token);
 
         int canaryrsp = 0; 
+
 #ifdef SILENCE
         canaryrsp = -1;
 #else        
         canaryrsp = call_the_canary(canary_dns_token);
 #endif
+
         free(canary_dns_token);
         
         if (canaryrsp > 0) {
-                dprintf("ERROR canaryusb: When calling canary tokens site, for connected USB: %s, run it on debug mode for more insights", usb_fingrprnt);
-                syslog(LOG_ERR, "canaryusb errored when trying to advice about new connected USB %s", usb_fingrprnt);
+                dprintf("ERROR canaryusb: When calling canary tokens site, "
+                                "for connected USB: %s, run it on debug mode "
+                                "for more insights", usb_fingrprnt);
+                syslog(LOG_ERR, "canaryusb errored when trying to advice about "
+                                "new connected USB %s", usb_fingrprnt);
         } else if (canaryrsp == -1) {
                 dprintf("Executing on SILENCE and DEBUG mode do NOT call to canary site\n"); 
         } else {
-                syslog(LOG_NOTICE, "canary token sent for connected USB device: %s", usb_fingrprnt);
+                syslog(LOG_NOTICE, "canary token sent for connected USB device: %s", 
+                                usb_fingrprnt);
                 dprintf("canary token sent\n");
         }
 }

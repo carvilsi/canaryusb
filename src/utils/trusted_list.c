@@ -20,7 +20,7 @@ int compare_str(char *sub_list, char *cmp)
 int is_device_in_trust_list(char *trusted_list, char *fingrprnt, char *delim) 
 {
         int is_equal = 0;
-        char *tl = (char*)malloc(strlen(trusted_list));
+        char *tl = (char*) malloc(strlen(trusted_list));
         strcpy(tl, trusted_list);
 
         char *sub_list = strtok(tl, delim);

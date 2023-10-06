@@ -41,7 +41,8 @@ UsbAttrs get_usb_attributes(sd_device *dev)
 
 SDCardAttrs get_sdcard_attributes(sd_device *dev) 
 {
-        SDCardAttrs sdcrd_attrs = {"noname", "noserial", "nosize", "noblocksizenorparttabletype", "no-path"};
+        SDCardAttrs sdcrd_attrs = {"noname", "noserial", "nosize", 
+                "noblocksizenorparttabletype", "no-path"};
 
         int res;
         const char *syspath;
@@ -83,7 +84,8 @@ void get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt)
         dprintf("\tattributes serial: %s\n", usb_attrs.serial);
         dprintf("\tat: %s\n\n", usb_attrs.syspath);
 
-        sprintf(usb_fingprt, "%s:%s-%s-%s", usb_attrs.vendor, usb_attrs.product, usb_attrs.product_name, usb_attrs.serial);
+        sprintf(usb_fingprt, "%s:%s-%s-%s", usb_attrs.vendor, usb_attrs.product, 
+                        usb_attrs.product_name, usb_attrs.serial);
         if (strchr(usb_fingprt, REPLACE_THIS) != NULL)
                 replace_in_string(usb_fingprt, REPLACE_THIS, REPLACE_WITH);
         dprintf("usb fingerprint: %s\n", usb_fingprt);
@@ -98,7 +100,8 @@ void get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt)
         dprintf("\tblock size or part table type: %s\n", sdcrd_attrs.blcksz_prtbltype);
         dprintf("\tat: %s\n\n", sdcrd_attrs.syspath);
         
-        sprintf(sdcrd_fingprt, "%s:%s-%s:%s", sdcrd_attrs.id_name, sdcrd_attrs.id_serial, sdcrd_attrs.size, sdcrd_attrs.blcksz_prtbltype);
+        sprintf(sdcrd_fingprt, "%s:%s-%s:%s", sdcrd_attrs.id_name, sdcrd_attrs.id_serial, 
+                        sdcrd_attrs.size, sdcrd_attrs.blcksz_prtbltype);
         if (strchr(sdcrd_fingprt, REPLACE_THIS) != NULL)
                 replace_in_string(sdcrd_fingprt, REPLACE_THIS, REPLACE_WITH);
         dprintf("sdcard fingerprint: %s\n", sdcrd_fingprt);
