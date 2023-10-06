@@ -19,7 +19,7 @@ int call_the_canary(const char *canary_dns_token)
         return canaryrsp;
 }
 
-void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_token, char *canary_token)
+void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_token)
 {
         if (strlen(buf_sub_fingerptr) > MAX_BASE_32_MESSAGE_LENGTH) {
                 int i;
@@ -43,16 +43,17 @@ void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_token, cha
 void get_canary_encoded_usb_fingerprint(char *usb_fingprt, char *buf_sub_fingerptr) 
 {
         size_t buflen = (size_t)TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1;
-        int size_enc = base32_encode(buf_sub_fingerptr, &buflen, usb_fingprt, strlen(usb_fingprt)); 
+        int size_enc = base32_encode(buf_sub_fingerptr, &buflen, usb_fingprt, 
+                        strlen(usb_fingprt)); 
         dprintf("Encoded %d characters as: %s\n", size_enc, buf_sub_fingerptr);
 }
 
-void deal_with_canaries(char *base32_usb_fingprt, char *usb_fingrprnt, char *canary_token)
+void deal_with_canaries(char *base32_usb_fingprt, char *usb_fingrprnt)
 {
         char *canary_dns_token = (char*) malloc(strlen(base32_usb_fingprt) + 
                         strlen(MAGIC_STRING) + 2 + strlen(canary_token));
         check_memory_allocation(canary_dns_token);
-        build_canary_dns_token(base32_usb_fingprt, canary_dns_token, canary_token);
+        build_canary_dns_token(base32_usb_fingprt, canary_dns_token);
 
         int canaryrsp = 0; 
 

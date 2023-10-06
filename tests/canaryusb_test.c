@@ -99,7 +99,7 @@ static void build_canary_dns_token_()
 {
         char *canary_dns_token = (char *) malloc(strlen(BASE32_ENCODED_USB_FINGERPRINT) + 
                         strlen(MAGIC_STRING) + 2 + strlen(canary_token));
-        build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT, canary_dns_token, canary_token);
+        build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT, canary_dns_token);
         cst_s(canary_dns_token, "should give", CANARY_DNS_TOKEN);
         free(canary_dns_token);
 }
