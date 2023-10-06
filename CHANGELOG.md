@@ -1,5 +1,9 @@
 # Changelog
 
+# [v](d)
+
+* Increased trusted list length
+
 # [v3.2.0](2023-09-18)
 
 * Added release to Makefile
