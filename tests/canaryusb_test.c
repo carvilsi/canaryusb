@@ -24,6 +24,7 @@
 #define SERIAL "no"
 #define USB_FINGERPRINT "1af3:0001-ZOWIE_Gaming_mouse-no"
 #define USB_FINGERPRINT_LONG "AverylongUSB:fingerptint-to-check:foobarbazlol-theworldisallthatisthecase"
+
 static void config_file_reading_only_canary_token()
 {
         test_config_file = "configurations/config_canary_token.toml";

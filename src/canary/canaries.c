@@ -38,15 +38,15 @@ void build_canary_dns_token(char *b32usbfngp, char *canary_dns_token)
         dprintf("canary_dns_token to send: %s\n", canary_dns_token);
 }
 
-void get_canary_encoded_usb_fingerprint(char *usb_fingprt, char *buf_sub_fingerptr) 
+void get_canary_encoded_usb_fingerprint(char *dev_fingprt, char *buf_sub_fingerptr) 
 {
         size_t buflen = (size_t)TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1;
-        int size_enc = base32_encode(buf_sub_fingerptr, &buflen, usb_fingprt, 
-                        strlen(usb_fingprt)); 
+        int size_enc = base32_encode(buf_sub_fingerptr, &buflen, dev_fingprt, 
+                        strlen(dev_fingprt)); 
         dprintf("Encoded %d characters as: %s\n", size_enc, buf_sub_fingerptr);
 }
 
-void deal_with_canaries(char *base32_usb_fingprt, char *usb_fingrprnt)
+void deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt)
 {
         char *canary_dns_token = (char*) malloc(strlen(base32_usb_fingprt) + 
                         strlen(MAGIC_STRING) + 2 + strlen(canary_token));
@@ -65,15 +65,15 @@ void deal_with_canaries(char *base32_usb_fingprt, char *usb_fingrprnt)
         
         if (canaryrsp > 0) {
                 dprintf("ERROR canaryusb: When calling canary tokens site, "
-                                "for connected USB: %s, run it on debug mode "
-                                "for more insights", usb_fingrprnt);
+                                "for connected device: %s, run it on debug mode "
+                                "for more insights", dev_fingrprnt);
                 syslog(LOG_ERR, "canaryusb errored when trying to advice about "
-                                "new connected USB %s", usb_fingrprnt);
+                                "new connected device%s", dev_fingrprnt);
         } else if (canaryrsp == -1) {
                 dprintf("Executing on SILENCE and DEBUG mode do NOT call to canary site\n"); 
         } else {
-                syslog(LOG_NOTICE, "canary token sent for connected USB device: %s", 
-                                usb_fingrprnt);
+                syslog(LOG_NOTICE, "canary token sent for connected device: %s", 
+                                dev_fingrprnt);
                 dprintf("canary token sent\n");
         }
 }
