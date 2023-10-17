@@ -21,8 +21,6 @@
 
 static const char cb32[] = 
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-static unsigned char rev32[256];
-static int reverse_init = 0;
 
 int base32_encode(char *buf, size_t *buflen, const void *data, size_t size)
 /*

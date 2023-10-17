@@ -2,6 +2,7 @@
 
 # [v](d)
 
+* Added support for SDCard
 * Increased trusted list length
 
 # [v3.2.0](2023-09-18)

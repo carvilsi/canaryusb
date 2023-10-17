@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
                 kill_canaryusb_instance();
         }
 
-        if (!usb_fingerprint) {
+        if (!dev_fingerprint) {
                 pid_t pid;
                 pid = fork();
 
@@ -62,11 +62,12 @@ int main(int argc, char *argv[])
                 dprintf("%s daemon started\n", _NAME_);
                 syslog(LOG_NOTICE, "%s daemon started", _NAME_);
         } else {
-                printf("%s in usb_fingerprint mode\n", _NAME_);
-                printf("waiting for a new USB device connections, ctrl+c to stop it\n");
+                printf("%s in fingerprint mode\n", _NAME_);
+                printf("waiting for a new USB device or SDCard connections, "
+                                "ctrl+c to stop it\n");
         }
 
-        monitor_usb();
+        monitor_devices();
         free_canaries();
         
         return EXIT_SUCCESS;
