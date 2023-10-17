@@ -15,13 +15,15 @@
 #define PROVIDED_TRUSTED_LIST "list,of,foobar,trusted-devices"
 #define CONFIGURED_TRUSTED_LIST "1af3:0001-ZOWIE_Gaming_mouse-no,594d:604d-YD60MQ-no"
 #define BASE32_ENCODED_USB_FINGERPRINT "GFQWMMZ2GAYDAMJNLJHVOSKFL5DWC3LJNZTV63LPOVZWKLLON4"
+#define BASE32_ENCODED_USB_FINGERPRINT_LONG "IF3GK4TZNRXW4Z2VKNBDUZTJNZTWK4TQORUW45BNORXS2Y3IMVRWWOTGN5XWEYLSMJQXU3DPNQWXI2DFO5XXE3DENFZWC3DMORUGC5DJON2GQZLDMFZWK"
 #define CANARY_DNS_TOKEN "GFQWMMZ2GAYDAMJNLJHVOSKFL5DWC3LJNZTV63LPOVZWKLLON4.G42.555whateverYouGetFrom.canarytokens.com" 
+#define CANARY_DNS_TOKEN_LONG "IF3GK4TZNRXW4Z2VKNBDUZTJNZTWK4TQORUW45BNORXS2Y3IMVRWWOTGN5X.WEYLSMJQXU3DPNQWXI2DFO5XXE3DENFZWC3DMORUGC5DJON2GQZLDMFZWK.G42.555whateverYouGetFrom.canarytokens.com"
 #define ID_VENDOR "1af3"
 #define ID_PRODUCT "0001"
 #define PRODUCT_NAME "ZOWIE Gaming mouse"
 #define SERIAL "no"
 #define USB_FINGERPRINT "1af3:0001-ZOWIE_Gaming_mouse-no"
-
+#define USB_FINGERPRINT_LONG "AverylongUSB:fingerptint-to-check:foobarbazlol-theworldisallthatisthecase"
 static void config_file_reading_only_canary_token()
 {
         test_config_file = "configurations/config_canary_token.toml";
@@ -77,13 +79,21 @@ static void command_list_arguments_usb_fingerprint()
 }
 
 static void get_canary_encoded_usb_fingerprint_test() {
-        char *usb_fingerprint = "1af3:0001-ZOWIE_Gaming_mouse-no";
         char *base32_usb_fingerprint= (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
         check_memory_allocation(base32_usb_fingerprint);
-        get_canary_encoded_usb_fingerprint(usb_fingerprint, base32_usb_fingerprint);
+        get_canary_encoded_usb_fingerprint(USB_FINGERPRINT, base32_usb_fingerprint);
         cst_s(base32_usb_fingerprint, "should be base32 encoded", BASE32_ENCODED_USB_FINGERPRINT); 
         free(base32_usb_fingerprint);
 }
+
+static void get_canary_encoded_usb_fingerprint_long_test() {
+        char *base32_usb_fingerprint= (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
+        check_memory_allocation(base32_usb_fingerprint);
+        get_canary_encoded_usb_fingerprint(USB_FINGERPRINT_LONG, base32_usb_fingerprint);
+        cst_s(base32_usb_fingerprint, "should be base32 encoded", BASE32_ENCODED_USB_FINGERPRINT_LONG); 
+        free(base32_usb_fingerprint);
+}
+
 
 static void usb_fingerprint_and_trusted_list()
 {
@@ -101,6 +111,15 @@ static void build_canary_dns_token_()
                         strlen(MAGIC_STRING) + 2 + strlen(canary_token));
         build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT, canary_dns_token);
         cst_s(canary_dns_token, "should give", CANARY_DNS_TOKEN);
+        free(canary_dns_token);
+}
+
+static void build_long_canary_dns_token_()
+{
+        char *canary_dns_token = (char *) malloc(strlen(BASE32_ENCODED_USB_FINGERPRINT_LONG) + 
+                        strlen(MAGIC_STRING) + 2 + strlen(canary_token));
+        build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT_LONG, canary_dns_token);
+        cst_s(canary_dns_token, "should give", CANARY_DNS_TOKEN_LONG);
         free(canary_dns_token);
 }
 
@@ -134,8 +153,10 @@ static void all_tests()
         cst_run(command_line_arguments_canary_token_and_trusted_list);
         cst_run(command_list_arguments_usb_fingerprint);
         cst_run(get_canary_encoded_usb_fingerprint_test);
+        cst_run(get_canary_encoded_usb_fingerprint_long_test);
         cst_run(usb_fingerprint_and_trusted_list);
         cst_run(build_canary_dns_token_);
+        cst_run(build_long_canary_dns_token_);
         cst_run(call_the_canary_);
         cst_run(get_usb_fingerprint_);
 }
