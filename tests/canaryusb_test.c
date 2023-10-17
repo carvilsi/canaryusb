@@ -94,15 +94,23 @@ static void get_canary_encoded_usb_fingerprint_long_test() {
         free(base32_usb_fingerprint);
 }
 
-
 static void usb_fingerprint_and_trusted_list()
 {
         char *usb_fingrprnt = "foobar";
         int is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
-        cst_a("should ignore usb fingerprint if is at trusted list", is_in_list == 1);
+        cst_a("should ignore usb fingerprint (foobar) if is at trusted list", is_in_list == 1);
         usb_fingrprnt = "tar";
         is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
-        cst_a("should not ignore usb fingerprint if is not at trusted list", is_in_list == 0);
+        cst_a("should not ignore usb fingerprint (tar) if is not at trusted list", is_in_list == 0);
+        usb_fingrprnt = "trufur";
+        is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        cst_a("should not ignore usb fingerprint (trufur) if is not at trusted list", is_in_list == 0);
+        usb_fingrprnt = "foobal";
+        is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        cst_a("should not ignore usb fingerprint (foobal) if is not at trusted list", is_in_list == 0);
+        usb_fingrprnt = "foObar";
+        is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        cst_a("should not ignore usb fingerprint (foObar) if is not at trusted list", is_in_list == 0);
 }
 
 static void build_canary_dns_token_()

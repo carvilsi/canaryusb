@@ -12,8 +12,9 @@ int compare_str(char *sub_list, char *cmp)
                 if (sub_list[i] == cmp[i])
                         res = 1;
                 else
-                        res = 0;
+                        return 0;
         }
+
         return res;
 }
 

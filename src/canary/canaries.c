@@ -19,21 +19,19 @@ int call_the_canary(const char *canary_dns_token)
         return canaryrsp;
 }
 
-void build_canary_dns_token(char *buf_sub_fingerptr, char *canary_dns_token)
+void build_canary_dns_token(char *b32usbfngp, char *canary_dns_token)
 {
-        if (strlen(buf_sub_fingerptr) > MAX_BASE_32_MESSAGE_LENGTH) {
-                int i;
-                for (i = 0; i < MAX_BASE_32_MESSAGE_LENGTH; i++) {
-                        canary_dns_token[i] = buf_sub_fingerptr[i];
-                }
-                strcat(canary_dns_token, DOT);
-                for (i = MAX_BASE_32_MESSAGE_LENGTH + 1; i <= strlen(buf_sub_fingerptr); i++) {
-                        canary_dns_token[i] = buf_sub_fingerptr[i - 1];
-                }
+        if (strlen(b32usbfngp) < MAX_BASE_32_MESSAGE_LENGTH) {
+                strcpy(canary_dns_token, b32usbfngp);
+                strcat(canary_dns_token, DOT); 
         } else {
-                strcpy(canary_dns_token, buf_sub_fingerptr);
+                memcpy(canary_dns_token, b32usbfngp, MAX_BASE_32_MESSAGE_LENGTH);
+                strcat(canary_dns_token, DOT);
+                memcpy(&canary_dns_token[MAX_BASE_32_MESSAGE_LENGTH + 1], 
+                                &b32usbfngp[MAX_BASE_32_MESSAGE_LENGTH], 
+                                MAX_BASE_32_MESSAGE_LENGTH);
+                strcat(canary_dns_token, DOT);
         }
-        strcat(canary_dns_token, DOT); 
         strcat(canary_dns_token, MAGIC_STRING); 
         strcat(canary_dns_token, DOT);
         strcat(canary_dns_token, canary_token);
