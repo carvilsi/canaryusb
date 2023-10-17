@@ -53,19 +53,21 @@
 #endif                                   
 
 #define _NAME_ "canaryusb" 
-#define _VERSION_ "3.2.0"
+#define _VERSION_ "4.0.0"
 
 #define BOLD_TEXT "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
 
 #define MAX_PID_LEN 10
 
-//These are only for testing reasons.
 extern int dev_fingerprint;
+//These are only for testing reasons.
 extern int trusted_list;
 extern char *canary_token;
 extern char *trusted_list_value;
 extern int kill_canaryusb;
+extern int monitor_usb;
+extern int monitor_sdcard;
 
 void monitor_devices();
 void free_canaries();

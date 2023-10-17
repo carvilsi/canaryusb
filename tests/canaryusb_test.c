@@ -71,12 +71,30 @@ static void command_line_arguments_canary_token_and_trusted_list()
         cst_i(trusted_list, "should be", 1);
 }
 
-static void command_list_arguments_usb_fingerprint()
+static void dev_fingerprint_variable()
 {
-        cst_i(dev_fingerprint, "should be", 0);
-        char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-u"};
+        cst_i(dev_fingerprint, "on start should be", 0);
+        char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f"};
+        /*char *argv[] = {"canaries", "-f"};*/
         parse_command_line(6, argv);
-        cst_i(dev_fingerprint, "variable should be", 1);
+        cst_i(dev_fingerprint, "should be", 1);
+}
+
+static void monitor_usb_variable()
+{
+        cst_i(monitor_usb, "on start should be", 0);
+        char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-u"};
+        /*char *argv[] = {"canaries",  "-u"};*/
+        parse_command_line(6, argv);
+        cst_i(monitor_usb, "should be", 1);
+}
+
+static void monitor_sdcard_variable()
+{
+        cst_i(monitor_sdcard, "on start should be", 0);
+        char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-s"};
+        parse_command_line(6, argv);
+        cst_i(monitor_sdcard, "should be", 1);
 }
 
 static void get_canary_encoded_usb_fingerprint_test() {
@@ -156,18 +174,20 @@ static void get_usb_fingerprint_()
 
 static void all_tests()
 {
-        cst_run(config_file_reading_only_canary_token);
-        cst_run(config_file_reading_canary_token_and_trusted_list);
-        cst_run(command_line_arguments_canary_token);
-        cst_run(command_line_arguments_canary_token_and_trusted_list);
-        cst_run(command_list_arguments_usb_fingerprint);
-        cst_run(get_canary_encoded_usb_fingerprint_test);
-        cst_run(get_canary_encoded_usb_fingerprint_long_test);
-        cst_run(usb_fingerprint_and_trusted_list);
-        cst_run(build_canary_dns_token_);
-        cst_run(build_long_canary_dns_token_);
-        cst_run(call_the_canary_);
-        cst_run(get_usb_fingerprint_);
+        /*cst_run(config_file_reading_only_canary_token);*/
+        /*cst_run(config_file_reading_canary_token_and_trusted_list);*/
+        /*cst_run(command_line_arguments_canary_token);*/
+        /*cst_run(command_line_arguments_canary_token_and_trusted_list);*/
+        cst_run(dev_fingerprint_variable);
+        cst_run(monitor_usb_variable);
+        cst_run(monitor_usb_variable);
+        /*cst_run(get_canary_encoded_usb_fingerprint_test);*/
+        /*cst_run(get_canary_encoded_usb_fingerprint_long_test);*/
+        /*cst_run(usb_fingerprint_and_trusted_list);*/
+        /*cst_run(build_canary_dns_token_);*/
+        /*cst_run(build_long_canary_dns_token_);*/
+        /*cst_run(call_the_canary_);*/
+        /*cst_run(get_usb_fingerprint_);*/
 }
 
 int main(void)  

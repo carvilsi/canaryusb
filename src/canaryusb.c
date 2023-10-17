@@ -41,6 +41,8 @@
 
 int dev_fingerprint = 0;
 int trusted_list = 0;
+int monitor_usb = 0;
+int monitor_sdcard = 0;
 int kill_canaryusb = 0;
 char *canary_token;
 char *trusted_list_value;
@@ -101,15 +103,25 @@ void monitor_devices()
         if (r < 0) 
                 goto finish;
 
-        r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
+        if (monitor_usb == 1 || (monitor_usb == 0 && monitor_sdcard == 0)) {
+                r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
                         USB_SUBSYSTEM, USB_DEVICE_TYPE);
-        if (r < 0)
-                goto finish;
+                dprintf("Monitoring USB devices\n");
+                syslog(LOG_NOTICE, "Monitoring USB devices");
 
-        r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
-                        SDCARD_SUBSYSTEM, SDCARD_DEVICE_TYPE);
-        if (r < 0)
-                goto finish;
+                if (r < 0)
+                        goto finish;
+        }
+
+        if (monitor_sdcard == 1 || (monitor_usb == 0 && monitor_sdcard == 0)) {
+                r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
+                                SDCARD_SUBSYSTEM, SDCARD_DEVICE_TYPE);
+                dprintf("Monitoring SDCard devices\n");
+                syslog(LOG_NOTICE, "Monitoring SDCard devices");
+
+                if (r < 0)
+                        goto finish;
+        }
 
         r = sd_device_monitor_start(sddm, device_monitor_handler, NULL);
         if (r < 0) 
@@ -137,7 +149,9 @@ finish:
 static struct option long_options[] = 
 {
        {"trust_list", required_argument, 0, 't'},
-       {"usb_fingerprint", no_argument, 0, 'u'},
+       {"usb_fingerprint", no_argument, 0, 'f'},
+       {"usb_monitor", no_argument, 0, 'u'},
+       {"sdcard_monitor", no_argument, 0, 's'},
        {"canary_token", required_argument, 0, 'c'},
        {"help", no_argument, 0, 'h'},
        {"kill", no_argument, 0, 'k'},
@@ -146,44 +160,60 @@ static struct option long_options[] =
 
 void parse_command_line(int argc, char *argv[])
 {
-        int c;
+        int p;
+        int ct = 0;
         while (1) {
                 int option_index = 0;
 
-                c = getopt_long(argc, argv, "hukt:c:", long_options, &option_index);
-                if (c == -1)
+                p = getopt_long(argc, argv, "hfuskt:c:", long_options, &option_index);
+                if (p == -1)
                         break;
 
-                switch (c) {
-                            case 't':
-                                    trusted_list = 1;
-                                    check_argument_length(optarg, TRUSTEDLIST);
-                                    trusted_list_value = (char *) malloc(strlen(optarg)+1);
-                                    check_memory_allocation(trusted_list_value);
-                                    strcpy(trusted_list_value, optarg);
-                                    break;
-                            case 'h':
-                                    show_help();
-                                    break;
-                            case 'u':
-                                    dev_fingerprint = 1;
-                                    break;
-                            case 'k':
-                                    kill_canaryusb = 1;
-                                    break;
-                            case 'c':
-                                    check_argument_length(optarg, CANARYTOKEN);
-                                    canary_token = (char *) malloc(strlen(optarg)+1);
-                                    check_memory_allocation(canary_token);
-                                    strcpy(canary_token, optarg);
-                                    break;
-                            case '?':
-                                    show_help();
-                                    break;
-                            default:
-                                    printf("?? getopt returned character code 0%o ??\n", c);
+                switch (p) {
+                        case 't':
+                                trusted_list = 1;
+                                check_argument_length(optarg, TRUSTEDLIST);
+                                trusted_list_value = (char *) malloc(strlen(optarg) + 1);
+                                check_memory_allocation(trusted_list_value);
+                                strcpy(trusted_list_value, optarg);
+                                break;
+                        case 'h':
+                                show_help();
+                                break;
+                        case 'f':
+                                dev_fingerprint = 1;
+                                break;
+                        case 'u':
+                                monitor_usb = 1;
+                                break;
+                        case 's':
+                                monitor_sdcard = 1;
+                                break;
+                        case 'k':
+                                kill_canaryusb = 1;
+                                break;
+                        case 'c':
+                                check_argument_length(optarg, CANARYTOKEN);
+                                canary_token = (char *) malloc(strlen(optarg) + 1);
+                                check_memory_allocation(canary_token);
+                                strcpy(canary_token, optarg);
+                                ct = 1;
+                                break;
+                        case '?':
+                                show_help();
+                                break;
+                        default:
+                                printf("?? getopt returned character code 0%o ??\n", p);
                 }
         }
+
+        if (monitor_usb == 1 && monitor_sdcard == 1) {
+                monitor_usb = 0;
+                monitor_sdcard = 0;
+        }
+
+        if (ct == 0 && (monitor_usb == 1 || monitor_sdcard == 1))
+               parse_configuration_file(); 
 }
 
 void parse_configuration_file()
