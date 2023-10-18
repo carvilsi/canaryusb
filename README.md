@@ -15,17 +15,17 @@ Here we are thinking about removable media threats like BadUSB or physical attac
 
 1. [Command Line Options](#command-line-options)
 2. [Buid](#build)
-    2.1 [Dependencies](#dependencies)
-4. [Run](#run)
-5. [Install](#install)
-    5.1 [Uninstall](#uninstall)
-    5.2 [Install from binary](#install-from-binary)
-6. [Install as a service](#install-as-a-service)
-    6.1 [Remove the service](#remove-the-service)
-7. [Tests](#tests)
-8. [Examples](#examples)
-9. [Stop the daemon](#stop-the-daemon)
-10. [Notes](#notes)
+    1. [Dependencies](#dependencies)
+3. [Run](#run)
+4. [Install](#install)
+    1. [Uninstall](#uninstall)
+    2. [Install from binary](#install-from-binary)
+5. [Install as a service](#install-as-a-service)
+    1. [Remove the service](#remove-the-service)
+6. [Tests](#tests)
+7. [Examples](#examples)
+8. [Stop the daemon](#stop-the-daemon)
+9. [Notes](#notes)
 
 ---
 
