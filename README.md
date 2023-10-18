@@ -48,10 +48,10 @@ Here we are thinking about removable media threats like BadUSB or physical attac
                 In this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.
                 Also will not start a daemon, to quit **ctrl+c**.
 
-**-u, --usb-monitor
+**-u, --usb-monitor**
                 will only monitor USB devices.
 
-**-s, --sdcard-monitor
+**-s, --sdcard-monitor**
                 will only monitor SDCard devices.
                 Note: that the USB storage devices will be also monitored.
 
