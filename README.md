@@ -29,7 +29,7 @@ Here we are thinking about removable media threats like BadUSB or physical attac
 
 ---
 
-## Command Line Options<a name=commad-line-options" />
+## Command Line Options<a name="commad-line-options" />
 
 **Options**:
 
@@ -143,7 +143,11 @@ If you already installed canaryusb, you can uninstall it with:
 ### Install from binary<a name="install-from-binary" />
 
 You can download the binary file at [repo releases](https://github.com/carvilsi/canaryusb/releases)
-Notice that if you want to run *canaryusb* with config file, it will expect that this is at: `~/.config/canaryusb/config.toml`. I guess that be able to config with cli params the location for the config file would it be something to add (TODO). 
+Notice that if you want to run *canaryusb* with config file, it will expect that this is at: 
+
+`~/.config/canaryusb/config.toml`. 
+
+I guess that be able to config with cli params the location for the config file would it be something to add (TODO). 
 Also the *make* commands like *uninstall, add_service* expects that the binary is at `~/.local/bin/`, change this is just edit the binary location of *canaryusb.service* under *configuration* directory though.
 
 ## Install as a service<a name="install-as-a-service" />
