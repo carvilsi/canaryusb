@@ -14,7 +14,7 @@ Here we are thinking about removable media threats like BadUSB or physical attac
                 you'll receive the notification based on the created DNS token
                 to know more about it check: https://docs.canarytokens.org/guide/dns-token.html
 
-**-f, --usb_fingerprint**
+**-f, --fingerprint_device**
                 this prints the fingerprint related with a USB or SDCard device that is plugged into computer
                 and could be used to create the list for trust_list option.
                 In this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.

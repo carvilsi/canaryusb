@@ -43,7 +43,7 @@ void show_help()
         printf("\t\tcreated token from Canary token site: https://canarytokens.org/generate\n");
         printf("\t\tyou'll receive the notification based on the created DNS token\n");
         printf("\t\tto know more about it check: https://docs.canarytokens.org/guide/dns-token.html\n");
-        printf(BOLD_TEXT "-f, --usb_fingerprint\n" NO_BOLD_TEXT);
+        printf(BOLD_TEXT "-f, --fingerprint_device\n" NO_BOLD_TEXT);
         printf("\t\tthis prints the fingerprint related with a USB or SDCard device that is plugged into computer\n");
         printf("\t\tand could be used to create the list for " BOLD_TEXT "trust_list" NO_BOLD_TEXT " option.\n");
         printf("\t\tIn this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.\n");
