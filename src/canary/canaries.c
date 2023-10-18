@@ -41,9 +41,8 @@ void build_canary_dns_token(char *b32usbfngp, char *canary_dns_token)
 void get_canary_encoded_usb_fingerprint(char *dev_fingprt, char *buf_sub_fingerptr) 
 {
         size_t buflen = (size_t)TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1;
-        int size_enc = base32_encode(buf_sub_fingerptr, &buflen, dev_fingprt, 
+        base32_encode(buf_sub_fingerptr, &buflen, dev_fingprt, 
                         strlen(dev_fingprt)); 
-        dprintf("Encoded %d characters as: %s\n", size_enc, buf_sub_fingerptr);
 }
 
 void deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt)
