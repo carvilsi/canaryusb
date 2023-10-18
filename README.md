@@ -9,6 +9,9 @@ Here we are thinking about removable media threats like BadUSB or physical attac
 
 **Options**:
 
+**-v, --version**
+                this prints the canaryusb version
+
 **-c, --canary-token [DNS canary token]**
                 created token from Canary token site: https://canarytokens.org/generate
                 you'll receive the notification based on the created DNS token

@@ -39,6 +39,8 @@ void show_help()
         printf("Sends email notification when a USB or SDCard device is plugged into your computer, powered by Canary Tokens\n");
         printf("\n");
         printf("Options:\n");
+        printf(BOLD_TEXT "-v, --version\n" NO_BOLD_TEXT);
+        printf("\t\tthis prints the canaryusb version\n");
         printf(BOLD_TEXT "-c, --canary-token [DNS canary token]\n" NO_BOLD_TEXT);
         printf("\t\tcreated token from Canary token site: https://canarytokens.org/generate\n");
         printf("\t\tyou'll receive the notification based on the created DNS token\n");

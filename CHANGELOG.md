@@ -1,5 +1,9 @@
 # Changelog
 
+# [v](d)
+
+* Added command line argument to print the version
+
 # [v4.0.1](2023-10-18)
 
 * Added support for **SDCard**

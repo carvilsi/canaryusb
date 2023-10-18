@@ -38,6 +38,11 @@ int main(int argc, char *argv[])
         else
                 parse_command_line(argc, argv);
 
+        if (version) {
+                printf("%s %s\n", _NAME_, _VERSION_);
+                exit(0);
+        }
+
         if (!kill_canaryusb) {
                 if (is_running()) {
                         fprintf(stderr, "there is another instance of %s running\n"

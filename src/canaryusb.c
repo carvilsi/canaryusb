@@ -44,6 +44,7 @@ int trusted_list = 0;
 int monitor_usb = 0;
 int monitor_sdcard = 0;
 int kill_canaryusb = 0;
+int version = 0;
 char *canary_token;
 char *trusted_list_value;
 
@@ -155,6 +156,7 @@ static struct option long_options[] =
        {"canary-token", required_argument, 0, 'c'},
        {"help", no_argument, 0, 'h'},
        {"kill", no_argument, 0, 'k'},
+       {"version", no_argument, 0, 'v'},
        {0, 0 , 0, 0}
 };
 
@@ -165,7 +167,7 @@ void parse_command_line(int argc, char *argv[])
         while (1) {
                 int option_index = 0;
 
-                p = getopt_long(argc, argv, "hfuskt:c:", long_options, &option_index);
+                p = getopt_long(argc, argv, "vhfuskt:c:", long_options, &option_index);
                 if (p == -1)
                         break;
 
@@ -198,6 +200,9 @@ void parse_command_line(int argc, char *argv[])
                                 check_memory_allocation(canary_token);
                                 strcpy(canary_token, optarg);
                                 ct = 1;
+                                break;
+                        case 'v':
+                                version = 1;
                                 break;
                         case '?':
                                 show_help();

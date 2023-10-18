@@ -53,7 +53,7 @@
 #endif                                   
 
 #define _NAME_ "canaryusb" 
-#define _VERSION_ "4.0.2"
+#define _VERSION_ "4.0.3"
 
 #define BOLD_TEXT "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
@@ -68,6 +68,7 @@ extern char *trusted_list_value;
 extern int kill_canaryusb;
 extern int monitor_usb;
 extern int monitor_sdcard;
+extern int version;
 
 void monitor_devices();
 void free_canaries();
