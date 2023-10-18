@@ -3,6 +3,7 @@
 <h1>Canaryusb</h1> 
 
 <img src="https://github.com/carvilsi/canaryusb/actions/workflows/c.yml/badge.svg?branch=main" alt="test">
+<img src="https://img.shields.io/github/v/release/carvilsi/canaryusb" alt="release">
 
 Get a mail notification via, **Canary Tokens (DNS)** when a **USB** or **SDCard** device is connected on a Linux computer.
 Could be useful when you leave the laptop unattended or for a server on a remote location, will not prevent to being 
