@@ -39,68 +39,63 @@
 #include "utils/trusted_list.h"
 #include "utils/util.h"
 
-int usb_fingerprint = 0;
+int dev_fingerprint = 0;
 int trusted_list = 0;
+int monitor_usb = 0;
+int monitor_sdcard = 0;
 int kill_canaryusb = 0;
 char *canary_token;
 char *trusted_list_value;
 
-static int usb_monitor_handler(sd_device_monitor *m, sd_device *dev, void *userdata) 
+static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *userdata) 
 {
         sd_device_action_t actions;
         sd_device_get_action(dev, &actions);
-
         if (actions == SD_DEVICE_ADD) {
-                UsbAttrs usbattrs = get_usb_attributes(dev);
-                size_t fingp_len = strlen(usbattrs.vendor) + 
-                        strlen(usbattrs.product) + 
-                        strlen(usbattrs.product_name) + 
-                        strlen(usbattrs.serial) + 5;
+                const char *subsystem;
+                sd_device_get_subsystem(dev, &subsystem);
 
-                dprintf("USB device with %s name and vendor/product %s:%s and %s serial. \
-                                Connected at: %s\n",
-                                usbattrs.product_name,
-                                usbattrs.vendor,
-                                usbattrs.product,
-                                usbattrs.serial,
-                                usbattrs.syspath);
-                
-                char tmp_usb_fingprt[fingp_len];
-                char *usb_fingrprnt = get_usb_fingerprint(usbattrs, tmp_usb_fingprt);
-                char *base32_usb_fingprt = (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
-                check_memory_allocation(base32_usb_fingprt);
-                get_canary_encoded_usb_fingerprint(usb_fingrprnt, base32_usb_fingprt);
+                char *dev_fngrprnt = get_device_fingerprint(dev, subsystem);
+
+                char *base32_fngrprnt = (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
+                check_memory_allocation(base32_fngrprnt);
+                get_canary_encoded_usb_fingerprint(dev_fngrprnt, base32_fngrprnt);
 
                 // Check if we have a trusted list and the device is in the list.
                 int is_in_list = 0;
                 if (trusted_list) {
-                        is_in_list = is_usb_device_in_trust_list(trusted_list_value, usb_fingrprnt, 
+                        is_in_list = is_device_in_trust_list(trusted_list_value, dev_fngrprnt, 
                                         TRUSTED_LIST_DELIMITER);
                 }
 
                 // if we want to the related fingerprint with the connected usb, print it!
                 // else, call canary token
-                if (usb_fingerprint) {
-                        printf("usb_fingerprint: %s\n", usb_fingrprnt);
+                if (dev_fingerprint) {
+                        printf("%s fingerprint: %s\n", 
+                                        strcmp(subsystem, SDCARD_SUBSYSTEM) == 0 ? "SDCard" : 
+                                        subsystem, dev_fngrprnt);
                 } else {
                         if (is_in_list) {
                                 syslog(LOG_NOTICE, 
-                                                "usb device: %s connected, but is at trusted list, not calling canary token", 
-                                                usb_fingrprnt);
-                                dprintf("usb device: %s connected, but is at trusted list, not calling canary token\n", 
-                                                usb_fingrprnt);
+                                                "%s device: %s connected, but is at trusted " 
+                                                "list, not calling canary token", 
+                                                subsystem, dev_fngrprnt);
+                                dprintf("%s device: %s connected, but is at trusted list, "
+                                                "not calling canary token\n", 
+                                                subsystem, dev_fngrprnt);
                         } else {
-                                deal_with_canaries(base32_usb_fingprt, usb_fingrprnt, canary_token); 
+                                deal_with_canaries(base32_fngrprnt, dev_fngrprnt); 
                         }
                 }
-                free(base32_usb_fingprt);
-                
+
+                free(base32_fngrprnt);
+                free(dev_fngrprnt);
         }
 
         return 0;
 }
 
-void monitor_usb() 
+void monitor_devices() 
 {
         int r;
         sd_device_monitor *sddm = NULL;
@@ -108,11 +103,27 @@ void monitor_usb()
         if (r < 0) 
                 goto finish;
 
-        r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, SUBSYSTEM, DEVICE_TYPE);
-        if (r < 0)
-                goto finish;
+        if (monitor_usb == 1 || (monitor_usb == 0 && monitor_sdcard == 0)) {
+                r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
+                        USB_SUBSYSTEM, USB_DEVICE_TYPE);
+                dprintf("Monitoring USB devices\n");
+                syslog(LOG_NOTICE, "Monitoring USB devices");
 
-        r = sd_device_monitor_start(sddm, usb_monitor_handler, NULL);
+                if (r < 0)
+                        goto finish;
+        }
+
+        if (monitor_sdcard == 1 || (monitor_usb == 0 && monitor_sdcard == 0)) {
+                r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
+                                SDCARD_SUBSYSTEM, SDCARD_DEVICE_TYPE);
+                dprintf("Monitoring SDCard devices\n");
+                syslog(LOG_NOTICE, "Monitoring SDCard devices");
+
+                if (r < 0)
+                        goto finish;
+        }
+
+        r = sd_device_monitor_start(sddm, device_monitor_handler, NULL);
         if (r < 0) 
                 goto finish;
 
@@ -137,9 +148,11 @@ finish:
 
 static struct option long_options[] = 
 {
-       {"trust_list", required_argument, 0, 't'},
-       {"usb_fingerprint", no_argument, 0, 'u'},
-       {"canary_token", required_argument, 0, 'c'},
+       {"trust-list", required_argument, 0, 't'},
+       {"fingerprint-device", no_argument, 0, 'f'},
+       {"usb-monitor", no_argument, 0, 'u'},
+       {"sdcard-monitor", no_argument, 0, 's'},
+       {"canary-token", required_argument, 0, 'c'},
        {"help", no_argument, 0, 'h'},
        {"kill", no_argument, 0, 'k'},
        {0, 0 , 0, 0}
@@ -147,44 +160,60 @@ static struct option long_options[] =
 
 void parse_command_line(int argc, char *argv[])
 {
-        int c;
+        int p;
+        int ct = 0;
         while (1) {
                 int option_index = 0;
 
-                c = getopt_long(argc, argv, "hukt:c:", long_options, &option_index);
-                if (c == -1)
+                p = getopt_long(argc, argv, "hfuskt:c:", long_options, &option_index);
+                if (p == -1)
                         break;
 
-                switch (c) {
-                            case 't':
-                                    trusted_list = 1;
-                                    check_argument_length(optarg, TRUSTEDLIST);
-                                    trusted_list_value = (char *) malloc(strlen(optarg)+1);
-                                    check_memory_allocation(trusted_list_value);
-                                    strcpy(trusted_list_value, optarg);
-                                    break;
-                            case 'h':
-                                    show_help();
-                                    break;
-                            case 'u':
-                                    usb_fingerprint = 1;
-                                    break;
-                            case 'k':
-                                    kill_canaryusb = 1;
-                                    break;
-                            case 'c':
-                                    check_argument_length(optarg, CANARYTOKEN);
-                                    canary_token = (char *) malloc(strlen(optarg)+1);
-                                    check_memory_allocation(canary_token);
-                                    strcpy(canary_token, optarg);
-                                    break;
-                            case '?':
-                                    show_help();
-                                    break;
-                            default:
-                                    printf("?? getopt returned character code 0%o ??\n", c);
+                switch (p) {
+                        case 't':
+                                trusted_list = 1;
+                                check_argument_length(optarg, TRUSTEDLIST);
+                                trusted_list_value = (char *) malloc(strlen(optarg) + 1);
+                                check_memory_allocation(trusted_list_value);
+                                strcpy(trusted_list_value, optarg);
+                                break;
+                        case 'h':
+                                show_help();
+                                break;
+                        case 'f':
+                                dev_fingerprint = 1;
+                                break;
+                        case 'u':
+                                monitor_usb = 1;
+                                break;
+                        case 's':
+                                monitor_sdcard = 1;
+                                break;
+                        case 'k':
+                                kill_canaryusb = 1;
+                                break;
+                        case 'c':
+                                check_argument_length(optarg, CANARYTOKEN);
+                                canary_token = (char *) malloc(strlen(optarg) + 1);
+                                check_memory_allocation(canary_token);
+                                strcpy(canary_token, optarg);
+                                ct = 1;
+                                break;
+                        case '?':
+                                show_help();
+                                break;
+                        default:
+                                printf("?? getopt returned character code 0%o ??\n", p);
                 }
         }
+
+        if (monitor_usb == 1 && monitor_sdcard == 1) {
+                monitor_usb = 0;
+                monitor_sdcard = 0;
+        }
+
+        if (ct == 0 && (monitor_usb == 1 || monitor_sdcard == 1))
+               parse_configuration_file(); 
 }
 
 void parse_configuration_file()

@@ -25,8 +25,8 @@ void check_memory_allocation(void *check_me)
 
 void replace_in_string(char *to_replace, char replace_this, char replace_with)
 {
-        int i = 0;
-        for (i; i <= strlen(to_replace); i++) {
+        int i;
+        for (i=0; i <= strlen(to_replace); i++) {
                 if (to_replace[i] == replace_this)
                         to_replace[i] = replace_with;
         }
@@ -36,21 +36,26 @@ void show_help()
 {
         printf(BOLD_TEXT "%s v%s by char 2023\n" NO_BOLD_TEXT, _NAME_, _VERSION_);
         printf("\n");
-        printf("Sends email notification when a USB device is plugged into your computer, powered by Canary Tokens\n");
+        printf("Sends email notification when a USB or SDCard device is plugged into your computer, powered by Canary Tokens\n");
         printf("\n");
         printf("Options:\n");
-        printf(BOLD_TEXT "-c, --canary_token [DNS canary token]\n" NO_BOLD_TEXT);
+        printf(BOLD_TEXT "-c, --canary-token [DNS canary token]\n" NO_BOLD_TEXT);
         printf("\t\tcreated token from Canary token site: https://canarytokens.org/generate\n");
         printf("\t\tyou'll receive the notification based on the created DNS token\n");
         printf("\t\tto know more about it check: https://docs.canarytokens.org/guide/dns-token.html\n");
-        printf(BOLD_TEXT "-u, --usb_fingerprint\n" NO_BOLD_TEXT);
-        printf("\t\tthis prints the fingerprint related with a USB device that is plugged into computer\n");
-        printf("\t\tand could be used to create the list for " BOLD_TEXT "trust_list" NO_BOLD_TEXT " option.\n");
-        printf("\t\tIn this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.\n");
+        printf(BOLD_TEXT "-f, --fingerprint-device\n" NO_BOLD_TEXT);
+        printf("\t\tthis prints the fingerprint related with a USB or SDCard device that is plugged into computer\n");
+        printf("\t\tand could be used to create the list for " BOLD_TEXT "trust-list" NO_BOLD_TEXT " option.\n");
+        printf("\t\tIn this mode, will not be any call to Canary Tokens, only the device fingerprint will be printed.\n");
         printf("\t\tAlso will not start a daemon, to quit" BOLD_TEXT " ctrl+c\n" NO_BOLD_TEXT);
-        printf(BOLD_TEXT "-t, --trust_list [comma separated usb_fingerprint list]\n" NO_BOLD_TEXT);
-        printf("\t\tlist of usb fingerprints, comma seprated, to not notify when the related deviced is connected\n");
-        printf("\t\tcheck " BOLD_TEXT "usb_fingerprint" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB device\n");
+        printf(BOLD_TEXT "-u, --usb-monitor\n" NO_BOLD_TEXT);
+        printf("\t\twill " BOLD_TEXT "only monitor USB" NO_BOLD_TEXT " devices.\n");
+        printf(BOLD_TEXT "-s, --sdcard-monitor\n" NO_BOLD_TEXT);
+        printf("\t\twill " BOLD_TEXT "only monitor SDCard" NO_BOLD_TEXT " devices.\n");
+        printf("\t\t" BOLD_TEXT "note:" NO_BOLD_TEXT " that the USB storage devices will be also monitored.\n");
+        printf(BOLD_TEXT "-t, --trust-list [comma separated device fingerprint list]\n" NO_BOLD_TEXT);
+        printf("\t\tlist of device fingerprints, comma seprated, to not notify when the related deviced is connected\n");
+        printf("\t\tcheck " BOLD_TEXT "fingerprint-device" NO_BOLD_TEXT " option to retrieve device fingerprint for connected USB or SDCard device\n");
         printf(BOLD_TEXT "-k, --kill\n" NO_BOLD_TEXT);
         printf("\t\tkills the daemon, if it's running\n");
         printf("\n");
@@ -186,18 +191,20 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
 
         toml_table_t *canary_conf = toml_table_in(conf, _NAME_);
         if (!canary_conf) {
-                fprintf(stderr, "ERROR: config file exists but is missing [%s] table please check README.md", _NAME_);
+                fprintf(stderr, "ERROR: config file exists but is missing [%s] "
+                                "table please check README.md", _NAME_);
                 show_help();
         }
 
-        toml_datum_t canary_token = toml_string_in(canary_conf, "canary_token");
-        if (!canary_token.ok) {
-                fprintf(stderr, "ERROR: no canary_token value at config file please check README.md\n");
+        toml_datum_t cnry_tkn = toml_string_in(canary_conf, "canary_token");
+        if (!cnry_tkn.ok) {
+                fprintf(stderr, "ERROR: no canary_token value at config file "
+                                "please check README.md\n");
                 show_help();
         } else {
-                dprintf("canary_token config value: %s\n", canary_token.u.s);
-                check_argument_length(canary_token.u.s, CANARYTOKEN);
-                strcpy(cnrytkn, canary_token.u.s);
+                dprintf("canary_token config value: %s\n", cnry_tkn.u.s);
+                check_argument_length(cnry_tkn.u.s, CANARYTOKEN);
+                strcpy(cnrytkn, cnry_tkn.u.s);
         }
 
         toml_datum_t trust_list = toml_string_in(canary_conf, "trust_list");
@@ -210,7 +217,7 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
                 strcpy(trstdlst, trust_list.u.s);
         }
         
-        free(canary_token.u.s);
+        free(cnry_tkn.u.s);
         toml_free(canary_conf);
 }
 

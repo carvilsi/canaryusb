@@ -1,5 +1,12 @@
 # Changelog
 
+# [v4.0.1](2023-10-18)
+
+* Added support for **SDCard**
+* Added command line arguments to select USB or SDCard monitor mode; `-u (usb-monitor)` and `-s (sdcard-monitor)`
+* Increased trusted list length
+* Solved issue related with trust list comparison against device fingerprint
+
 # [v3.2.0](2023-09-18)
 
 * Added release to Makefile
