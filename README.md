@@ -1,11 +1,35 @@
-![tests](https://github.com/carvilsi/canaryusb/actions/workflows/c.yml/badge.svg?branch=main)
+<div align="center">
 
-# Canaryusb 
+<h1>Canaryusb</h1> 
+
+<img src="https://github.com/carvilsi/canaryusb/actions/workflows/c.yml/badge.svg?branch=main" alt="test">
 
 Get a mail notification via, **Canary Tokens (DNS)** when a **USB** or **SDCard** device is connected on a Linux computer.
 Could be useful when you leave the laptop unattended or for a server on a remote location, will not prevent to being 
 breached, but at least you'll notice; this is the principle behind [Thinkst Canary](https://canary.tools/#why).
 Here we are thinking about removable media threats like BadUSB or physical attacks to extract data.
+
+</div>
+
+---
+
+1. [Command Line Options](#command-line-options)
+2. [Buid](#build)
+    1. [Dependencies](#dependencies)
+3. [Run](#run)
+4. [Install](#install)
+    1. [Uninstall](#uninstall)
+    2. [Install from binary](#install-from-binary)
+5. [Install as a service](#install-as-a-service)
+    1. [Remove the service](#remove-the-service)
+6. [Tests](#tests)
+7. [Examples](#examples)
+8. [Stop the daemon](#stop-the-daemon)
+9. [Notes](#notes)
+
+---
+
+## Command Line Options<a name="commad-line-options" />
 
 **Options**:
 
@@ -116,13 +140,17 @@ If you already installed canaryusb, you can uninstall it with:
 
 `$ make uninstall`
 
-### Install from binary
+### Install from binary<a name="install-from-binary" />
 
 You can download the binary file at [repo releases](https://github.com/carvilsi/canaryusb/releases)
-Notice that if you want to run *canaryusb* with config file, it will expect that this is at: `~/.config/canaryusb/config.toml`. I guess that be able to config with cli params the location for the config file would it be something to add (TODO). 
+Notice that if you want to run *canaryusb* with config file, it will expect that this is at: 
+
+`~/.config/canaryusb/config.toml`. 
+
+I guess that be able to config with cli params the location for the config file would it be something to add (TODO). 
 Also the *make* commands like *uninstall, add_service* expects that the binary is at `~/.local/bin/`, change this is just edit the binary location of *canaryusb.service* under *configuration* directory though.
 
-## Install as a service
+## Install as a service<a name="install-as-a-service" />
 
 `$ make clean; make add_service`
 
@@ -131,7 +159,7 @@ If is not an update you'll need to set the right configuration at `~/.config/can
 
 `$ systemctl --user start canaryusb.service` 
 
-### Remove the service
+### Remove the service<a name="remove-the-service" />
 
 `$ make remove_service`
 
@@ -170,7 +198,7 @@ The tests should be run from the `tests/` directory.
 
 `$ canaryusb`
 
-## Stop the daemon
+## Stop the daemon<a name="stop-the-daemon" />
 
 If **installed**:
 
