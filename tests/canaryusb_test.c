@@ -96,6 +96,14 @@ static void monitor_sdcard_variable()
         cst_i(monitor_sdcard, "should be", 1);
 }
 
+static void command_line_arguments_version()
+{
+        cst_i(version, "should be", 0);
+        char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s", "-v"};
+        parse_command_line(9, argv);
+        cst_i(version, "should be", 1);
+}
+
 static void get_canary_encoded_usb_fingerprint_test() {
         char *base32_usb_fingerprint= (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
         check_memory_allocation(base32_usb_fingerprint);
@@ -183,6 +191,7 @@ static void all_tests()
         cst_run(dev_fingerprint_variable);
         cst_run(monitor_usb_variable);
         cst_run(monitor_sdcard_variable);
+        cst_run(command_line_arguments_version);
         cst_run(get_canary_encoded_usb_fingerprint_test);
         cst_run(get_canary_encoded_usb_fingerprint_long_test);
         cst_run(call_the_canary_);
