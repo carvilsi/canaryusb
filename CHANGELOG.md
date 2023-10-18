@@ -1,10 +1,10 @@
 # Changelog
 
-# [v](d)
+# [v4.0.3](2023-10-18)
 
 * Added command line argument to print the version
 
-# [v4.0.1](2023-10-18)
+# [v4.0.2](2023-10-18)
 
 * Added support for **SDCard**
 * Added command line arguments to select USB or SDCard monitor mode; `-u (usb-monitor)` and `-s (sdcard-monitor)`
