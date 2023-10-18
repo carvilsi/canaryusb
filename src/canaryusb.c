@@ -148,11 +148,11 @@ finish:
 
 static struct option long_options[] = 
 {
-       {"trust_list", required_argument, 0, 't'},
-       {"fingerprint_device", no_argument, 0, 'f'},
-       {"usb_monitor", no_argument, 0, 'u'},
-       {"sdcard_monitor", no_argument, 0, 's'},
-       {"canary_token", required_argument, 0, 'c'},
+       {"trust-list", required_argument, 0, 't'},
+       {"fingerprint-device", no_argument, 0, 'f'},
+       {"usb-monitor", no_argument, 0, 'u'},
+       {"sdcard-monitor", no_argument, 0, 's'},
+       {"canary-token", required_argument, 0, 'c'},
        {"help", no_argument, 0, 'h'},
        {"kill", no_argument, 0, 'k'},
        {0, 0 , 0, 0}
