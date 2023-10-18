@@ -2,25 +2,32 @@
 
 # Canaryusb 
 
-Get a mail notification via, **Canary Tokens (DNS)** when a **USB** device is connected on a GNU/Linux computer.
+Get a mail notification via, **Canary Tokens (DNS)** when a **USB** or **SDCard** device is connected on a Linux computer.
 Could be useful when you leave the laptop unattended or for a server on a remote location, will not prevent to being 
 breached, but at least you'll notice; this is the principle behind [Thinkst Canary](https://canary.tools/#why).
 Here we are thinking about removable media threats like BadUSB or physical attacks to extract data.
 
 **Options**:
 
-**-c, --canary_token [DNS canary token]**
+**-c, --canary-token [DNS canary token]**
                 created token from Canary token site: https://canarytokens.org/generate
                 you'll receive the notification based on the created DNS token
                 to know more about it check: https://docs.canarytokens.org/guide/dns-token.html
 
-**-u, --usb_fingerprint**
-                this prints the fingerprint related with a USB device that is plugged into computer
+**-f, --fingerprint-device**
+                this prints the fingerprint related with a USB or SDCard device that is plugged into computer
                 and could be used to create the list for trust_list option.
                 In this mode, will not be any call to Canary Tokens, only the usb fingerprint will be printed.
                 Also will not start a daemon, to quit **ctrl+c**.
 
-**-t, --trust_list [comma separated usb_fingerprint list]**
+**-u, --usb-monitor
+                will only monitor USB devices.
+
+**-s, --sdcard-monitor
+                will only monitor SDCard devices.
+                Note: that the USB storage devices will be also monitored.
+
+**-t, --trust-list [comma separated usb_fingerprint list]**
                 list of usb fingerprints, comma seprated, to not notify when the related deviced is connected
                 check usb_fingerprint option to retrieve device fingerprint for connected USB device.
 
@@ -67,7 +74,7 @@ Seems that on **Arch Linux** is already installed.
 
 `$ ./canaryusb [options]`
 
-**Receive a mail for any device that will be connected to USB**
+**Receive a mail for any device that will be connected to USB or SDCard slot**
 
 `$ ./canaryusb -c <your DNS canary token>`
 
@@ -75,9 +82,17 @@ Seems that on **Arch Linux** is already installed.
 
 `$ ./canaryusb -c <your DNS canary token> -t <comma separated list of trusted devices fingerprint>`
 
-**Get the fingerprint of devices for trusted list, do not send any mail**
+**Get the fingerprint of devices for trusted list, does not send any mail notification**
+
+`$ ./canaryusb -f`
+
+**Will monitor only USB devices**
 
 `$ ./canaryusb -u`
+
+**Will monitor only SDCard, note that USB with storage capabilities will be also detected**
+
+`$ ./canaryusb -s`
 
 
 Here you can create your [DNS token](https://canarytokens.org/generate)
@@ -142,7 +157,7 @@ The tests should be run from the `tests/` directory.
 
 * Get the fingerprint of devices for trusted list, do not send any mail
 
-`$ ./canaryusb -u`
+`$ ./canaryusb -f`
 
 **Output** when a USB device is connected:
 
