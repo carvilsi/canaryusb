@@ -53,7 +53,7 @@
 #endif                                   
 
 #define _NAME_ "canaryusb" 
-#define _VERSION_ "4.0.1"
+#define _VERSION_ "4.0.2"
 
 #define BOLD_TEXT "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
