@@ -1,5 +1,9 @@
 # Changelog
 
+# [v4.0.3](2023-10-23)
+
+* Some code improvements, after a review.
+
 # [v4.0.3](2023-10-18)
 
 * Added command line argument to print the version

@@ -19,7 +19,7 @@ int call_the_canary(const char *canary_dns_token)
         return canaryrsp;
 }
 
-void build_canary_dns_token(char *b32usbfngp, char *canary_dns_token)
+void build_canary_dns_token(char *b32usbfngp, char *canary_dns_token, ConfigCanrayUSB *opts)
 {
         if (strlen(b32usbfngp) < MAX_BASE_32_MESSAGE_LENGTH) {
                 strcpy(canary_dns_token, b32usbfngp);
@@ -34,7 +34,7 @@ void build_canary_dns_token(char *b32usbfngp, char *canary_dns_token)
         }
         strcat(canary_dns_token, MAGIC_STRING); 
         strcat(canary_dns_token, DOT);
-        strcat(canary_dns_token, canary_token);
+        strcat(canary_dns_token, opts->canary_token);
         dprintf("canary_dns_token to send: %s\n", canary_dns_token);
 }
 
@@ -45,12 +45,12 @@ void get_canary_encoded_usb_fingerprint(char *dev_fingprt, char *buf_sub_fingerp
                         strlen(dev_fingprt)); 
 }
 
-void deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt)
+void deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt, ConfigCanrayUSB *opts)
 {
         char *canary_dns_token = (char*) malloc(strlen(base32_usb_fingprt) + 
-                        strlen(MAGIC_STRING) + 2 + strlen(canary_token));
+                        strlen(MAGIC_STRING) + 2 + strlen(opts->canary_token));
         check_memory_allocation(canary_dns_token);
-        build_canary_dns_token(base32_usb_fingprt, canary_dns_token);
+        build_canary_dns_token(base32_usb_fingprt, canary_dns_token, opts);
 
         int canaryrsp = 0; 
 
