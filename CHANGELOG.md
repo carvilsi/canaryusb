@@ -1,6 +1,6 @@
 # Changelog
 
-# [v4.0.3](2023-10-23)
+# [v4.0.4](2023-10-23)
 
 * Some code improvements, after a review.
 
