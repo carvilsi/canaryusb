@@ -140,18 +140,20 @@ void kill_canaryusb_instance()
 void check_argument_length(char *arg, int type)
 { 
         size_t len = strlen(arg) + 1;
-        if (type == TRUSTEDLIST) {
-                dprintf("the length of trusted list is %ld\n", len);
+        if (type == TYPE_TRUSTEDLIST_LENGTH_CHECK) {
+                printf("the length of trusted list is %ld\n", len);
                 if (len > MAX_TRUSTED_LIST_LENGTH) {
-                        fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", MAX_TRUSTED_LIST_LENGTH);
+                        fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", 
+                                        MAX_TRUSTED_LIST_LENGTH);
                         exit(EXIT_FAILURE);
                 }
         }
 
-        if (type == CANARYTOKEN) {
+        if (type == TYPE_CANARYTOKEN_LENGTH_CHECK) {
                 dprintf("the length of canary token is %ld\n", len);
                 if (len > MAX_CANARY_TOKEN_LENGTH) {
-                        fprintf(stderr, "The canary token characters exceeds the limit of %d\n", MAX_CANARY_TOKEN_LENGTH);
+                        fprintf(stderr, "The canary token characters exceeds the limit of %d\n", 
+                                        MAX_CANARY_TOKEN_LENGTH);
                         exit(EXIT_FAILURE);
                 }
         }
@@ -205,7 +207,7 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
                 show_help();
         } else {
                 dprintf("canary_token config value: %s\n", cnry_tkn.u.s);
-                check_argument_length(cnry_tkn.u.s, CANARYTOKEN);
+                check_argument_length(cnry_tkn.u.s, TYPE_CANARYTOKEN_LENGTH_CHECK);
                 strcpy(cnrytkn, cnry_tkn.u.s);
         }
 
@@ -215,7 +217,7 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
                 trstdlst = NULL;
         } else {
                 dprintf("trust_list config value: %s\n", trust_list.u.s);
-                check_argument_length(trust_list.u.s, TRUSTEDLIST);
+                check_argument_length(trust_list.u.s, TYPE_TRUSTEDLIST_LENGTH_CHECK);
                 strcpy(trstdlst, trust_list.u.s);
         }
         

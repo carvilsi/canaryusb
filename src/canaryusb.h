@@ -23,6 +23,8 @@
  * SOFTWARE.
  */
 
+#include <stdbool.h>
+
 #define USB_SUBSYSTEM "usb"
 #define USB_DEVICE_TYPE "usb_device"
 #define SDCARD_SUBSYSTEM "block"
@@ -41,8 +43,8 @@
 #define CONFIG_FILE ".config/canaryusb/config.toml"
 
 // Argument check types
-#define CANARYTOKEN 0
-#define TRUSTEDLIST 1
+#define TYPE_CANARYTOKEN_LENGTH_CHECK 0
+#define TYPE_TRUSTEDLIST_LENGTH_CHECK 1
 
 #define val_name(v)#v
 
@@ -53,25 +55,36 @@
 #endif                                   
 
 #define _NAME_ "canaryusb" 
-#define _VERSION_ "4.0.3"
+#define _VERSION_ "4.0.4"
 
 #define BOLD_TEXT "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
 
 #define MAX_PID_LEN 10
 
-extern int dev_fingerprint;
-//These are only for testing reasons.
-extern int trusted_list;
-extern char *canary_token;
-extern char *trusted_list_value;
-extern int kill_canaryusb;
-extern int monitor_usb;
-extern int monitor_sdcard;
-extern int version;
+typedef struct {
+        bool dev_fingerprint;
+        bool trusted_list;
+        const char *canary_token;
+        const char *trusted_list_value;
+        bool kill_canaryusb;
+        bool monitor_usb;
+        bool monitor_sdcard;
+        bool version;
+}ConfigCanrayUSB;
 
-void monitor_devices();
-void free_canaries();
-void parse_command_line(int argc, char *argv[]);
-void parse_configuration_file();
+#define config_canary_usb_INIT { \
+        false,                   \
+        false,                   \
+        NULL,                    \
+        NULL,                    \
+        false,                   \
+        false,                   \
+        false,                   \
+        false,                   \
+}                                \
+
+void monitor_devices(ConfigCanrayUSB *opts);
+void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts);
+void parse_configuration_file(ConfigCanrayUSB *opts);
 

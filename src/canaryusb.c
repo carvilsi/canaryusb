@@ -32,6 +32,7 @@
 #include <systemd/sd-event.h>
 #include <systemd/sd-device.h>
 #include <errno.h>
+#include <stdbool.h>
 
 #include "canaryusb.h"
 #include "usbs/usbs.h"
@@ -39,17 +40,9 @@
 #include "utils/trusted_list.h"
 #include "utils/util.h"
 
-int dev_fingerprint = 0;
-int trusted_list = 0;
-int monitor_usb = 0;
-int monitor_sdcard = 0;
-int kill_canaryusb = 0;
-int version = 0;
-char *canary_token;
-char *trusted_list_value;
-
 static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *userdata) 
 {
+        ConfigCanrayUSB *opts = (ConfigCanrayUSB*) userdata;
         sd_device_action_t actions;
         sd_device_get_action(dev, &actions);
         if (actions == SD_DEVICE_ADD) {
@@ -64,14 +57,14 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
 
                 // Check if we have a trusted list and the device is in the list.
                 int is_in_list = 0;
-                if (trusted_list) {
-                        is_in_list = is_device_in_trust_list(trusted_list_value, dev_fngrprnt, 
+                if (opts->trusted_list) {
+                        is_in_list = is_device_in_trust_list(opts->trusted_list_value, dev_fngrprnt, 
                                         TRUSTED_LIST_DELIMITER);
                 }
 
                 // if we want to the related fingerprint with the connected usb, print it!
                 // else, call canary token
-                if (dev_fingerprint) {
+                if (opts->dev_fingerprint) {
                         printf("%s fingerprint: %s\n", 
                                         strcmp(subsystem, SDCARD_SUBSYSTEM) == 0 ? "SDCard" : 
                                         subsystem, dev_fngrprnt);
@@ -85,7 +78,7 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                                                 "not calling canary token\n", 
                                                 subsystem, dev_fngrprnt);
                         } else {
-                                deal_with_canaries(base32_fngrprnt, dev_fngrprnt); 
+                                deal_with_canaries(base32_fngrprnt, dev_fngrprnt, opts); 
                         }
                 }
 
@@ -96,7 +89,7 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
         return 0;
 }
 
-void monitor_devices() 
+void monitor_devices(ConfigCanrayUSB *opts) 
 {
         int r;
         sd_device_monitor *sddm = NULL;
@@ -104,7 +97,7 @@ void monitor_devices()
         if (r < 0) 
                 goto finish;
 
-        if (monitor_usb == 1 || (monitor_usb == 0 && monitor_sdcard == 0)) {
+        if (opts->monitor_usb || (!opts->monitor_usb && !opts->monitor_sdcard)) {
                 r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
                         USB_SUBSYSTEM, USB_DEVICE_TYPE);
                 dprintf("Monitoring USB devices\n");
@@ -114,7 +107,7 @@ void monitor_devices()
                         goto finish;
         }
 
-        if (monitor_sdcard == 1 || (monitor_usb == 0 && monitor_sdcard == 0)) {
+        if (opts->monitor_sdcard || (!opts->monitor_usb && !opts->monitor_sdcard)) {
                 r = sd_device_monitor_filter_add_match_subsystem_devtype(sddm, 
                                 SDCARD_SUBSYSTEM, SDCARD_DEVICE_TYPE);
                 dprintf("Monitoring SDCard devices\n");
@@ -124,7 +117,7 @@ void monitor_devices()
                         goto finish;
         }
 
-        r = sd_device_monitor_start(sddm, device_monitor_handler, NULL);
+        r = sd_device_monitor_start(sddm, device_monitor_handler, opts);
         if (r < 0) 
                 goto finish;
 
@@ -160,11 +153,11 @@ static struct option long_options[] =
        {0, 0 , 0, 0}
 };
 
-void parse_command_line(int argc, char *argv[])
+void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
 {
         int p;
         int ct = 0;
-        while (1) {
+        for (;;) {
                 int option_index = 0;
 
                 p = getopt_long(argc, argv, "vhfuskt:c:", long_options, &option_index);
@@ -173,36 +166,32 @@ void parse_command_line(int argc, char *argv[])
 
                 switch (p) {
                         case 't':
-                                trusted_list = 1;
-                                check_argument_length(optarg, TRUSTEDLIST);
-                                trusted_list_value = (char *) malloc(strlen(optarg) + 1);
-                                check_memory_allocation(trusted_list_value);
-                                strcpy(trusted_list_value, optarg);
+                                opts->trusted_list = true;
+                                check_argument_length(optarg, TYPE_TRUSTEDLIST_LENGTH_CHECK);
+                                opts->trusted_list_value = strdup(optarg);
                                 break;
                         case 'h':
                                 show_help();
                                 break;
                         case 'f':
-                                dev_fingerprint = 1;
+                                opts->dev_fingerprint = true;
                                 break;
                         case 'u':
-                                monitor_usb = 1;
+                                opts->monitor_usb = true;
                                 break;
                         case 's':
-                                monitor_sdcard = 1;
+                                opts->monitor_sdcard = true;
                                 break;
                         case 'k':
-                                kill_canaryusb = 1;
+                                opts->kill_canaryusb = true;
                                 break;
                         case 'c':
-                                check_argument_length(optarg, CANARYTOKEN);
-                                canary_token = (char *) malloc(strlen(optarg) + 1);
-                                check_memory_allocation(canary_token);
-                                strcpy(canary_token, optarg);
+                                check_argument_length(optarg, TYPE_CANARYTOKEN_LENGTH_CHECK);
+                                opts->canary_token = strdup(optarg);
                                 ct = 1;
                                 break;
                         case 'v':
-                                version = 1;
+                                opts->version = 1;
                                 break;
                         case '?':
                                 show_help();
@@ -212,37 +201,31 @@ void parse_command_line(int argc, char *argv[])
                 }
         }
 
-        if (monitor_usb == 1 && monitor_sdcard == 1) {
-                monitor_usb = 0;
-                monitor_sdcard = 0;
+        if (opts->monitor_usb && opts->monitor_sdcard) {
+                opts->monitor_usb = false;
+                opts->monitor_sdcard = false;
         }
 
-        if (ct == 0 && (monitor_usb == 1 || monitor_sdcard == 1))
-               parse_configuration_file(); 
+        if (ct && (opts->monitor_usb || opts->monitor_sdcard))
+               parse_configuration_file(opts); 
 }
 
-void parse_configuration_file()
+void parse_configuration_file(ConfigCanrayUSB *opts)
 {
-        canary_token = (char *) malloc(MAX_CANARY_TOKEN_LENGTH);
-        trusted_list_value = (char *) malloc(MAX_TRUSTED_LIST_LENGTH);
+        char *canary_token = (char *) malloc(MAX_CANARY_TOKEN_LENGTH);
+        char *trusted_list_value = (char *) malloc(MAX_TRUSTED_LIST_LENGTH);
         check_memory_allocation(canary_token);
         check_memory_allocation(trusted_list_value);
         config_file_handler(canary_token, trusted_list_value);
+
+        opts->canary_token = strdup(canary_token);
         
-        if (strcmp(trusted_list_value, "") == 0) {
-                trusted_list = 0;
-                trusted_list_value = NULL;
-        } else {
-                trusted_list = 1;
+        if (strcmp(trusted_list_value, "") != 0) {
+                opts->trusted_list = true;
+                opts->trusted_list_value = strdup(trusted_list_value);
         }
-}
-
-void free_canaries()
-{
-        if (canary_token != NULL)
-                free(canary_token);
-
-        if (trusted_list_value != NULL)
-                free(trusted_list_value);
+        
+        free(canary_token);
+        free(trusted_list_value);
 }
 
