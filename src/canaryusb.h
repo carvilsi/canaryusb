@@ -54,10 +54,10 @@
 #define dprintf(...) {}                  
 #endif                                   
 
-#define _NAME_ "canaryusb" 
-#define _VERSION_ "4.0.4"
+#define NAME    "canaryusb" 
+#define VERSION "4.0.4"
 
-#define BOLD_TEXT "\e[1m"
+#define BOLD_TEXT    "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
 
 #define MAX_PID_LEN 10

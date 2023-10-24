@@ -212,6 +212,7 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
 
 void parse_configuration_file(ConfigCanrayUSB *opts)
 {
+        //TODO: refactor this, pass ConfigCanrayUSB instead allocating.
         char *canary_token = (char *) malloc(MAX_CANARY_TOKEN_LENGTH);
         char *trusted_list_value = (char *) malloc(MAX_TRUSTED_LIST_LENGTH);
         check_memory_allocation(canary_token);
@@ -219,10 +220,12 @@ void parse_configuration_file(ConfigCanrayUSB *opts)
         config_file_handler(canary_token, trusted_list_value);
 
         opts->canary_token = strdup(canary_token);
+        check_memory_allocation(opts->canary_token);
         
         if (strcmp(trusted_list_value, "") != 0) {
                 opts->trusted_list = true;
                 opts->trusted_list_value = strdup(trusted_list_value);
+                check_memory_allocation(opts->trusted_list_value);
         }
         
         free(canary_token);
