@@ -32,18 +32,20 @@
 #include "utils/util.h"
 
 int main(int argc, char *argv[])
-{       
-        if (argc < 2)
-                parse_configuration_file(); 
-        else
-                parse_command_line(argc, argv);
+{ 
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
 
-        if (version) {
+        if (argc < 2)
+                parse_configuration_file(&opts);
+        else
+                parse_command_line(argc, argv, &opts);
+
+        if (opts.version) {
                 printf("%s %s\n", _NAME_, _VERSION_);
                 exit(0);
         }
 
-        if (!kill_canaryusb) {
+        if (!opts.kill_canaryusb) {
                 if (is_running()) {
                         fprintf(stderr, "there is another instance of %s running\n"
                                 "you can stop it with '%s -k'\n", _NAME_, _NAME_);
@@ -53,7 +55,7 @@ int main(int argc, char *argv[])
                 kill_canaryusb_instance();
         }
 
-        if (!dev_fingerprint) {
+        if (!opts.dev_fingerprint) {
                 pid_t pid;
                 pid = fork();
 
@@ -72,8 +74,7 @@ int main(int argc, char *argv[])
                                 "ctrl+c to stop it\n");
         }
 
-        monitor_devices();
-        free_canaries();
+        monitor_devices(&opts);
         
         return EXIT_SUCCESS;
 }

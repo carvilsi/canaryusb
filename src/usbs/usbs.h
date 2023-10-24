@@ -1,7 +1,6 @@
 #include <systemd/sd-device.h>
 
-typedef struct 
-{
+typedef struct {
         char *vendor;
         char *product;
         char *product_name;
@@ -9,8 +8,7 @@ typedef struct
         char *syspath;
 }UsbAttrs;
 
-typedef struct
-{
+typedef struct {
         char *id_name;
         char *id_serial;
         char *size;

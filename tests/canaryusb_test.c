@@ -29,79 +29,84 @@ static void config_file_reading_only_canary_token()
 {
         test_config_file = "configurations/config_canary_token.toml";
         
-        cst_i(trusted_list, "variable should be", 0);
-        parse_configuration_file();
-        cst_a("canary_token must exists", canary_token != NULL);
-        cst_s(canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
-        cst_i(trusted_list, "variable should be", 0);
-        cst_a("trusted list must not exists", trusted_list_value == NULL);
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        cst_a("variable trusted list should be false", !opts.trusted_list );
+        parse_configuration_file(&opts);
+        cst_a("canary_token must exists", opts.canary_token != NULL);
+        cst_s(opts.canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
+        cst_a("variable trusted list should be false after read config file without trusted list", opts.trusted_list == false);
+        cst_a("trusted list value must not exists", opts.trusted_list_value == NULL);
 }
 
 static void config_file_reading_canary_token_and_trusted_list()
 {
         test_config_file = "configurations/config_canary_token_trusted_list.toml";
         
-        cst_i(trusted_list, "variable should be", 0);
-        parse_configuration_file();
-        cst_a("canary_token must exists", canary_token != NULL);
-        cst_s(canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
-        cst_i(trusted_list, "variable should be", 1);
-        cst_a("trusted list must exists", trusted_list_value != NULL);
-        cst_s(trusted_list_value, "must be equal to the one at the config file", CONFIGURED_TRUSTED_LIST);
-        
-        //reseting trusted_list var
-        trusted_list = 0;
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        cst_a("variable trusted list should be false", opts.trusted_list == false);
+        parse_configuration_file(&opts);
+        cst_a("canary_token must exists", opts.canary_token != NULL);
+        cst_s(opts.canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
+        cst_a("variable trusted list should be true", opts.trusted_list);
+        cst_i(opts.trusted_list, "variable should be", 1);
+        cst_a("trusted list value must exists", opts.trusted_list_value != NULL);
+        cst_s(opts.trusted_list_value, "must be equal to the one at the config file", CONFIGURED_TRUSTED_LIST);
 }
 
 static void command_line_arguments_canary_token()
 {
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN};
-        parse_command_line(3, argv);
-        cst_a("canary_token must exists", canary_token != NULL);
-        cst_s(canary_token, "must be equal to the one provided", PROVIDED_CANARY_TOKEN);
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        parse_command_line(3, argv, &opts);
+        cst_a("canary_token must exists", opts.canary_token != NULL);
+        cst_s(opts.canary_token, "must be equal to the one provided", PROVIDED_CANARY_TOKEN);
 }
 
 static void command_line_arguments_canary_token_and_trusted_list()
 {
-        cst_i(trusted_list, "should be", 0);
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        cst_i(opts.trusted_list, "should be", 0);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST};
-        parse_command_line(5, argv);
-        cst_a("trusted list must exists", trusted_list_value != NULL);
-        cst_s(trusted_list_value, "must be equal to the one provided list", PROVIDED_TRUSTED_LIST);
-        cst_i(trusted_list, "should be", 1);
+        parse_command_line(5, argv, &opts);
+        cst_a("trusted list must exists", opts.trusted_list_value != NULL);
+        cst_s(opts.trusted_list_value, "must be equal to the one provided list", PROVIDED_TRUSTED_LIST);
+        cst_i(opts.trusted_list, "should be", 1);
 }
 
 static void dev_fingerprint_variable()
 {
-        cst_i(dev_fingerprint, "on start should be", 0);
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        cst_a("dev_fingerprint on start should be false", !opts.dev_fingerprint);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f"};
-        parse_command_line(6, argv);
-        cst_i(dev_fingerprint, "should be", 1);
+        parse_command_line(6, argv, &opts);
+        cst_a("dev_fingerprint after command line arguments should be true", opts.dev_fingerprint);
 }
 
 static void monitor_usb_variable()
 {
-        cst_i(monitor_usb, "on start should be", 0);
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        cst_a("monitor_usb on start should be false", !opts.monitor_usb);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u"};
-        parse_command_line(7, argv);
-        cst_i(monitor_usb, "should be", 1);
+        parse_command_line(7, argv, &opts);
+        cst_a("monitor_usb after command line arguments should be true", opts.monitor_usb);
 }
 
 static void monitor_sdcard_variable()
 {
-        monitor_usb = 0;
-        cst_i(monitor_sdcard, "on start should be", 0);
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        cst_a("monitor_sdcard on start should be false", !opts.monitor_sdcard);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s"};
-        parse_command_line(8, argv);
-        cst_i(monitor_sdcard, "should be", 1);
+        parse_command_line(8, argv, &opts);
+        cst_a("monitor_sdcard after command line arguments should be true", opts.monitor_sdcard);
 }
 
 static void command_line_arguments_version()
 {
-        cst_i(version, "should be", 0);
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        cst_a("version variable should be false on start", !opts.version);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s", "-v"};
-        parse_command_line(9, argv);
-        cst_i(version, "should be", 1);
+        parse_command_line(9, argv, &opts);
+        cst_a("version variable should be true on set by command line", opts.version);
 }
 
 static void get_canary_encoded_usb_fingerprint_test() {
@@ -123,27 +128,29 @@ static void get_canary_encoded_usb_fingerprint_long_test() {
 static void usb_fingerprint_and_trusted_list()
 {
         char *usb_fingrprnt = "foobar";
-        int is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        int is_in_list = is_device_in_trust_list(PROVIDED_TRUSTED_LIST, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
         cst_a("should ignore usb fingerprint (foobar) if is at trusted list", is_in_list == 1);
         usb_fingrprnt = "tar";
-        is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        is_in_list = is_device_in_trust_list(PROVIDED_CANARY_TOKEN, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
         cst_a("should not ignore usb fingerprint (tar) if is not at trusted list", is_in_list == 0);
         usb_fingrprnt = "trufur";
-        is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        is_in_list = is_device_in_trust_list(PROVIDED_CANARY_TOKEN, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
         cst_a("should not ignore usb fingerprint (trufur) if is not at trusted list", is_in_list == 0);
         usb_fingrprnt = "foobal";
-        is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        is_in_list = is_device_in_trust_list(PROVIDED_CANARY_TOKEN, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
         cst_a("should not ignore usb fingerprint (foobal) if is not at trusted list", is_in_list == 0);
         usb_fingrprnt = "foObar";
-        is_in_list = is_device_in_trust_list(trusted_list_value, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
+        is_in_list = is_device_in_trust_list(PROVIDED_CANARY_TOKEN, usb_fingrprnt, TRUSTED_LIST_DELIMITER);
         cst_a("should not ignore usb fingerprint (foObar) if is not at trusted list", is_in_list == 0);
 }
 
 static void build_canary_dns_token_()
 {
         char *canary_dns_token = (char *) malloc(strlen(BASE32_ENCODED_USB_FINGERPRINT) + 
-                        strlen(MAGIC_STRING) + 2 + strlen(canary_token));
-        build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT, canary_dns_token);
+                        strlen(MAGIC_STRING) + 2 + strlen(PROVIDED_CANARY_TOKEN));
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        opts.canary_token = PROVIDED_CANARY_TOKEN;
+        build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT, canary_dns_token, &opts);
         cst_s(canary_dns_token, "should give", CANARY_DNS_TOKEN);
         free(canary_dns_token);
 }
@@ -151,8 +158,10 @@ static void build_canary_dns_token_()
 static void build_long_canary_dns_token_()
 {
         char *canary_dns_token = (char *) malloc(strlen(BASE32_ENCODED_USB_FINGERPRINT_LONG) + 
-                        strlen(MAGIC_STRING) + 2 + strlen(canary_token));
-        build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT_LONG, canary_dns_token);
+                        strlen(MAGIC_STRING) + 2 + strlen(PROVIDED_CANARY_TOKEN));
+        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        opts.canary_token = PROVIDED_CANARY_TOKEN;
+        build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT_LONG, canary_dns_token, &opts);
         cst_s(canary_dns_token, "should give", CANARY_DNS_TOKEN_LONG);
         free(canary_dns_token);
 }
@@ -185,14 +194,14 @@ static void all_tests()
         cst_run(config_file_reading_canary_token_and_trusted_list);
         cst_run(command_line_arguments_canary_token);
         cst_run(command_line_arguments_canary_token_and_trusted_list);
-        cst_run(usb_fingerprint_and_trusted_list);
-        cst_run(build_canary_dns_token_);
-        cst_run(build_long_canary_dns_token_);
         cst_run(dev_fingerprint_variable);
         cst_run(monitor_usb_variable);
         cst_run(monitor_sdcard_variable);
         cst_run(command_line_arguments_version);
         cst_run(get_canary_encoded_usb_fingerprint_test);
+        cst_run(usb_fingerprint_and_trusted_list);
+        cst_run(build_canary_dns_token_);
+        cst_run(build_long_canary_dns_token_);
         cst_run(get_canary_encoded_usb_fingerprint_long_test);
         cst_run(call_the_canary_);
         cst_run(get_usb_fingerprint_);
