@@ -42,7 +42,7 @@
 
 static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *userdata) 
 {
-        ConfigCanrayUSB *opts =(ConfigCanrayUSB*) userdata;
+        ConfigCanrayUSB *opts = (ConfigCanrayUSB*) userdata;
         sd_device_action_t actions;
         sd_device_get_action(dev, &actions);
         if (actions == SD_DEVICE_ADD) {
