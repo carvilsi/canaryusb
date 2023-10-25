@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../canaryusb.h"
 #include "./util.h"
 
 int compare_str(char *sub_list, char *cmp)
@@ -25,7 +26,7 @@ int is_device_in_trust_list(const char *trusted_list, char *fingrprnt, char *del
         int is_equal = 0;
         char *tl = (char*) malloc(strlen(trusted_list));
         check_memory_allocation(tl);
-        strncpy(tl, trusted_list, strlen(trusted_list));
+        strcpy(tl, trusted_list);
 
         char *sub_list = strtok(tl, delim);
         while (sub_list != NULL && !is_equal) {

@@ -54,10 +54,10 @@
 #define dprintf(...) {}                  
 #endif                                   
 
-#define _NAME_ "canaryusb" 
-#define _VERSION_ "4.0.4"
+#define NAME    "canaryusb" 
+#define VERSION "4.0.5"
 
-#define BOLD_TEXT "\e[1m"
+#define BOLD_TEXT    "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
 
 #define MAX_PID_LEN 10
@@ -65,8 +65,8 @@
 typedef struct {
         bool dev_fingerprint;
         bool trusted_list;
-        const char *canary_token;
-        const char *trusted_list_value;
+        char *canary_token;
+        char *trusted_list_value;
         bool kill_canaryusb;
         bool monitor_usb;
         bool monitor_sdcard;
@@ -86,5 +86,4 @@ typedef struct {
 
 void monitor_devices(ConfigCanrayUSB *opts);
 void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts);
-void parse_configuration_file(ConfigCanrayUSB *opts);
 

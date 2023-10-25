@@ -1,5 +1,9 @@
 # Changelog
 
+# [v4.0.5](2023-10-25)
+
+* Some refactoring after a review.
+
 # [v4.0.4](2023-10-23)
 
 * Some code improvements, after a review.

@@ -169,6 +169,7 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                                 opts->trusted_list = true;
                                 check_argument_length(optarg, TYPE_TRUSTEDLIST_LENGTH_CHECK);
                                 opts->trusted_list_value = strdup(optarg);
+                                check_memory_allocation(opts->trusted_list_value);
                                 break;
                         case 'h':
                                 show_help();
@@ -188,6 +189,7 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                         case 'c':
                                 check_argument_length(optarg, TYPE_CANARYTOKEN_LENGTH_CHECK);
                                 opts->canary_token = strdup(optarg);
+                                check_memory_allocation(opts->canary_token);
                                 ct = 1;
                                 break;
                         case 'v':
@@ -207,25 +209,6 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
         }
 
         if (ct && (opts->monitor_usb || opts->monitor_sdcard))
-               parse_configuration_file(opts); 
-}
-
-void parse_configuration_file(ConfigCanrayUSB *opts)
-{
-        char *canary_token = (char *) malloc(MAX_CANARY_TOKEN_LENGTH);
-        char *trusted_list_value = (char *) malloc(MAX_TRUSTED_LIST_LENGTH);
-        check_memory_allocation(canary_token);
-        check_memory_allocation(trusted_list_value);
-        config_file_handler(canary_token, trusted_list_value);
-
-        opts->canary_token = strdup(canary_token);
-        
-        if (strcmp(trusted_list_value, "") != 0) {
-                opts->trusted_list = true;
-                opts->trusted_list_value = strdup(trusted_list_value);
-        }
-        
-        free(canary_token);
-        free(trusted_list_value);
+               config_file_handler(opts); 
 }
 

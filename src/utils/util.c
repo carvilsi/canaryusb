@@ -34,7 +34,7 @@ void replace_in_string(char *to_replace, char replace_this, char replace_with)
 
 void show_help()
 {
-        printf(BOLD_TEXT "%s v%s by char 2023\n" NO_BOLD_TEXT, _NAME_, _VERSION_);
+        printf(BOLD_TEXT "%s v%s by char 2023\n" NO_BOLD_TEXT, NAME, VERSION);
         printf("\n");
         printf("Sends email notification when a USB or SDCard device is plugged into your computer, powered by Canary Tokens\n");
         printf("\n");
@@ -95,9 +95,9 @@ int is_running()
 {
         char *cmd_pgrep = "pgrep";
         char *cmd_cnt = "| wc -l";
-        char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(_NAME_) + strlen(cmd_cnt) + 2);
+        char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(NAME) + strlen(cmd_cnt) + 2);
         check_memory_allocation(cmd);
-        sprintf(cmd, "%s %s %s", cmd_pgrep, _NAME_, cmd_cnt);
+        sprintf(cmd, "%s %s %s", cmd_pgrep, NAME, cmd_cnt);
 
         FILE *fd = command_file_descriptor_exec(cmd);
 
@@ -118,9 +118,9 @@ void kill_canaryusb_instance()
        if (is_running()) {
                char *cmd_pgrep = "kill $(pgrep";
                char *cmd_cnt = "| head -1)";
-               char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(_NAME_) + strlen(cmd_cnt) + 2);
+               char *cmd = (char *) malloc(strlen(cmd_pgrep) + strlen(NAME) + strlen(cmd_cnt) + 2);
                check_memory_allocation(cmd);
-               sprintf(cmd, "%s %s %s", cmd_pgrep, _NAME_, cmd_cnt);
+               sprintf(cmd, "%s %s %s", cmd_pgrep, NAME, cmd_cnt);
 
                FILE *fd = command_file_descriptor_exec(cmd);
                
@@ -128,10 +128,10 @@ void kill_canaryusb_instance()
                fgets(cmdo, MAX_PID_LEN, fd);
                close_file_descriptor(fd);    
 
-               syslog(LOG_NOTICE, "%s daemon stopped", _NAME_);
-               printf("%s daemon stopped\n", _NAME_);
+               syslog(LOG_NOTICE, "%s daemon stopped", NAME);
+               printf("%s daemon stopped\n", NAME);
        } else {
-               printf("no %s daemon running, nothing to stop\n", _NAME_);
+               printf("no %s daemon running, nothing to stop\n", NAME);
        }
        
        exit(EXIT_SUCCESS);
@@ -159,7 +159,7 @@ void check_argument_length(char *arg, int type)
         }
 }
 
-void config_file_handler(char *cnrytkn, char *trstdlst)
+void config_file_handler(ConfigCanrayUSB *opts)
 {
         FILE *fp;
         char errbuf[200];
@@ -193,10 +193,10 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
                 show_help();
         }
 
-        toml_table_t *canary_conf = toml_table_in(conf, _NAME_);
+        toml_table_t *canary_conf = toml_table_in(conf, NAME);
         if (!canary_conf) {
                 fprintf(stderr, "ERROR: config file exists but is missing [%s] "
-                                "table please check README.md", _NAME_);
+                                "table please check README.md", NAME);
                 show_help();
         }
 
@@ -208,17 +208,20 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
         } else {
                 dprintf("canary_token config value: %s\n", cnry_tkn.u.s);
                 check_argument_length(cnry_tkn.u.s, TYPE_CANARYTOKEN_LENGTH_CHECK);
-                strcpy(cnrytkn, cnry_tkn.u.s);
+                opts->canary_token = strdup(cnry_tkn.u.s);
+                check_memory_allocation(opts->canary_token);
         }
 
         toml_datum_t trust_list = toml_string_in(canary_conf, "trust_list");
         if (!trust_list.ok) {
                 dprintf("WARN: no trust_list value at config file\n");
-                trstdlst = NULL;
         } else {
                 dprintf("trust_list config value: %s\n", trust_list.u.s);
+                opts->trusted_list = true;
                 check_argument_length(trust_list.u.s, TYPE_TRUSTEDLIST_LENGTH_CHECK);
-                strcpy(trstdlst, trust_list.u.s);
+                opts->trusted_list_value = strdup(trust_list.u.s);
+                check_memory_allocation(opts->trusted_list_value);
+                free(trust_list.u.s);
         }
         
         free(cnry_tkn.u.s);

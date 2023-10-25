@@ -31,7 +31,7 @@ static void config_file_reading_only_canary_token()
         
         ConfigCanrayUSB opts = config_canary_usb_INIT;
         cst_a("variable trusted list should be false", !opts.trusted_list );
-        parse_configuration_file(&opts);
+        config_file_handler(&opts);
         cst_a("canary_token must exists", opts.canary_token != NULL);
         cst_s(opts.canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
         cst_a("variable trusted list should be false after read config file without trusted list", opts.trusted_list == false);
@@ -44,11 +44,10 @@ static void config_file_reading_canary_token_and_trusted_list()
         
         ConfigCanrayUSB opts = config_canary_usb_INIT;
         cst_a("variable trusted list should be false", opts.trusted_list == false);
-        parse_configuration_file(&opts);
+        config_file_handler(&opts);
         cst_a("canary_token must exists", opts.canary_token != NULL);
         cst_s(opts.canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
         cst_a("variable trusted list should be true", opts.trusted_list);
-        cst_i(opts.trusted_list, "variable should be", 1);
         cst_a("trusted list value must exists", opts.trusted_list_value != NULL);
         cst_s(opts.trusted_list_value, "must be equal to the one at the config file", CONFIGURED_TRUSTED_LIST);
 }
