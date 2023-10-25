@@ -159,7 +159,7 @@ void check_argument_length(char *arg, int type)
         }
 }
 
-void config_file_handler(char *cnrytkn, char *trstdlst)
+void config_file_handler(ConfigCanrayUSB *opts)
 {
         FILE *fp;
         char errbuf[200];
@@ -208,17 +208,20 @@ void config_file_handler(char *cnrytkn, char *trstdlst)
         } else {
                 dprintf("canary_token config value: %s\n", cnry_tkn.u.s);
                 check_argument_length(cnry_tkn.u.s, TYPE_CANARYTOKEN_LENGTH_CHECK);
-                strcpy(cnrytkn, cnry_tkn.u.s);
+                opts->canary_token = strdup(cnry_tkn.u.s);
+                check_memory_allocation(opts->canary_token);
         }
 
         toml_datum_t trust_list = toml_string_in(canary_conf, "trust_list");
         if (!trust_list.ok) {
                 dprintf("WARN: no trust_list value at config file\n");
-                trstdlst = NULL;
         } else {
                 dprintf("trust_list config value: %s\n", trust_list.u.s);
+                opts->trusted_list = true;
                 check_argument_length(trust_list.u.s, TYPE_TRUSTEDLIST_LENGTH_CHECK);
-                strcpy(trstdlst, trust_list.u.s);
+                opts->trusted_list_value = strdup(trust_list.u.s);
+                check_memory_allocation(opts->trusted_list_value);
+                free(trust_list.u.s);
         }
         
         free(cnry_tkn.u.s);

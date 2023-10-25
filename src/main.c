@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
         ConfigCanrayUSB opts = config_canary_usb_INIT;
 
         if (argc < 2)
-                parse_configuration_file(&opts);
+                config_file_handler(&opts);
         else
                 parse_command_line(argc, argv, &opts);
 
