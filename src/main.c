@@ -36,19 +36,19 @@ int main(int argc, char *argv[])
         ConfigCanrayUSB opts = config_canary_usb_INIT;
 
         if (argc < 2)
-                parse_configuration_file(&opts);
+                config_file_handler(&opts);
         else
                 parse_command_line(argc, argv, &opts);
 
         if (opts.version) {
-                printf("%s %s\n", _NAME_, _VERSION_);
+                printf("%s %s\n", NAME, VERSION);
                 exit(0);
         }
 
         if (!opts.kill_canaryusb) {
                 if (is_running()) {
                         fprintf(stderr, "there is another instance of %s running\n"
-                                "you can stop it with '%s -k'\n", _NAME_, _NAME_);
+                                "you can stop it with '%s -k'\n", NAME, NAME);
                         exit(EXIT_FAILURE);
                 }
         } else {
@@ -66,10 +66,10 @@ int main(int argc, char *argv[])
                 if (setsid() < 0)
                         exit(EXIT_FAILURE);
 
-                dprintf("%s daemon started\n", _NAME_);
-                syslog(LOG_NOTICE, "%s daemon started", _NAME_);
+                dprintf("%s daemon started\n", NAME);
+                syslog(LOG_NOTICE, "%s daemon started", NAME);
         } else {
-                printf("%s in fingerprint mode\n", _NAME_);
+                printf("%s in fingerprint mode\n", NAME);
                 printf("waiting for a new USB device or SDCard connections, "
                                 "ctrl+c to stop it\n");
         }

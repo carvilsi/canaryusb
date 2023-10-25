@@ -12,8 +12,8 @@ SRC_SERVICE = ./configuration/canaryusb.service
 NAM_SERVICE = canaryusb.service
 
 SRC := $(shell find ./src/ -name '*.c') 
-NAM := $(shell awk '/_NAME_/ { gsub("\"", "", $$3); print $$3 }' src/canaryusb.h)
-VERS := $(shell awk '/_VERSION_/ { gsub("\"", "", $$3); print $$3 }' src/canaryusb.h)
+NAM := $(shell awk '/NAME/ { gsub("\"", "", $$3); print $$3 }' src/canaryusb.h)
+VERS := $(shell awk '/VERSION/ { gsub("\"", "", $$3); print $$3 }' src/canaryusb.h)
 REL := $(REL_PR)$(VERS)$(REL_SUF)
 
 all: cexec 
@@ -41,7 +41,7 @@ install: cexec
 
 uninstall:
 	@echo 'uninstalling $(NAM)...'
-	rm  $(DEST_BIN)$(NAM)
+	rm $(DEST_BIN)$(NAM)
 	rm -rf $(DEST_CONF)
 	@echo '$(NAM) uninstalled OK'
 
