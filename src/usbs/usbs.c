@@ -53,17 +53,29 @@ SDCardAttrs get_sdcard_attributes(sd_device *dev)
         const char *name;
         res = sd_device_get_property_value(dev, "ID_NAME", &name);
         if (res >= 0)
-                sdcrd_attrs.id_name= (char *)name;
+                sdcrd_attrs.id_name = (char *)name;
 
-        const char *serial;
-        res = sd_device_get_property_value(dev, "ID_SERIAL", &serial);
-        if (res >= 0)
-                sdcrd_attrs.id_serial= (char *)serial; 
+        //XXX: Trying to maintain the backward compatibility related with ID_SERIAL
+        //     but not shure about this... I think UUID is better
+        const char *uuid;
+        res = sd_device_get_property_value(dev, "ID_SERIAL", &uuid);
+        if (res >= 0) {
+                sdcrd_attrs.uuid = (char *)uuid; 
+        } else {
+                res = sd_device_get_property_value(dev, "ID_FS_UUID", &uuid);
+                if (res >= 0) {
+                        sdcrd_attrs.uuid = (char *)uuid; 
+                } else {
+                        res = sd_device_get_property_value(dev, "ID_PART_TABLE_UUID", &uuid);
+                        if (res >= 0)
+                                sdcrd_attrs.uuid = (char *)uuid;
+                }
+        }
 
         const char *size;
         res = sd_device_get_sysattr_value(dev, "size", &size);
         if (res >= 0)
-                sdcrd_attrs.size= (char *)size;
+                sdcrd_attrs.size = (char *)size;
         
         const char *blcksz_prtbltype;
         res = sd_device_get_property_value(dev, "ID_FS_BLOCKSIZE", &blcksz_prtbltype);
@@ -95,12 +107,12 @@ void get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt)
 {
         dprintf("\n-- SDCard connected --\n");
         dprintf("\tid_name: %s\n", sdcrd_attrs.id_name);
-        dprintf("\tid_serial: %s\n", sdcrd_attrs.id_serial);
+        dprintf("\tid_serial: %s\n", sdcrd_attrs.uuid);
         dprintf("\tsize: %s\n", sdcrd_attrs.size);
         dprintf("\tblock size or part table type: %s\n", sdcrd_attrs.blcksz_prtbltype);
         dprintf("\tat: %s\n\n", sdcrd_attrs.syspath);
         
-        sprintf(sdcrd_fingprt, "%s:%s-%s:%s", sdcrd_attrs.id_name, sdcrd_attrs.id_serial, 
+        sprintf(sdcrd_fingprt, "%s:%s-%s:%s", sdcrd_attrs.id_name, sdcrd_attrs.uuid, 
                         sdcrd_attrs.size, sdcrd_attrs.blcksz_prtbltype);
         if (strchr(sdcrd_fingprt, REPLACE_THIS) != NULL)
                 replace_in_string(sdcrd_fingprt, REPLACE_THIS, REPLACE_WITH);
@@ -124,7 +136,7 @@ char *get_device_fingerprint(sd_device *dev, const char *subsystem)
         if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {
                 SDCardAttrs sdcrd_attrs = get_sdcard_attributes(dev);
                 size_t sdcrd_fngrp_len = strlen(sdcrd_attrs.id_name) +
-                        strlen(sdcrd_attrs.id_serial) +
+                        strlen(sdcrd_attrs.uuid) +
                         strlen(sdcrd_attrs.size) +
                         strlen(sdcrd_attrs.blcksz_prtbltype) + 5;
                 fngrprnt = (char*) malloc(sdcrd_fngrp_len);

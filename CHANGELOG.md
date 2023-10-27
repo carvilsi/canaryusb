@@ -1,5 +1,9 @@
 # Changelog
 
+# [v](d)
+
+* Improve to retrieve uuid from drive instead id_serial
+
 # [v4.0.5](2023-10-25)
 
 * Some refactoring after a review.
