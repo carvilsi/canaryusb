@@ -69,7 +69,8 @@ SDCardAttrs get_sdcard_attributes(sd_device *dev)
         res = sd_device_get_property_value(dev, "ID_FS_BLOCKSIZE", &blcksz_prtbltype);
         if (res >= 0)
                 sdcrd_attrs.blcksz_prtbltype = (char *)blcksz_prtbltype;
-        else if (sd_device_get_property_value(dev, "ID_PART_TABLE_TYPE:", &blcksz_prtbltype) >= 0)
+        else if (sd_device_get_property_value(dev, "ID_PART_TABLE_TYPE:", 
+                                &blcksz_prtbltype) >= 0)
                 sdcrd_attrs.blcksz_prtbltype = (char *)blcksz_prtbltype;
         
         return sdcrd_attrs;

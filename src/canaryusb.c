@@ -51,15 +51,15 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
 
                 char *dev_fngrprnt = get_device_fingerprint(dev, subsystem);
 
-                char *base32_fngrprnt = (char *) malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
+                char *base32_fngrprnt = (char *)malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
                 check_memory_allocation(base32_fngrprnt);
                 get_canary_encoded_usb_fingerprint(dev_fngrprnt, base32_fngrprnt);
 
                 // Check if we have a trusted list and the device is in the list.
                 int is_in_list = 0;
                 if (opts->trusted_list) {
-                        is_in_list = is_device_in_trust_list(opts->trusted_list_value, dev_fngrprnt, 
-                                        TRUSTED_LIST_DELIMITER);
+                        is_in_list = is_device_in_trust_list(opts->trusted_list_value, 
+                                        dev_fngrprnt, TRUSTED_LIST_DELIMITER);
                 }
 
                 // if we want to the related fingerprint with the connected usb, print it!
