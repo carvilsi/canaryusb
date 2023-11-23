@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <netdb.h>
 #include <syslog.h>
 #include <systemd/sd-device.h>
+#include <stdio.h>
 
 #include "../canaryusb.h"
 #include "../usbs/usbs.h"
@@ -31,7 +31,7 @@ build_canary_dns_token(char *b32usbfngp, char *canary_dns_token,
                 strcat(canary_dns_token, DOT);
                 memcpy(&canary_dns_token[MAX_BASE_32_MESSAGE_LENGTH + 1], 
                                 &b32usbfngp[MAX_BASE_32_MESSAGE_LENGTH], 
-                                MAX_BASE_32_MESSAGE_LENGTH);
+                                MAX_BASE_32_MESSAGE_LENGTH + 1);
                 strcat(canary_dns_token, DOT);
         }
         strcat(canary_dns_token, MAGIC_STRING); 
@@ -74,8 +74,8 @@ deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt,
                 syslog(LOG_ERR, "canaryusb errored when trying to advice about "
                                 "new connected device%s", dev_fingrprnt);
         } else if (canaryrsp == -1) {
-                dprintf("Executing on SILENCE and DEBUG mode do NOT call to \
-                                canary site\n"); 
+                dprintf("Executing on SILENCE and DEBUG mode do NOT call to "
+                                "canary site\n"); 
         } else {
                 syslog(LOG_NOTICE, "canary token sent for connected device: %s", 
                                 dev_fingrprnt);
