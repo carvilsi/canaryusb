@@ -1,5 +1,9 @@
 # Changelog
 
+# [v4.0.6](2023-11-x)
+
+* Fix bug related with long token.
+
 # [v4.0.5](2023-10-25)
 
 * Some refactoring after a review.
