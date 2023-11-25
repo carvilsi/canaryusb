@@ -55,24 +55,24 @@ int main(int argc, char *argv[])
                 kill_canaryusb_instance();
         }
 
-        /*if (!opts.dev_fingerprint) {*/
-                /*pid_t pid;*/
-                /*pid = fork();*/
+        if (!opts.dev_fingerprint) {
+                pid_t pid;
+                pid = fork();
 
-                /*if (pid < 0)*/
-                        /*exit(EXIT_FAILURE);*/
-                /*if (pid > 0) */
-                        /*exit(EXIT_SUCCESS);*/
-                /*if (setsid() < 0)*/
-                        /*exit(EXIT_FAILURE);*/
+                if (pid < 0)
+                        exit(EXIT_FAILURE);
+                if (pid > 0) 
+                        exit(EXIT_SUCCESS);
+                if (setsid() < 0)
+                        exit(EXIT_FAILURE);
 
-                /*dprintf("%s daemon started\n", NAME);*/
-                /*syslog(LOG_NOTICE, "%s daemon started", NAME);*/
-        /*} else {*/
+                dprintf("%s daemon started\n", NAME);
+                syslog(LOG_NOTICE, "%s daemon started", NAME);
+        } else {
                 printf("%s in fingerprint mode\n", NAME);
                 printf("waiting for a new USB device or SDCard connections, "
                                 "ctrl+c to stop it\n");
-        /*}*/
+        }
 
         monitor_devices(&opts);
         
