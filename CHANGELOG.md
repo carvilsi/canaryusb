@@ -1,8 +1,9 @@
 # Changelog
 
-# [v4.0.6](2023-11-x)
+# [v4.0.6](2023-11-27)
 
 * Fix bug, response from CanaryTokens 'Unrecoverable data' related with long token sent.
+* Fix command line option for usb or sdcard monitor, reading config file if only these parameters are provided.
 
 # [v4.0.5](2023-10-25)
 
