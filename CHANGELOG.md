@@ -2,7 +2,7 @@
 
 # [v4.0.6](2023-11-x)
 
-* Fix bug related with long token.
+* Fix bug, response from CanaryTokens 'Unrecoverable data' related with long token sent.
 
 # [v4.0.5](2023-10-25)
 
