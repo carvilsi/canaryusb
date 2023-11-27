@@ -156,7 +156,7 @@ static struct option long_options[] =
 void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
 {
         int p;
-        int ct = 0;
+        int ct = false;
         for (;;) {
                 int option_index = 0;
 
@@ -190,10 +190,10 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                                 check_argument_length(optarg, TYPE_CANARYTOKEN_LENGTH_CHECK);
                                 opts->canary_token = strdup(optarg);
                                 check_memory_allocation(opts->canary_token);
-                                ct = 1;
+                                ct = true;
                                 break;
                         case 'v':
-                                opts->version = 1;
+                                opts->version = true;
                                 break;
                         case '?':
                                 show_help();
@@ -208,7 +208,7 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                 opts->monitor_sdcard = false;
         }
 
-        if (ct && (opts->monitor_usb || opts->monitor_sdcard))
+        if (!ct && (opts->monitor_usb || opts->monitor_sdcard))
                config_file_handler(opts); 
 }
 
