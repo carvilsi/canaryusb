@@ -55,7 +55,7 @@
 #endif                                   
 
 #define NAME    "canaryusb" 
-#define VERSION "4.0.5"
+#define VERSION "4.0.6"
 
 #define BOLD_TEXT    "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
@@ -73,7 +73,7 @@ typedef struct {
         bool version;
 }ConfigCanrayUSB;
 
-#define config_canary_usb_INIT { \
+#define config_canary_usb_init { \
         false,                   \
         false,                   \
         NULL,                    \

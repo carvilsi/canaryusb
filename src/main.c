@@ -33,7 +33,7 @@
 
 int main(int argc, char *argv[])
 { 
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
 
         if (argc < 2)
                 config_file_handler(&opts);
