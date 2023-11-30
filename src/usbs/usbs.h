@@ -10,7 +10,7 @@ typedef struct {
 
 typedef struct {
         char *id_name;
-        char *id_serial;
+        char *uuid;
         char *size;
         char *blcksz_prtbltype;
         char *syspath;
