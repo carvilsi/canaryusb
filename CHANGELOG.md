@@ -1,8 +1,8 @@
 # Changelog
 
-# [v4.1.0](d)
+# [v4.1.0](2023-11-30)
 
-* Improve to retrieve uuid from drive instead id_serial
+* Improvement to retrieve uuid from drive if id_serial is not present.
 
 # [v4.0.6](2023-11-27)
 
