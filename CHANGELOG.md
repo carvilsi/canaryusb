@@ -1,5 +1,9 @@
 # Changelog
 
+# [v4.1.0](2023-11-30)
+
+* Improvement to retrieve uuid from drive if id_serial is not present.
+
 # [v4.0.6](2023-11-27)
 
 * Fix bug, response from CanaryTokens 'Unrecoverable data' related with long token sent.
