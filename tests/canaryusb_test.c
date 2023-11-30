@@ -29,7 +29,7 @@ static void config_file_reading_only_canary_token()
 {
         test_config_file = "configurations/config_canary_token.toml";
         
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("variable trusted list should be false", !opts.trusted_list );
         config_file_handler(&opts);
         cst_a("canary_token must exists", opts.canary_token != NULL);
@@ -42,7 +42,7 @@ static void config_file_reading_canary_token_and_trusted_list()
 {
         test_config_file = "configurations/config_canary_token_trusted_list.toml";
         
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("variable trusted list should be false", opts.trusted_list == false);
         config_file_handler(&opts);
         cst_a("canary_token must exists", opts.canary_token != NULL);
@@ -55,7 +55,7 @@ static void config_file_reading_canary_token_and_trusted_list()
 static void command_line_arguments_canary_token()
 {
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN};
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         parse_command_line(3, argv, &opts);
         cst_a("canary_token must exists", opts.canary_token != NULL);
         cst_s(opts.canary_token, "must be equal to the one provided", PROVIDED_CANARY_TOKEN);
@@ -63,7 +63,7 @@ static void command_line_arguments_canary_token()
 
 static void command_line_arguments_canary_token_and_trusted_list()
 {
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         cst_i(opts.trusted_list, "should be", 0);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST};
         parse_command_line(5, argv, &opts);
@@ -74,7 +74,7 @@ static void command_line_arguments_canary_token_and_trusted_list()
 
 static void dev_fingerprint_variable()
 {
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("dev_fingerprint on start should be false", !opts.dev_fingerprint);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f"};
         parse_command_line(6, argv, &opts);
@@ -83,7 +83,7 @@ static void dev_fingerprint_variable()
 
 static void monitor_usb_variable()
 {
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("monitor_usb on start should be false", !opts.monitor_usb);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u"};
         parse_command_line(7, argv, &opts);
@@ -92,7 +92,7 @@ static void monitor_usb_variable()
 
 static void monitor_sdcard_variable()
 {
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("monitor_sdcard on start should be false", !opts.monitor_sdcard);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s"};
         parse_command_line(8, argv, &opts);
@@ -101,7 +101,7 @@ static void monitor_sdcard_variable()
 
 static void command_line_arguments_version()
 {
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("version variable should be false on start", !opts.version);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s", "-v"};
         parse_command_line(9, argv, &opts);
@@ -147,7 +147,7 @@ static void build_canary_dns_token_()
 {
         char *canary_dns_token = (char *) malloc(strlen(BASE32_ENCODED_USB_FINGERPRINT) + 
                         strlen(MAGIC_STRING) + 2 + strlen(PROVIDED_CANARY_TOKEN));
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         opts.canary_token = PROVIDED_CANARY_TOKEN;
         build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT, canary_dns_token, &opts);
         cst_s(canary_dns_token, "should give", CANARY_DNS_TOKEN);
@@ -158,7 +158,7 @@ static void build_long_canary_dns_token_()
 {
         char *canary_dns_token = (char *) malloc(strlen(BASE32_ENCODED_USB_FINGERPRINT_LONG) + 
                         strlen(MAGIC_STRING) + 2 + strlen(PROVIDED_CANARY_TOKEN));
-        ConfigCanrayUSB opts = config_canary_usb_INIT;
+        ConfigCanrayUSB opts = config_canary_usb_init;
         opts.canary_token = PROVIDED_CANARY_TOKEN;
         build_canary_dns_token(BASE32_ENCODED_USB_FINGERPRINT_LONG, canary_dns_token, &opts);
         cst_s(canary_dns_token, "should give", CANARY_DNS_TOKEN_LONG);

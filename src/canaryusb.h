@@ -73,7 +73,7 @@ typedef struct {
         bool version;
 }ConfigCanrayUSB;
 
-#define config_canary_usb_INIT { \
+#define config_canary_usb_init { \
         false,                   \
         false,                   \
         NULL,                    \

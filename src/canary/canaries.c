@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <netdb.h>
 #include <syslog.h>
 #include <systemd/sd-device.h>
+#include <stdio.h>
 
 #include "../canaryusb.h"
 #include "../usbs/usbs.h"
@@ -19,7 +19,9 @@ int call_the_canary(const char *canary_dns_token)
         return canaryrsp;
 }
 
-void build_canary_dns_token(char *b32usbfngp, char *canary_dns_token, ConfigCanrayUSB *opts)
+void 
+build_canary_dns_token(char *b32usbfngp, char *canary_dns_token, 
+                ConfigCanrayUSB *opts)
 {
         if (strlen(b32usbfngp) < MAX_BASE_32_MESSAGE_LENGTH) {
                 strcpy(canary_dns_token, b32usbfngp);
@@ -29,7 +31,7 @@ void build_canary_dns_token(char *b32usbfngp, char *canary_dns_token, ConfigCanr
                 strcat(canary_dns_token, DOT);
                 memcpy(&canary_dns_token[MAX_BASE_32_MESSAGE_LENGTH + 1], 
                                 &b32usbfngp[MAX_BASE_32_MESSAGE_LENGTH], 
-                                MAX_BASE_32_MESSAGE_LENGTH);
+                                MAX_BASE_32_MESSAGE_LENGTH + 1);
                 strcat(canary_dns_token, DOT);
         }
         strcat(canary_dns_token, MAGIC_STRING); 
@@ -38,14 +40,17 @@ void build_canary_dns_token(char *b32usbfngp, char *canary_dns_token, ConfigCanr
         dprintf("canary_dns_token to send: %s\n", canary_dns_token);
 }
 
-void get_canary_encoded_usb_fingerprint(char *dev_fingprt, char *buf_sub_fingerptr) 
+void 
+get_canary_encoded_usb_fingerprint(char *dev_fingprt, char *buf_sub_fingerptr) 
 {
         size_t buflen = (size_t)TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1;
         base32_encode(buf_sub_fingerptr, &buflen, dev_fingprt, 
                         strlen(dev_fingprt)); 
 }
 
-void deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt, ConfigCanrayUSB *opts)
+void 
+deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt, 
+                ConfigCanrayUSB *opts)
 {
         char *canary_dns_token = (char*) malloc(strlen(base32_usb_fingprt) + 
                         strlen(MAGIC_STRING) + 2 + strlen(opts->canary_token));
@@ -69,7 +74,8 @@ void deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt, ConfigCan
                 syslog(LOG_ERR, "canaryusb errored when trying to advice about "
                                 "new connected device%s", dev_fingrprnt);
         } else if (canaryrsp == -1) {
-                dprintf("Executing on SILENCE and DEBUG mode do NOT call to canary site\n"); 
+                dprintf("Executing on SILENCE and DEBUG mode do NOT call to "
+                                "canary site\n"); 
         } else {
                 syslog(LOG_NOTICE, "canary token sent for connected device: %s", 
                                 dev_fingrprnt);
