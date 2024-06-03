@@ -228,31 +228,18 @@ void config_file_handler(ConfigCanrayUSB *opts)
                 check_memory_allocation(opts->canary_token);
         }
 
-	// reading the possible array on toml format of trusted list devices
-        toml_array_t *trust_list = toml_array_in(canary_conf, "trust_list");
-	if (!trust_list) {
-		dprintf("WARN: no trust_list value at config file\n");
-	} else {
-                int trust_list_size = toml_array_nelem(trust_list);
-	        toml_datum_t tdt = toml_string_at(trust_list, 0);
-	        char *trusted_list = tdt.u.s;
-	        strcat(trusted_list, ",");
-	        for (int i = 1; i < trust_list_size; i++) {
-	               toml_datum_t dev_name = toml_string_at(trust_list, i);
-	               if (!dev_name.ok) break;
-	               strcat(trusted_list, dev_name.u.s);
-	               if (i < trust_list_size - 1)
-	                    strcat(trusted_list, ",");
-	               free(dev_name.u.s);
-	        }
-		dprintf("trust_list config value: %s\n", trusted_list);
-		opts->trusted_list = true;
-		check_argument_length(trusted_list, TYPE_TRUSTEDLIST_LENGTH_CHECK);
-		opts->trusted_list_value = strdup(trusted_list);
-		check_memory_allocation(opts->trusted_list_value);
-		free(trusted_list);
-	}
-	
+        toml_datum_t trust_list = toml_string_in(canary_conf, "trust_list");
+        if (!trust_list.ok) {
+                dprintf("WARN: no trust_list value at config file\n");
+        } else {
+                dprintf("trust_list config value: %s\n", trust_list.u.s);
+                opts->trusted_list = true;
+                check_argument_length(trust_list.u.s, TYPE_TRUSTEDLIST_LENGTH_CHECK);
+                opts->trusted_list_value = strdup(trust_list.u.s);
+                check_memory_allocation(opts->trusted_list_value);
+                free(trust_list.u.s);
+        }
+        
         free(cnry_tkn.u.s);
         toml_free(canary_conf);
 }
