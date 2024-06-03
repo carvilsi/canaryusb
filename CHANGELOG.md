@@ -1,5 +1,9 @@
 # Changelog
 
+# [v5.0.0](2024-06-03)
+
+* Improvement for config file, now the list of trusted devices is a toml array.
+
 # [v4.1.0](2023-11-30)
 
 * Improvement to retrieve uuid from drive if id_serial is not present.
