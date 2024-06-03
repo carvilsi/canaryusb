@@ -1,4 +1,7 @@
 [canaryusb]
 canary_token = "testing.configuration.file.canarytokens.com"
-trust_list = "1af3:0001-ZOWIE_Gaming_mouse-no,594d:604d-YD60MQ-no"
+trust_list = [ 
+        "1af3:0001-ZOWIE_Gaming_mouse-no",
+        "594d:604d-YD60MQ-no"
+]
 
