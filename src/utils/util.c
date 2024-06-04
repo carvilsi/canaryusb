@@ -282,7 +282,7 @@ void config_file_handler(ConfigCanrayUSB *opts)
 		check_memory_allocation(opts->trusted_list_value);
 		free(trusted_list);
 	}
-	
+
         free(cnry_tkn.u.s);
         toml_free(canary_conf);
 }
