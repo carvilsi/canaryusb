@@ -235,17 +235,15 @@ void config_file_handler(ConfigCanrayUSB *opts)
 	} else {
 		int lst_sz = 0;
 		int trst_lst_sz = toml_array_nelem(trust_list);
-		char *frst = NULL;
 		
                 // first round going throug all toml array of trusted 
                 // devices to get the size of the total trusted list
                 for (int i = 0; i < trst_lst_sz; i++) {
 		        toml_datum_t dev_fngprt = toml_string_at(trust_list, i);
-		        if (i == 0) {
-                                frst = dev_fngprt.u.s;
-		        }
-		        if (!dev_fngprt.ok) break;
+		        if (!dev_fngprt.ok)
+                                break;
 		        lst_sz += strlen(dev_fngprt.u.s);
+                        free(dev_fngprt.u.s);
 		}
 
 		lst_sz += trst_lst_sz;
@@ -259,25 +257,30 @@ void config_file_handler(ConfigCanrayUSB *opts)
                         exit(EXIT_FAILURE);
                 }
 
-                // lets create the trusted devices list
+                // lets create the trusted devices list on the second round
 		char *trusted_list = NULL;
 		trusted_list = (char *) malloc(lst_sz);
                 check_memory_allocation(trusted_list);
-		strcpy(trusted_list, frst);
-		for (int i = 1; i < trst_lst_sz; i++) {
+		for (int i = 0; i < trst_lst_sz; i++) {
 		        toml_datum_t dev_fngprt = toml_string_at(trust_list, i);
-		        if (!dev_fngprt.ok) break;
-		        strcat(trusted_list, ",");
-		        strcat(trusted_list, dev_fngprt.u.s);
+		        if (!dev_fngprt.ok)
+                                break;
+                        
+                        if (i == 0) {
+                                strcpy(trusted_list, dev_fngprt.u.s);
+                        } else {
+		                strcat(trusted_list, ",");
+		                strcat(trusted_list, dev_fngprt.u.s);
+                        }
+
 		        free(dev_fngprt.u.s);
 		}
-
-		dprintf("trust_list config value: %s\n", trusted_list);
+		
+                dprintf("trust_list config value: %s\n", trusted_list);
 		opts->trusted_list = true;
 		opts->trusted_list_value = strdup(trusted_list);
 		check_memory_allocation(opts->trusted_list_value);
 		free(trusted_list);
-                free(frst);
 	}
 	
         free(cnry_tkn.u.s);

@@ -1,6 +1,6 @@
 # Changelog
 
-# [v5.0.0](2024-06-03)
+# [v5.0.0](2024-06-04)
 
 * Improvement for config file, now the list of trusted devices is a toml array.
 
