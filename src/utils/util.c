@@ -228,18 +228,61 @@ void config_file_handler(ConfigCanrayUSB *opts)
                 check_memory_allocation(opts->canary_token);
         }
 
-        toml_datum_t trust_list = toml_string_in(canary_conf, "trust_list");
-        if (!trust_list.ok) {
-                dprintf("WARN: no trust_list value at config file\n");
-        } else {
-                dprintf("trust_list config value: %s\n", trust_list.u.s);
-                opts->trusted_list = true;
-                check_argument_length(trust_list.u.s, TYPE_TRUSTEDLIST_LENGTH_CHECK);
-                opts->trusted_list_value = strdup(trust_list.u.s);
-                check_memory_allocation(opts->trusted_list_value);
-                free(trust_list.u.s);
-        }
-        
+	// reading the possible array on toml format of trusted list devices
+        toml_array_t *trust_list = toml_array_in(canary_conf, "trust_list");
+	if (!trust_list) {
+		dprintf("WARN: no trust_list value at config file\n");
+	} else {
+		int lst_sz = 0;
+		int trst_lst_sz = toml_array_nelem(trust_list);
+		
+                // first round going throug all toml array of trusted 
+                // devices to get the size of the total trusted list
+                for (int i = 0; i < trst_lst_sz; i++) {
+		        toml_datum_t dev_fngprt = toml_string_at(trust_list, i);
+		        if (!dev_fngprt.ok)
+                                break;
+		        lst_sz += strlen(dev_fngprt.u.s);
+                        free(dev_fngprt.u.s);
+		}
+
+		lst_sz += trst_lst_sz;
+		dprintf("the total size of string list: %d\n", lst_sz);
+                
+                // lets check the total size size of the trusted list 
+                // we do not want to check the amount of memory to allocate
+                if (lst_sz > MAX_TRUSTED_LIST_LENGTH) {
+                        fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", 
+                                        MAX_TRUSTED_LIST_LENGTH);
+                        exit(EXIT_FAILURE);
+                }
+
+                // lets create the trusted devices list on the second round
+		char *trusted_list = NULL;
+		trusted_list = (char *) malloc(lst_sz);
+                check_memory_allocation(trusted_list);
+		for (int i = 0; i < trst_lst_sz; i++) {
+		        toml_datum_t dev_fngprt = toml_string_at(trust_list, i);
+		        if (!dev_fngprt.ok)
+                                break;
+                        
+                        if (i == 0) {
+                                strcpy(trusted_list, dev_fngprt.u.s);
+                        } else {
+		                strcat(trusted_list, ",");
+		                strcat(trusted_list, dev_fngprt.u.s);
+                        }
+
+		        free(dev_fngprt.u.s);
+		}
+		
+                dprintf("trust_list config value: %s\n", trusted_list);
+		opts->trusted_list = true;
+		opts->trusted_list_value = strdup(trusted_list);
+		check_memory_allocation(opts->trusted_list_value);
+		free(trusted_list);
+	}
+
         free(cnry_tkn.u.s);
         toml_free(canary_conf);
 }
