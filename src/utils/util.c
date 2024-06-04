@@ -233,24 +233,51 @@ void config_file_handler(ConfigCanrayUSB *opts)
 	if (!trust_list) {
 		dprintf("WARN: no trust_list value at config file\n");
 	} else {
-                int trust_list_size = toml_array_nelem(trust_list);
-	        toml_datum_t tdt = toml_string_at(trust_list, 0);
-	        char *trusted_list = tdt.u.s;
-	        strcat(trusted_list, ",");
-	        for (int i = 1; i < trust_list_size; i++) {
-	               toml_datum_t dev_name = toml_string_at(trust_list, i);
-	               if (!dev_name.ok) break;
-	               strcat(trusted_list, dev_name.u.s);
-	               if (i < trust_list_size - 1)
-	                    strcat(trusted_list, ",");
-	               free(dev_name.u.s);
-	        }
+		int lst_sz = 0;
+		int trst_lst_sz = toml_array_nelem(trust_list);
+		char *frst = NULL;
+		
+                // first round going throug all toml array of trusted 
+                // devices to get the size of the total trusted list
+                for (int i = 0; i < trst_lst_sz; i++) {
+		        toml_datum_t dev_fngprt = toml_string_at(trust_list, i);
+		        if (i == 0) {
+                                frst = dev_fngprt.u.s;
+		        }
+		        if (!dev_fngprt.ok) break;
+		        lst_sz += strlen(dev_fngprt.u.s);
+		}
+
+		lst_sz += trst_lst_sz;
+		dprintf("the total size of string list: %d\n", lst_sz);
+                
+                // lets check the total size size of the trusted list 
+                // we do not want to check the amount of memory to allocate
+                if (lst_sz > MAX_TRUSTED_LIST_LENGTH) {
+                        fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", 
+                                        MAX_TRUSTED_LIST_LENGTH);
+                        exit(EXIT_FAILURE);
+                }
+
+                // lets create the trusted devices list
+		char *trusted_list = NULL;
+		trusted_list = (char *) malloc(lst_sz);
+                check_memory_allocation(trusted_list);
+		strcpy(trusted_list, frst);
+		for (int i = 1; i < trst_lst_sz; i++) {
+		        toml_datum_t dev_fngprt = toml_string_at(trust_list, i);
+		        if (!dev_fngprt.ok) break;
+		        strcat(trusted_list, ",");
+		        strcat(trusted_list, dev_fngprt.u.s);
+		        free(dev_fngprt.u.s);
+		}
+
 		dprintf("trust_list config value: %s\n", trusted_list);
 		opts->trusted_list = true;
-		check_argument_length(trusted_list, TYPE_TRUSTEDLIST_LENGTH_CHECK);
 		opts->trusted_list_value = strdup(trusted_list);
 		check_memory_allocation(opts->trusted_list_value);
 		free(trusted_list);
+                free(frst);
 	}
 	
         free(cnry_tkn.u.s);
