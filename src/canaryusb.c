@@ -50,6 +50,9 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 sd_device_get_subsystem(dev, &subsystem);
 
                 char *dev_fngrprnt = get_device_fingerprint(dev, subsystem);
+                //TODO: add here a function to retrieve just the path of the device
+                // something like: /sys/devices/pci0000:00/0000:00:14.0/usb1/1-2/
+                // and adding the file authorized
 
                 char *base32_fngrprnt = (char *)malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
                 check_memory_allocation(base32_fngrprnt);
@@ -150,6 +153,7 @@ static struct option long_options[] =
        {"help", no_argument, 0, 'h'},
        {"kill", no_argument, 0, 'k'},
        {"version", no_argument, 0, 'v'},
+       {"de-authorize-device", no_argument, 0, 'd'},
        {0, 0 , 0, 0}
 };
 
@@ -160,7 +164,7 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
         for (;;) {
                 int option_index = 0;
 
-                p = getopt_long(argc, argv, "vhfuskt:c:", long_options, &option_index);
+                p = getopt_long(argc, argv, "vhfuskdt:c:", long_options, &option_index);
                 if (p == -1)
                         break;
 
@@ -194,6 +198,9 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                                 break;
                         case 'v':
                                 opts->version = true;
+                                break;
+                        case 'd':
+                                opts->deauth_dev = true;
                                 break;
                         case '?':
                                 show_help();

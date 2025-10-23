@@ -62,6 +62,7 @@
 
 #define MAX_PID_LEN 10
 
+//TODO: add here the config related with block device
 typedef struct {
         bool dev_fingerprint;
         bool trusted_list;
@@ -71,6 +72,7 @@ typedef struct {
         bool monitor_usb;
         bool monitor_sdcard;
         bool version;
+        bool deauth_dev;
 }ConfigCanrayUSB;
 
 #define config_canary_usb_init { \
@@ -78,6 +80,7 @@ typedef struct {
         false,                   \
         NULL,                    \
         NULL,                    \
+        false,                   \
         false,                   \
         false,                   \
         false,                   \
