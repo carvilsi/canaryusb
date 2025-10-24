@@ -71,6 +71,8 @@ void show_help()
         printf("\t\tcheck " BOLD_TEXT "fingerprint-device" NO_BOLD_TEXT 
                         " option to retrieve device fingerprint for connected USB "
                         "or SDCard device\n");
+        printf(BOLD_TEXT "-d, --de-authorize-device\n" NO_BOLD_TEXT);
+        printf("\t\tde-authorize a connected device not present on the trust list\n");
         printf(BOLD_TEXT "-k, --kill\n" NO_BOLD_TEXT);
         printf("\t\tkills the daemon, if it's running\n");
         printf("\n");
