@@ -18,6 +18,8 @@ typedef struct {
 
 UsbAttrs get_usb_attributes(sd_device *dev);
 void get_usb_fingerprint(UsbAttrs usb_attrs, char *usb_fingprt);
+void get_usb_authorization_syspath(UsbAttrs usb_attrs, char *usb_syspath);
+char *get_device_authorize_syspath(sd_device *dev, const char *subsystem);
 SDCardAttrs get_sdcard_attributes(sd_device *dev);
 void get_sdcard_fingerprint(SDCardAttrs sdcrd_attrs, char *sdcrd_fingprt);
 char *get_device_fingerprint(sd_device *dev, const char *subsystem);

@@ -50,9 +50,6 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 sd_device_get_subsystem(dev, &subsystem);
 
                 char *dev_fngrprnt = get_device_fingerprint(dev, subsystem);
-                //TODO: add here a function to retrieve just the path of the device
-                // something like: /sys/devices/pci0000:00/0000:00:14.0/usb1/1-2/
-                // and adding the file authorized
 
                 char *base32_fngrprnt = (char *)malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
                 check_memory_allocation(base32_fngrprnt);
@@ -81,7 +78,34 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                                                 "not calling canary token\n", 
                                                 subsystem, dev_fngrprnt);
                         } else {
+                                dprintf("l0l\n");
                                 deal_with_canaries(base32_fngrprnt, dev_fngrprnt, opts); 
+
+                                dprintf("l1l\n");
+                                // check if we want to de-authorize the not in list device
+                                // and is a USB
+                                // and de-authorize it and so some loggin
+                                // TODO: maybe add the de-authorized device to a list on file
+                                // XXX: note that right now only support de-authorization for USB
+                                if (opts->deauth_dev) {
+                                        dprintf("l2l\n");
+                                        char *de_auth_syspath = get_device_authorize_syspath(dev, subsystem);
+                                        dprintf("The de-auth path: %s\n", de_auth_syspath);
+                                        if (de_auth_syspath == NULL) {
+                                                // is a SDCard
+                                                syslog(LOG_NOTICE, 
+                                                        "%s device: %s connected and de-authorize is " 
+                                                        "not possible since is SDCard not supported", 
+                                                        subsystem, dev_fngrprnt);
+                                                dprintf("%s device: %s connected and de-authorize is "
+                                                        "not possible since is SDCard not supported\n", 
+                                                        subsystem, dev_fngrprnt);
+                                        } else {
+                                                dprintf("%s device: %s connected and de-authorize is "
+                                                        "enable, de-authorizing at: %s\n",
+                                                        subsystem, dev_fngrprnt, de_auth_syspath);
+                                        }
+                                }
                         }
                 }
 
@@ -118,6 +142,14 @@ void monitor_devices(ConfigCanrayUSB *opts)
 
                 if (r < 0)
                         goto finish;
+        }
+
+        if (opts->deauth_dev) {
+                dprintf("de-authorize device enable\n");
+                syslog(LOG_NOTICE, "de-authorize device enable");
+
+                /*if (r < 0)*/
+                        /*goto finish;*/
         }
 
         r = sd_device_monitor_start(sddm, device_monitor_handler, opts);
