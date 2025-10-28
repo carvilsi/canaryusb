@@ -41,6 +41,7 @@
 #define MAX_CANARY_TOKEN_LENGTH 200
 #define MAX_TRUSTED_LIST_LENGTH 2040
 #define CONFIG_FILE ".config/canaryusb/config.toml"
+#define AUTHORIZED_PATH_LENGTH 12
 
 // Argument check types
 #define TYPE_CANARYTOKEN_LENGTH_CHECK 0

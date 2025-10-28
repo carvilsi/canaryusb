@@ -73,6 +73,7 @@ void show_help()
                         "or SDCard device\n");
         printf(BOLD_TEXT "-d, --de-authorize-device\n" NO_BOLD_TEXT);
         printf("\t\tde-authorize a connected device not present on the trust list\n");
+        printf("\t\trequires to be executed as sudoer\n");
         printf(BOLD_TEXT "-k, --kill\n" NO_BOLD_TEXT);
         printf("\t\tkills the daemon, if it's running\n");
         printf("\n");

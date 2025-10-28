@@ -78,19 +78,16 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                                                 "not calling canary token\n", 
                                                 subsystem, dev_fngrprnt);
                         } else {
-                                dprintf("l0l\n");
                                 deal_with_canaries(base32_fngrprnt, dev_fngrprnt, opts); 
 
-                                dprintf("l1l\n");
                                 // check if we want to de-authorize the not in list device
                                 // and is a USB
                                 // and de-authorize it and so some loggin
                                 // TODO: maybe add the de-authorized device to a list on file
                                 // XXX: note that right now only support de-authorization for USB
+                                /*if (opts->deauth_dev && strcmp(USB_SUBSYSTEM, subsystem)) {*/
                                 if (opts->deauth_dev) {
-                                        dprintf("l2l\n");
                                         char *de_auth_syspath = get_device_authorize_syspath(dev, subsystem);
-                                        dprintf("The de-auth path: %s\n", de_auth_syspath);
                                         if (de_auth_syspath == NULL) {
                                                 // is a SDCard
                                                 syslog(LOG_NOTICE, 
@@ -101,16 +98,38 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                                                         "not possible since is SDCard not supported\n", 
                                                         subsystem, dev_fngrprnt);
                                         } else {
-                                                dprintf("%s device: %s connected and de-authorize is "
-                                                        "enable, de-authorizing at: %s\n",
-                                                        subsystem, dev_fngrprnt, de_auth_syspath);
+                                                FILE *auth_file = fopen(de_auth_syspath, "w");
+                                                if (auth_file != NULL) {
+                                                        fprintf(auth_file, "0");
+                                                        fclose(auth_file);
+                                                        syslog(LOG_NOTICE,
+                                                                "%s device: %s connected and de-authorized "
+                                                                "at:\n\t %s\n",
+                                                                subsystem, dev_fngrprnt, de_auth_syspath);
+                                                        dprintf("%s device: %s connected and de-authorized "
+                                                                "at:\n\t %s\n",
+                                                                subsystem, dev_fngrprnt, de_auth_syspath);
+                                                } else {
+                                                        syslog(LOG_ERR, 
+                                                               "not possible to write at "
+                                                               "authorized file: %s\n",
+                                                               de_auth_syspath);
+                                                        dprintf("error writing auth file\n");
+                                                }
+                                        }
+                                        if (de_auth_syspath != NULL) {
+                                                dprintf("WTE!\n");
+                                                free(de_auth_syspath);
                                         }
                                 }
                         }
                 }
 
+                                                dprintf("WTE1!\n");
                 free(base32_fngrprnt);
+                                                dprintf("WTE2!\n");
                 free(dev_fngrprnt);
+                                                dprintf("WTE3!\n");
         }
 
         return 0;
