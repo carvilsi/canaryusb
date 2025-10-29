@@ -92,7 +92,9 @@ void show_help()
 FILE *command_file_descriptor_exec(char *cmnd)
 {
         FILE *fd = popen(cmnd, "r");
+        dprintf("l0l!\n");
         free(cmnd);
+        dprintf("l1l!\n");
 
         if (fd == NULL) {
                 fprintf(stderr, "ERROR not possible to get file descriptor\n");

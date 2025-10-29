@@ -85,8 +85,10 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                                 // and de-authorize it and so some loggin
                                 // TODO: maybe add the de-authorized device to a list on file
                                 // XXX: note that right now only support de-authorization for USB
-                                /*if (opts->deauth_dev && strcmp(USB_SUBSYSTEM, subsystem)) {*/
-                                if (opts->deauth_dev) {
+                                dprintf("subsystem: %s\n", subsystem);
+dprintf("%s\n", USB_SUBSYSTEM);
+                                if (opts->deauth_dev && strcmp(USB_SUBSYSTEM, subsystem) == 0) {
+                                /*if (opts->deauth_dev) {*/
                                         char *de_auth_syspath = get_device_authorize_syspath(dev, subsystem);
                                         if (de_auth_syspath == NULL) {
                                                 // is a SDCard
@@ -119,15 +121,19 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                                         }
                                         if (de_auth_syspath != NULL) {
                                                 dprintf("WTE!\n");
+                                                dprintf("--> %s\n", de_auth_syspath);
                                                 free(de_auth_syspath);
+                                                dprintf("WTE0!\n");
                                         }
                                 }
                         }
                 }
 
                                                 dprintf("WTE1!\n");
+                                                dprintf("--> %s\n", base32_fngrprnt);
                 free(base32_fngrprnt);
                                                 dprintf("WTE2!\n");
+                                                dprintf("--> %s\n", dev_fngrprnt);
                 free(dev_fngrprnt);
                                                 dprintf("WTE3!\n");
         }

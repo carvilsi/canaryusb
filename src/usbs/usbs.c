@@ -164,9 +164,9 @@ char *get_device_authorize_syspath(sd_device *dev, const char *subsystem)
         } 
  
         // right now de-authorization is supported for USB
-        if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {
-                authsyspath = NULL;
-        }
+        /*if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {*/
+                /*authsyspath = NULL;*/
+        /*}*/
         
         return authsyspath;
 }

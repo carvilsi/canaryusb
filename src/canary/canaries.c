@@ -65,7 +65,9 @@ deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt,
         canaryrsp = call_the_canary(canary_dns_token);
 #endif
 
+        dprintf("WTE 5!\n");
         free(canary_dns_token);
+        dprintf("WTE 6!\n");
         
         if (canaryrsp > 0) {
                 dprintf("ERROR canaryusb: When calling canary tokens site, "
