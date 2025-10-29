@@ -85,57 +85,42 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                                 // and de-authorize it and so some loggin
                                 // TODO: maybe add the de-authorized device to a list on file
                                 // XXX: note that right now only support de-authorization for USB
-                                dprintf("subsystem: %s\n", subsystem);
-dprintf("%s\n", USB_SUBSYSTEM);
                                 if (opts->deauth_dev && strcmp(USB_SUBSYSTEM, subsystem) == 0) {
-                                /*if (opts->deauth_dev) {*/
                                         char *de_auth_syspath = get_device_authorize_syspath(dev, subsystem);
-                                        if (de_auth_syspath == NULL) {
-                                                // is a SDCard
-                                                syslog(LOG_NOTICE, 
-                                                        "%s device: %s connected and de-authorize is " 
-                                                        "not possible since is SDCard not supported", 
-                                                        subsystem, dev_fngrprnt);
-                                                dprintf("%s device: %s connected and de-authorize is "
-                                                        "not possible since is SDCard not supported\n", 
-                                                        subsystem, dev_fngrprnt);
+                                        
+                                        FILE *auth_file = fopen(de_auth_syspath, "w");
+                                        if (auth_file != NULL) {
+                                                fprintf(auth_file, "0");
+                                                fclose(auth_file);
+                                                syslog(LOG_NOTICE,
+                                                        "%s device: %s connected and de-authorized "
+                                                        "at:\n\t %s\n",
+                                                        subsystem, dev_fngrprnt, de_auth_syspath);
+                                                dprintf("%s device: %s connected and de-authorized "
+                                                        "at:\n\t %s\n",
+                                                        subsystem, dev_fngrprnt, de_auth_syspath);
                                         } else {
-                                                FILE *auth_file = fopen(de_auth_syspath, "w");
-                                                if (auth_file != NULL) {
-                                                        fprintf(auth_file, "0");
-                                                        fclose(auth_file);
-                                                        syslog(LOG_NOTICE,
-                                                                "%s device: %s connected and de-authorized "
-                                                                "at:\n\t %s\n",
-                                                                subsystem, dev_fngrprnt, de_auth_syspath);
-                                                        dprintf("%s device: %s connected and de-authorized "
-                                                                "at:\n\t %s\n",
-                                                                subsystem, dev_fngrprnt, de_auth_syspath);
-                                                } else {
-                                                        syslog(LOG_ERR, 
-                                                               "not possible to write at "
-                                                               "authorized file: %s\n",
-                                                               de_auth_syspath);
-                                                        dprintf("error writing auth file\n");
-                                                }
+                                                syslog(LOG_ERR, 
+                                                       "not possible to write at "
+                                                       "authorized file: %s "
+                                                       "Could possible that you don't "
+                                                       "have enough permission, try "
+                                                       "to run it as sudoer",
+                                                       de_auth_syspath);
+                                                dprintf("not possible to write at "
+                                                       "authorized file: %s "
+                                                       "Could possible that you don't "
+                                                       "have enough permission, try "
+                                                       "to run it as sudoer",
+                                                       de_auth_syspath);
                                         }
-                                        if (de_auth_syspath != NULL) {
-                                                dprintf("WTE!\n");
-                                                dprintf("--> %s\n", de_auth_syspath);
-                                                free(de_auth_syspath);
-                                                dprintf("WTE0!\n");
-                                        }
+
+                                        free(de_auth_syspath);
                                 }
                         }
                 }
-
-                                                dprintf("WTE1!\n");
-                                                dprintf("--> %s\n", base32_fngrprnt);
                 free(base32_fngrprnt);
-                                                dprintf("WTE2!\n");
-                                                dprintf("--> %s\n", dev_fngrprnt);
                 free(dev_fngrprnt);
-                                                dprintf("WTE3!\n");
         }
 
         return 0;
@@ -264,6 +249,29 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                                 break;
                         case 'd':
                                 opts->deauth_dev = true;
+                                int perm = check_permissions_and_user();
+                                // if we do not have permission to deal
+                                // with de-authorization on /sys/devices/
+                                // folder, we prefer to leave the execution
+                                if (perm != 0) {
+                                        syslog(LOG_ERR,
+                                               "de-authorize a device requires "
+                                               "to have permissions on %s",
+                                               SYSTEM_DEVICES_FOLDER);
+                                        printf("ERROR: de-authorize a device requires "
+                                                "to have permissions on %s\n",
+                                                SYSTEM_DEVICES_FOLDER);
+                                        int u = geteuid();
+                                        if (u != 0) {
+                                                syslog(LOG_WARNING,
+                                                       "hint: you are not running "
+                                                       "this as a root");
+                                                printf("hint: you are not running "
+                                                        "this as a root\n");
+                                        }
+
+                                        exit(EXIT_FAILURE);
+                                }
                                 break;
                         case '?':
                                 show_help();

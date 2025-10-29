@@ -151,6 +151,7 @@ char *get_device_fingerprint(sd_device *dev, const char *subsystem)
 char *get_device_authorize_syspath(sd_device *dev, const char *subsystem)
 {
         char *authsyspath;
+        // right now de-authorization is supported for USB
         if (strcmp(USB_SUBSYSTEM, subsystem) == 0) {
                 UsbAttrs usb_attrs = get_usb_attributes(dev);
                 size_t usbsyspathlen = strlen(usb_attrs.syspath) + AUTHORIZED_PATH_LENGTH;
@@ -162,11 +163,6 @@ char *get_device_authorize_syspath(sd_device *dev, const char *subsystem)
                 dprintf("\tat: %s\n\n", usb_attrs.syspath);
                 dprintf("\t authorization path at: %s\n\n", authsyspath);
         } 
- 
-        // right now de-authorization is supported for USB
-        /*if (strcmp(SDCARD_SUBSYSTEM, subsystem) == 0) {*/
-                /*authsyspath = NULL;*/
-        /*}*/
         
         return authsyspath;
 }

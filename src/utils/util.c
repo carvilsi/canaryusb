@@ -4,9 +4,11 @@
 #include <dirent.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <limits.h>
 #include <unistd.h>
 #include <syslog.h>
+#include <fcntl.h>
 
 #include "../canaryusb.h"
 #include "./toml.h"
@@ -92,9 +94,7 @@ void show_help()
 FILE *command_file_descriptor_exec(char *cmnd)
 {
         FILE *fd = popen(cmnd, "r");
-        dprintf("l0l!\n");
         free(cmnd);
-        dprintf("l1l!\n");
 
         if (fd == NULL) {
                 fprintf(stderr, "ERROR not possible to get file descriptor\n");
@@ -290,5 +290,30 @@ void config_file_handler(ConfigCanrayUSB *opts)
 
         free(cnry_tkn.u.s);
         toml_free(canary_conf);
+}
+
+int check_permissions_and_user()
+{
+
+        struct stat stbuf;
+        int status, res;
+
+        status = stat(SYSTEM_DEVICES_FOLDER, &stbuf);
+        
+        int user = geteuid();
+
+        if (status == -1) {
+                if (errno == EACCES) {
+                        res = -1;
+                }
+        } else {
+                if (user != stbuf.st_uid) {
+                       res = -1;
+                } else {
+                       res = 0;
+                }
+        }
+
+        return res;
 }
 
