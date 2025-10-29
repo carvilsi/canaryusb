@@ -229,8 +229,11 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                         case 't':
                                 opts->trusted_list = true;
                                 check_argument_length(optarg, TYPE_TRUSTEDLIST_LENGTH_CHECK);
-                                opts->trusted_list_value = strdup(optarg);
-                                check_memory_allocation(opts->trusted_list_value);
+                                char *trusted_list = (char *)malloc(strlen(optarg) + 1);
+                                check_memory_allocation(trusted_list);
+                                strcpy(trusted_list, optarg);
+                                opts->trusted_list_value = strdup(trusted_list);
+                                free(trusted_list);
                                 break;
                         case 'h':
                                 show_help();
@@ -249,9 +252,12 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                                 break;
                         case 'c':
                                 check_argument_length(optarg, TYPE_CANARYTOKEN_LENGTH_CHECK);
-                                opts->canary_token = strdup(optarg);
-                                check_memory_allocation(opts->canary_token);
+                                char *canary_tkn = (char *)malloc(strlen(optarg) + 1);
+                                check_memory_allocation(canary_tkn);
+                                strcpy(canary_tkn, optarg);
+                                opts->canary_token = strdup(canary_tkn);
                                 ct = true;
+                                free(canary_tkn);
                                 break;
                         case 'v':
                                 opts->version = true;
