@@ -90,5 +90,5 @@ typedef struct {
 }                                \
 
 void monitor_devices(ConfigCanrayUSB *opts);
-void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts);
+int parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts);
 

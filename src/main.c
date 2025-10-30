@@ -35,10 +35,18 @@ int main(int argc, char *argv[])
 { 
         ConfigCanrayUSB opts = config_canary_usb_init;
 
-        if (argc < 2)
+        if (argc < 2) {
                 config_file_handler(&opts);
-        else
-                parse_command_line(argc, argv, &opts);
+        } else {
+                int r = parse_command_line(argc, argv, &opts);
+#ifndef TESTS
+                // if we do not have permission to deal
+                // with de-authorization on /sys/devices/
+                // folder, we prefer to stop the execution
+                if (r != 0)
+                        exit(EXIT_FAILURE);
+#endif
+        }
 
         if (opts.version) {
                 printf("%s %s\n", NAME, VERSION);

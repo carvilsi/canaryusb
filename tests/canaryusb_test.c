@@ -35,6 +35,7 @@ static void config_file_reading_only_canary_token()
         cst_a("canary_token must exists", opts.canary_token != NULL);
         cst_s(opts.canary_token, "must be equal to the one at the config file", CONFIGURED_CANARY_TOKEN);
         cst_a("variable trusted list should be false after read config file without trusted list", opts.trusted_list == false);
+        cst_a("variable de-authorization device should be false after read config file without de-auth", opts.deauth_dev == false);
         cst_a("trusted list value must not exists", opts.trusted_list_value == NULL);
 }
 
@@ -50,6 +51,18 @@ static void config_file_reading_canary_token_and_trusted_list()
         cst_a("variable trusted list should be true", opts.trusted_list);
         cst_a("trusted list value must exists", opts.trusted_list_value != NULL);
         cst_s(opts.trusted_list_value, "must be equal to the one at the config file", CONFIGURED_TRUSTED_LIST);
+}
+
+static void config_file_reading_canary_token_and_trusted_list_and_de_auth_device()
+{
+        test_config_file = "configurations/config_canary_token_trusted_list_de_auth_dev.toml";
+        
+        ConfigCanrayUSB opts = config_canary_usb_init;
+        cst_a("variable de-auth device should be false", opts.deauth_dev == false);
+        printf("deauth_dev: %d\n", opts.deauth_dev);
+        config_file_handler(&opts);
+        printf("deauth_dev: %d\n", opts.deauth_dev);
+        cst_a("deauth_dev must be set to true", opts.deauth_dev);
 }
 
 static void command_line_arguments_canary_token()
@@ -104,8 +117,19 @@ static void command_line_arguments_version()
         ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("version variable should be false on start", !opts.version);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s", "-v"};
-        parse_command_line(9, argv, &opts);
+        int r = parse_command_line(9, argv, &opts);
         cst_a("version variable should be true on set by command line", opts.version);
+        cst_i(r, "should be 0 since -d is not set", 0);
+}
+
+static void command_line_arguments_de_authorize_device()
+{
+        ConfigCanrayUSB opts = config_canary_usb_init;
+        cst_a("version variable should be false on start", !opts.version);
+        char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s", "-v", "-d"};
+        int r = parse_command_line(10, argv, &opts);
+        cst_a("de-authorize device variable should be true on set by command line", opts.deauth_dev);
+        cst_i(r, "should be -1 since -d is present and we are not root", -1);
 }
 
 static void get_canary_encoded_usb_fingerprint_test() {
@@ -191,12 +215,14 @@ static void all_tests()
 {
         cst_run(config_file_reading_only_canary_token);
         cst_run(config_file_reading_canary_token_and_trusted_list);
+        cst_run(config_file_reading_canary_token_and_trusted_list_and_de_auth_device);
         cst_run(command_line_arguments_canary_token);
         cst_run(command_line_arguments_canary_token_and_trusted_list);
         cst_run(dev_fingerprint_variable);
         cst_run(monitor_usb_variable);
         cst_run(monitor_sdcard_variable);
         cst_run(command_line_arguments_version);
+        cst_run(command_line_arguments_de_authorize_device);
         cst_run(get_canary_encoded_usb_fingerprint_test);
         cst_run(usb_fingerprint_and_trusted_list);
         cst_run(build_canary_dns_token_);

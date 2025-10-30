@@ -162,7 +162,6 @@ void check_argument_length(char *arg, int type)
 { 
         size_t len = strlen(arg) + 1;
         if (type == TYPE_TRUSTEDLIST_LENGTH_CHECK) {
-                printf("the length of trusted list is %ld\n", len);
                 if (len > MAX_TRUSTED_LIST_LENGTH) {
                         fprintf(stderr, "The trusted list characters exceeds the limit of %d\n", 
                                         MAX_TRUSTED_LIST_LENGTH);
@@ -233,6 +232,16 @@ void config_file_handler(ConfigCanrayUSB *opts)
                 check_memory_allocation(opts->canary_token);
         }
 
+        toml_datum_t dth_dv = toml_bool_in(canary_conf, "deauth_devices");
+        if (toml_key_exists(canary_conf, "deauth_devices") && !dth_dv.ok) {
+                fprintf(stderr, "ERROR: no correct value at config file "
+                                "for deauth_devices check README.md\n");
+                show_help();
+        } else {
+                dprintf("deauth_device config value: %d\n", dth_dv.u.b);
+                opts->deauth_dev = dth_dv.u.b;
+        }
+
 	// reading the possible array on toml format of trusted list devices
         toml_array_t *trust_list = toml_array_in(canary_conf, "trust_list");
 	if (!trust_list) {
@@ -292,7 +301,7 @@ void config_file_handler(ConfigCanrayUSB *opts)
         toml_free(canary_conf);
 }
 
-int check_permissions_and_user()
+int check_system_devices_permissions_and_user()
 {
 
         struct stat stbuf;
@@ -313,6 +322,28 @@ int check_permissions_and_user()
                        res = 0;
                 }
         }
+
+#ifndef TESTS
+        if (res != 0) {
+                syslog(LOG_ERR,
+                       "de-authorize a device requires "
+                       "to have permissions on %s",
+                       SYSTEM_DEVICES_FOLDER);
+                fprintf(stderr, 
+                        "ERROR: de-authorize a device requires "
+                        "to have permissions on %s\n",
+                       SYSTEM_DEVICES_FOLDER);
+                int u = geteuid();
+                if (u != 0) {
+                        syslog(LOG_WARNING,
+                               "hint: you are not running "
+                               "this as root");
+                        fprintf(stderr,
+                                "hint: you are not running "
+                                "this as root\n");
+                }
+        }
+#endif
 
         return res;
 }

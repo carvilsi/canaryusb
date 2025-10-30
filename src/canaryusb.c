@@ -157,9 +157,6 @@ void monitor_devices(ConfigCanrayUSB *opts)
         if (opts->deauth_dev) {
                 dprintf("de-authorize device enable\n");
                 syslog(LOG_NOTICE, "de-authorize device enable");
-
-                /*if (r < 0)*/
-                        /*goto finish;*/
         }
 
         r = sd_device_monitor_start(sddm, device_monitor_handler, opts);
@@ -199,9 +196,10 @@ static struct option long_options[] =
        {0, 0 , 0, 0}
 };
 
-void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
+int parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
 {
         int p;
+        int res = 0;
         int ct = false;
         for (;;) {
                 int option_index = 0;
@@ -249,29 +247,9 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                                 break;
                         case 'd':
                                 opts->deauth_dev = true;
-                                int perm = check_permissions_and_user();
-                                // if we do not have permission to deal
-                                // with de-authorization on /sys/devices/
-                                // folder, we prefer to leave the execution
-                                if (perm != 0) {
-                                        syslog(LOG_ERR,
-                                               "de-authorize a device requires "
-                                               "to have permissions on %s",
-                                               SYSTEM_DEVICES_FOLDER);
-                                        printf("ERROR: de-authorize a device requires "
-                                                "to have permissions on %s\n",
-                                                SYSTEM_DEVICES_FOLDER);
-                                        int u = geteuid();
-                                        if (u != 0) {
-                                                syslog(LOG_WARNING,
-                                                       "hint: you are not running "
-                                                       "this as a root");
-                                                printf("hint: you are not running "
-                                                        "this as a root\n");
-                                        }
-
-                                        exit(EXIT_FAILURE);
-                                }
+                                res = check_system_devices_permissions_and_user(); 
+                                
+                                
                                 break;
                         case '?':
                                 show_help();
@@ -288,5 +266,7 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
 
         if (!ct && (opts->monitor_usb || opts->monitor_sdcard))
                config_file_handler(opts); 
+        
+        return res;
 }
 
