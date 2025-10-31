@@ -148,3 +148,22 @@ char *get_device_fingerprint(sd_device *dev, const char *subsystem)
         return fngrprnt;
 }
 
+char *get_device_authorize_syspath(sd_device *dev, const char *subsystem)
+{
+        char *authsyspath;
+        // right now de-authorization is supported for USB
+        if (strcmp(USB_SUBSYSTEM, subsystem) == 0) {
+                UsbAttrs usb_attrs = get_usb_attributes(dev);
+                size_t usbsyspathlen = strlen(usb_attrs.syspath) + AUTHORIZED_PATH_LENGTH;
+                authsyspath = (char*) malloc(usbsyspathlen);
+                check_memory_allocation(authsyspath);
+                sprintf(authsyspath, "%s/authorized", usb_attrs.syspath);
+                
+                dprintf("-- De-Authorize USB --\n");
+                dprintf("\tat: %s\n\n", usb_attrs.syspath);
+                dprintf("\t authorization path at: %s\n\n", authsyspath);
+        } 
+        
+        return authsyspath;
+}
+

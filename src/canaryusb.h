@@ -41,6 +41,8 @@
 #define MAX_CANARY_TOKEN_LENGTH 200
 #define MAX_TRUSTED_LIST_LENGTH 2040
 #define CONFIG_FILE ".config/canaryusb/config.toml"
+#define AUTHORIZED_PATH_LENGTH 12
+#define SYSTEM_DEVICES_FOLDER "/sys/devices"
 
 // Argument check types
 #define TYPE_CANARYTOKEN_LENGTH_CHECK 0
@@ -55,7 +57,7 @@
 #endif                                   
 
 #define NAME    "canaryusb" 
-#define VERSION "5.0.0"
+#define VERSION "5.1.0"
 
 #define BOLD_TEXT    "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
@@ -71,6 +73,7 @@ typedef struct {
         bool monitor_usb;
         bool monitor_sdcard;
         bool version;
+        bool deauth_dev;
 }ConfigCanrayUSB;
 
 #define config_canary_usb_init { \
@@ -82,8 +85,9 @@ typedef struct {
         false,                   \
         false,                   \
         false,                   \
+        false,                   \
 }                                \
 
 void monitor_devices(ConfigCanrayUSB *opts);
-void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts);
+int parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts);
 

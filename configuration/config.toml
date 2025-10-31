@@ -1,7 +1,10 @@
 [canaryusb]
-#uncomment next line and replace with your own DNS canary token; get one at: https://canarytokens.org/generate
+# uncomment next line and replace with your own DNS canary token; get one at: https://canarytokens.org/generate
 #canary_token = "555whateverYouGetFrom.canarytokens.com"
 
-#uncomment next line and place your list for trusted devices, check README.md for more info
+# uncomment next line and place your list for trusted devices, check README.md for more info
 #trust_list = "1af3:0001-ZOWIE_Gaming_mouse-no,594d:604d-YD60MQ-no"
 
+# uncomment next line to enable de-athorize usd devices not present on trust-list
+# this feature requires run canaryusb as root user
+#deauth_devices = true

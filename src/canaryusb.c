@@ -79,9 +79,46 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                                                 subsystem, dev_fngrprnt);
                         } else {
                                 deal_with_canaries(base32_fngrprnt, dev_fngrprnt, opts); 
+
+                                // check if we want to de-authorize the not in list device
+                                // and is a USB
+                                // and de-authorize it and so some loggin
+                                // TODO: maybe add the de-authorized device to a list on file
+                                // XXX: note that right now only support de-authorization for USB
+                                if (opts->deauth_dev && strcmp(USB_SUBSYSTEM, subsystem) == 0) {
+                                        char *de_auth_syspath = get_device_authorize_syspath(dev, subsystem);
+                                        
+                                        FILE *auth_file = fopen(de_auth_syspath, "w");
+                                        if (auth_file != NULL) {
+                                                fprintf(auth_file, "0");
+                                                fclose(auth_file);
+                                                syslog(LOG_NOTICE,
+                                                        "%s device: %s connected and de-authorized "
+                                                        "at:\n\t %s\n",
+                                                        subsystem, dev_fngrprnt, de_auth_syspath);
+                                                dprintf("%s device: %s connected and de-authorized "
+                                                        "at:\n\t %s\n",
+                                                        subsystem, dev_fngrprnt, de_auth_syspath);
+                                        } else {
+                                                syslog(LOG_ERR, 
+                                                       "not possible to write at "
+                                                       "authorized file: %s "
+                                                       "Could possible that you don't "
+                                                       "have enough permission, try "
+                                                       "to run it as sudoer",
+                                                       de_auth_syspath);
+                                                dprintf("not possible to write at "
+                                                       "authorized file: %s "
+                                                       "Could possible that you don't "
+                                                       "have enough permission, try "
+                                                       "to run it as sudoer",
+                                                       de_auth_syspath);
+                                        }
+
+                                        free(de_auth_syspath);
+                                }
                         }
                 }
-
                 free(base32_fngrprnt);
                 free(dev_fngrprnt);
         }
@@ -117,6 +154,11 @@ void monitor_devices(ConfigCanrayUSB *opts)
                         goto finish;
         }
 
+        if (opts->deauth_dev) {
+                dprintf("de-authorize device enable\n");
+                syslog(LOG_NOTICE, "de-authorize device enable");
+        }
+
         r = sd_device_monitor_start(sddm, device_monitor_handler, opts);
         if (r < 0) 
                 goto finish;
@@ -150,17 +192,19 @@ static struct option long_options[] =
        {"help", no_argument, 0, 'h'},
        {"kill", no_argument, 0, 'k'},
        {"version", no_argument, 0, 'v'},
+       {"de-authorize-device", no_argument, 0, 'd'},
        {0, 0 , 0, 0}
 };
 
-void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
+int parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
 {
         int p;
+        int res = 0;
         int ct = false;
         for (;;) {
                 int option_index = 0;
 
-                p = getopt_long(argc, argv, "vhfuskt:c:", long_options, &option_index);
+                p = getopt_long(argc, argv, "vhfuskdt:c:", long_options, &option_index);
                 if (p == -1)
                         break;
 
@@ -168,8 +212,11 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                         case 't':
                                 opts->trusted_list = true;
                                 check_argument_length(optarg, TYPE_TRUSTEDLIST_LENGTH_CHECK);
-                                opts->trusted_list_value = strdup(optarg);
-                                check_memory_allocation(opts->trusted_list_value);
+                                char *trusted_list = (char *)malloc(strlen(optarg) + 1);
+                                check_memory_allocation(trusted_list);
+                                strcpy(trusted_list, optarg);
+                                opts->trusted_list_value = strdup(trusted_list);
+                                free(trusted_list);
                                 break;
                         case 'h':
                                 show_help();
@@ -188,12 +235,21 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                                 break;
                         case 'c':
                                 check_argument_length(optarg, TYPE_CANARYTOKEN_LENGTH_CHECK);
-                                opts->canary_token = strdup(optarg);
-                                check_memory_allocation(opts->canary_token);
+                                char *canary_tkn = (char *)malloc(strlen(optarg) + 1);
+                                check_memory_allocation(canary_tkn);
+                                strcpy(canary_tkn, optarg);
+                                opts->canary_token = strdup(canary_tkn);
                                 ct = true;
+                                free(canary_tkn);
                                 break;
                         case 'v':
                                 opts->version = true;
+                                break;
+                        case 'd':
+                                opts->deauth_dev = true;
+                                res = check_system_devices_permissions_and_user(); 
+                                
+                                
                                 break;
                         case '?':
                                 show_help();
@@ -210,5 +266,7 @@ void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
 
         if (!ct && (opts->monitor_usb || opts->monitor_sdcard))
                config_file_handler(opts); 
+        
+        return res;
 }
 

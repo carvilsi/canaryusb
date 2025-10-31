@@ -1,5 +1,10 @@
 # Changelog
 
+# [v5.1.0](2025-10-31)
+
+* Fixes a bug related with command line args parsing and wrong free after malloc.
+* Possible to de-authorize a USB device not present on trusted-list (requires root).
+
 # [v5.0.0](2024-06-04)
 
 * Improvement for config file, now the list of trusted devices is a toml array.

@@ -10,6 +10,8 @@ Could be useful when you leave the laptop unattended or for a server on a remote
 breached, but at least you'll notice; this is the principle behind [Thinkst Canary](https://canary.tools/#why).
 Here we are thinking about removable media threats like BadUSB or physical attacks to extract data.
 
+Also it is possible to de-authorize an USB that is not present on trusted devices list. Check [kernel](https://www.kernel.org/doc/html/v5.15/usb/authorization.html) documentation.
+
 </div>
 
 ---
@@ -23,10 +25,12 @@ Here we are thinking about removable media threats like BadUSB or physical attac
     2. [Install from binary](#install-from-binary)
 5. [Install as a service](#install-as-a-service)
     1. [Remove the service](#remove-the-service)
+    2. [Install and run service as root (de-authorize mode)](#service-as-root)
 6. [Tests](#tests)
 7. [Examples](#examples)
 8. [Stop the daemon](#stop-the-daemon)
-9. [Notes](#notes)
+9. [Logs](#logs)
+10. [Notes](#notes)
 
 ---
 
@@ -58,6 +62,10 @@ Here we are thinking about removable media threats like BadUSB or physical attac
 **-t, --trust-list [comma separated usb_fingerprint list]**
                 list of usb fingerprints, comma seprated, to not notify when the related deviced is connected
                 check usb_fingerprint option to retrieve device fingerprint for connected USB device.
+
+-d, --de-authorize-device
+                de-authorize a connected device not present on the trust list
+                requires to be executed as sudoer (root).
 
 **-k, --kill**
                 kills the daemon, if it's running.
@@ -122,6 +130,10 @@ Seems that on **Arch Linux** is already installed.
 
 `$ ./canaryusb -s`
 
+**USB devices not present on trusted list will be de-authorizated, requires root**
+
+`$ ./canaryusb -d`
+
 
 Here you can create your [DNS token](https://canarytokens.org/generate)
 
@@ -165,6 +177,20 @@ If is not an update you'll need to set the right configuration at `~/.config/can
 `$ make remove_service`
 
 Will remove the canaryusb service, this will **not** uninstall canaryusb.
+
+### Install and run service as root (de-authorize mode)<a name="service-as-root" /> 
+
+You'll require to run canaryusb as a sudoer (root) in order to enable the de-authorize feature, any USB device not listed on trusted devices list, appart to trigger the CanaryToken will de-authorize the device on the system, meaning that will not possible to use it. Check [this](https://www.kernel.org/doc/html/v5.15/usb/authorization.html) to know how it works behind the scene.
+
+Since We do not like to deal with your system outside the user space there is not a make rule to do this; you'll need to **do it manually**:
+
+- Compile `$ make clean; make` or download the binary file at [repo releases](https://github.com/carvilsi/canaryusb/releases)
+- Copy the binary to your `/root/.local/bin/` folder (create it if not exists).
+- Copy the [configuration file](https://github.com/carvilsi/canaryusb/blob/main/configuration/config.toml) to `/root/.config/canaryusb` folder and for the de-authorization feature to be anable check that `deauth_devices` configuration is set to **true**.
+- Copy the [Sevice Unit File](https://github.com/carvilsi/canaryusb/blob/main/configuration/canaryusb.service) to `/etc/systemd/system/` folder and check that **line 14 is uncommented** (User=root) under `[Service]` config section.
+- Reload the services: `$ sudo systemctl daemon-reload`
+- Start the service: `$ sudo systemctl start canaryusb`
+- Check the status: `$ sudo systemctl status canaryusb`
 
 ## Tests
 
@@ -212,6 +238,16 @@ If is a **service**:
 If **running from src**:
 
 `$ ./canaryusb -k`
+
+## Logs<a name="logs" />
+
+**canaryusb** uses the *system logger* so you can check these by:
+
+- `$ journalctl -t canaryusb`
+
+In case that is runing as a service also possible to:
+
+- `$ journalctl --user`
 
 ## Notes
 
