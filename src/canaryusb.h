@@ -57,14 +57,13 @@
 #endif                                   
 
 #define NAME    "canaryusb" 
-#define VERSION "5.0.1"
+#define VERSION "5.1.0"
 
 #define BOLD_TEXT    "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
 
 #define MAX_PID_LEN 10
 
-//TODO: add here the config related with block device
 typedef struct {
         bool dev_fingerprint;
         bool trusted_list;

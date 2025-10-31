@@ -1,7 +1,6 @@
 CC = gcc
 LDFLAGS = `pkg-config --cflags --libs libsystemd`
-#CCFLAGS = -Werror -Wno-discarded-qualifiers -Wno-format-overflow -DTESTS -DSILENCE -g
-CCFLAGS = -Werror -Wno-discarded-qualifiers -Wno-format-overflow -DTESTS -DSILENCE -DDEBUG -g
+CCFLAGS = -Werror -Wno-discarded-qualifiers -Wno-format-overflow -DTESTS -DSILENCE -g
 
 SRC := $(shell find ./../src/ -type f -name '*.c' ! -name 'main.c') 
 

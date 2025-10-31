@@ -10,6 +10,8 @@ Could be useful when you leave the laptop unattended or for a server on a remote
 breached, but at least you'll notice; this is the principle behind [Thinkst Canary](https://canary.tools/#why).
 Here we are thinking about removable media threats like BadUSB or physical attacks to extract data.
 
+Also it is possible to de-authorize via [kernel](https://www.kernel.org/doc/html/v5.15/usb/authorization.html) an USB that is not present on trusted devices list.
+
 </div>
 
 ---

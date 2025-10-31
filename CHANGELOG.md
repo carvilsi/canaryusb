@@ -3,6 +3,7 @@
 # [develop]()
 
 * Fixes a bug related with command line args parsing and wrong free after malloc.
+* Possible to de-authorize a USB device not present on trusted-list (requires root).
 
 # [v5.0.0](2024-06-04)
 

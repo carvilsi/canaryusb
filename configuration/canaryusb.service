@@ -9,7 +9,9 @@ ExecStart=%h/.local/bin/canaryusb
 ExecStop=%h/.local/bin/canaryusb -k
 Restart=always
 RestartMode=direct
-
+# uncomment next line if you want to run this as root
+# mostly related with deauth_devices feature
+#User=root
 
 [Install]
 WantedBy=default.target
