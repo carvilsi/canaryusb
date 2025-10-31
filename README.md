@@ -25,7 +25,7 @@ Also it is possible to de-authorize via [kernel](https://www.kernel.org/doc/html
     2. [Install from binary](#install-from-binary)
 5. [Install as a service](#install-as-a-service)
     1. [Remove the service](#remove-the-service)
-    2. [Install and run service as root (de-authorize mode)](#service-as-root) /> 
+    2. [Install and run service as root (de-authorize mode)](#service-as-root)
 6. [Tests](#tests)
 7. [Examples](#examples)
 8. [Stop the daemon](#stop-the-daemon)
