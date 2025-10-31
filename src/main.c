@@ -38,14 +38,16 @@ int main(int argc, char *argv[])
         if (argc < 2) {
                 config_file_handler(&opts);
         } else {
-#ifndef TESTS
                 int r = parse_command_line(argc, argv, &opts);
+#ifndef TESTS
                 // if we do not have permission to deal
                 // with de-authorization on /sys/devices/
                 // folder, we prefer to stop the execution
                 if (r != 0)
                         exit(EXIT_FAILURE);
 #endif
+                if (r == 0)
+                        dprintf("permissions ok\n");
         }
 
         if (opts.version) {
