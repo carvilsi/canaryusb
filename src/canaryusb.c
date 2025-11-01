@@ -248,8 +248,6 @@ int parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                         case 'd':
                                 opts->deauth_dev = true;
                                 res = check_system_devices_permissions_and_user(); 
-                                
-                                
                                 break;
                         case '?':
                                 show_help();
