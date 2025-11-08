@@ -196,10 +196,9 @@ static struct option long_options[] =
        {0, 0 , 0, 0}
 };
 
-int parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
+void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
 {
         int p;
-        int res = 0;
         int ct = false;
         for (;;) {
                 int option_index = 0;
@@ -247,7 +246,6 @@ int parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
                                 break;
                         case 'd':
                                 opts->deauth_dev = true;
-                                res = check_system_devices_permissions_and_user(); 
                                 break;
                         case '?':
                                 show_help();
@@ -264,7 +262,5 @@ int parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts)
 
         if (!ct && (opts->monitor_usb || opts->monitor_sdcard))
                config_file_handler(opts); 
-        
-        return res;
 }
 

@@ -38,16 +38,8 @@ int main(int argc, char *argv[])
         if (argc < 2) {
                 config_file_handler(&opts);
         } else {
-                int r = parse_command_line(argc, argv, &opts);
-#ifndef TESTS
-                // if we do not have permission to deal
-                // with de-authorization on /sys/devices/
-                // folder, we prefer to stop the execution
-                if (r != 0)
-                        exit(EXIT_FAILURE);
-#endif
-                if (r == 0)
-                        dprintf("permissions ok\n");
+                parse_command_line(argc, argv, &opts);
+
         }
 
         if (opts.version) {
@@ -64,6 +56,20 @@ int main(int argc, char *argv[])
         } else {
                 kill_canaryusb_instance();
         }
+        
+        int r = 0;
+#ifndef TESTS
+        // if we do not have permission to deal
+        // with de-authorization on /sys/devices/
+        // folder, we prefer to stop the execution
+        if (opts.deauth_dev) {
+                r = check_system_devices_permissions_and_user()
+                if (r != 0)
+                        exit(EXIT_FAILURE);
+        }
+#endif
+                if (r == 0)
+                        dprintf("permissions ok\n");
 
         if (!opts.dev_fingerprint) {
                 pid_t pid;
