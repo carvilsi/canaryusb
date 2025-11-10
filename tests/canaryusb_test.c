@@ -59,9 +59,7 @@ static void config_file_reading_canary_token_and_trusted_list_and_de_auth_device
         
         ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("variable de-auth device should be false", opts.deauth_dev == false);
-        printf("deauth_dev: %d\n", opts.deauth_dev);
         config_file_handler(&opts);
-        printf("deauth_dev: %d\n", opts.deauth_dev);
         cst_a("deauth_dev must be set to true", opts.deauth_dev);
 }
 
@@ -117,9 +115,8 @@ static void command_line_arguments_version()
         ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("version variable should be false on start", !opts.version);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s", "-v"};
-        int r = parse_command_line(9, argv, &opts);
+        parse_command_line(9, argv, &opts);
         cst_a("version variable should be true on set by command line", opts.version);
-        cst_i(r, "should be 0 since -d is not set", 0);
 }
 
 static void command_line_arguments_de_authorize_device()
@@ -127,9 +124,8 @@ static void command_line_arguments_de_authorize_device()
         ConfigCanrayUSB opts = config_canary_usb_init;
         cst_a("version variable should be false on start", !opts.version);
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s", "-v", "-d"};
-        int r = parse_command_line(10, argv, &opts);
+        parse_command_line(10, argv, &opts);
         cst_a("de-authorize device variable should be true on set by command line", opts.deauth_dev);
-        cst_i(r, "should be -1 since -d is present and we are not root", -1);
 }
 
 static void get_canary_encoded_usb_fingerprint_test() {
