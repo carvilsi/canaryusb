@@ -14,5 +14,4 @@ int is_running();
 void kill_canaryusb_instance();
 void config_file_handler(ConfigCanrayUSB *opts);
 void check_argument_length(char *arg, int type);
-// TODO: add this check also when parsing config file
 int check_system_devices_permissions_and_user();
