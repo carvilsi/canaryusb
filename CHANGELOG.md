@@ -1,5 +1,9 @@
 # Changelog
 
+# [v5.1.1](2025-11-10)
+
+* Fixes check for permissions for de-atuhorize a device when using config file.
+
 # [v5.1.0](2025-10-31)
 
 * Fixes a bug related with command line args parsing and wrong free after malloc.

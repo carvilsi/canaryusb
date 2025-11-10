@@ -57,7 +57,7 @@
 #endif                                   
 
 #define NAME    "canaryusb" 
-#define VERSION "5.1.0"
+#define VERSION "5.1.1"
 
 #define BOLD_TEXT    "\e[1m"
 #define NO_BOLD_TEXT "\e[m"
@@ -89,5 +89,5 @@ typedef struct {
 }                                \
 
 void monitor_devices(ConfigCanrayUSB *opts);
-int parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts);
+void parse_command_line(int argc, char *argv[], ConfigCanrayUSB *opts);
 

@@ -323,7 +323,6 @@ int check_system_devices_permissions_and_user()
                 }
         }
 
-#ifndef TESTS
         if (res != 0) {
                 syslog(LOG_ERR,
                        "de-authorize a device requires "
@@ -343,7 +342,6 @@ int check_system_devices_permissions_and_user()
                                 "this as root\n");
                 }
         }
-#endif
 
         return res;
 }
