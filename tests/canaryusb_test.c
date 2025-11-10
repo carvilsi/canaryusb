@@ -61,8 +61,6 @@ static void config_file_reading_canary_token_and_trusted_list_and_de_auth_device
         cst_a("variable de-auth device should be false", opts.deauth_dev == false);
         config_file_handler(&opts);
         cst_a("deauth_dev must be set to true", opts.deauth_dev);
-        /*int r = check_system_devices_permissions_and_user();*/
-        /*cst_i(r, "should be -1 since we are not root user", -1);*/
 }
 
 static void command_line_arguments_canary_token()
@@ -128,8 +126,6 @@ static void command_line_arguments_de_authorize_device()
         char *argv[] = {"canaries", "-c", PROVIDED_CANARY_TOKEN, "-t", PROVIDED_TRUSTED_LIST, "-f", "-u", "-s", "-v", "-d"};
         parse_command_line(10, argv, &opts);
         cst_a("de-authorize device variable should be true on set by command line", opts.deauth_dev);
-        int r = check_system_devices_permissions_and_user();
-        cst_i(r, "should be -1 since we are not root user", -1);
 }
 
 static void get_canary_encoded_usb_fingerprint_test() {

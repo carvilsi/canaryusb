@@ -56,20 +56,16 @@ int main(int argc, char *argv[])
         } else {
                 kill_canaryusb_instance();
         }
-        
-        int r = 0;
-#ifndef TESTS
+
         // if we do not have permission to deal
         // with de-authorization on /sys/devices/
         // folder, we prefer to stop the execution
         if (opts.deauth_dev) {
-                r = check_system_devices_permissions_and_user()
+                int r = check_system_devices_permissions_and_user();
+                dprintf("the permission response: %d\n", r);
                 if (r != 0)
                         exit(EXIT_FAILURE);
         }
-#endif
-                if (r == 0)
-                        dprintf("permissions ok\n");
 
         if (!opts.dev_fingerprint) {
                 pid_t pid;
