@@ -17,7 +17,7 @@ Also it is possible to de-authorize an USB that is not present on trusted device
 ---
 
 1. [Command Line Options](#command-line-options)
-2. [Buid](#build)
+2. [Build](#build)
     1. [Dependencies](#dependencies)
 3. [Run](#run)
 4. [Install](#install)
