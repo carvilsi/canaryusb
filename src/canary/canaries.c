@@ -23,6 +23,7 @@ void
 build_canary_dns_token(char *b32usbfngp, char *canary_dns_token, 
                 ConfigCanrayUSB *opts)
 {
+        dprintf("base32: %s\n", b32usbfngp);
         if (strlen(b32usbfngp) < MAX_BASE_32_MESSAGE_LENGTH) {
                 strcpy(canary_dns_token, b32usbfngp);
                 strcat(canary_dns_token, DOT); 
@@ -52,8 +53,8 @@ void
 deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt, 
                 ConfigCanrayUSB *opts)
 {
-        char *canary_dns_token = (char*) malloc(strlen(base32_usb_fingprt) + 
-                        strlen(MAGIC_STRING) + 2 + strlen(opts->canary_token));
+        int dns_total_size = TOTAL_MAX_BASE_32_MESSAGE_LENGTH + strlen(opts->canary_token);
+        char canary_dns_token[dns_total_size];
         check_memory_allocation(canary_dns_token);
         build_canary_dns_token(base32_usb_fingprt, canary_dns_token, opts);
 
@@ -65,8 +66,6 @@ deal_with_canaries(char *base32_usb_fingprt, char *dev_fingrprnt,
         canaryrsp = call_the_canary(canary_dns_token);
 #endif
 
-        free(canary_dns_token);
-        
         if (canaryrsp > 0) {
                 dprintf("ERROR canaryusb: When calling canary tokens site, "
                                 "for connected device: %s, run it on debug mode "

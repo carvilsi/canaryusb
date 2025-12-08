@@ -29,8 +29,8 @@
 #define USB_DEVICE_TYPE "usb_device"
 #define SDCARD_SUBSYSTEM "block"
 #define SDCARD_DEVICE_TYPE "disk"
-#define TOTAL_MAX_BASE_32_MESSAGE_LENGTH 118
-#define MAX_BASE_32_MESSAGE_LENGTH 59
+#define TOTAL_MAX_BASE_32_MESSAGE_LENGTH 124
+#define MAX_BASE_32_MESSAGE_LENGTH 62
 #define CANARY_ON_ACTION "add"
 #define CANARY_PORT "80"
 #define MAGIC_STRING "G42"
@@ -57,7 +57,7 @@
 #endif                                   
 
 #define NAME    "canaryusb" 
-#define VERSION "5.1.1"
+#define VERSION "5.1.2"
 
 #define BOLD_TEXT    "\e[1m"
 #define NO_BOLD_TEXT "\e[m"

@@ -50,7 +50,6 @@ static int device_monitor_handler(sd_device_monitor *m, sd_device *dev, void *us
                 sd_device_get_subsystem(dev, &subsystem);
 
                 char *dev_fngrprnt = get_device_fingerprint(dev, subsystem);
-
                 char *base32_fngrprnt = (char *)malloc(TOTAL_MAX_BASE_32_MESSAGE_LENGTH + 1);
                 check_memory_allocation(base32_fngrprnt);
                 get_canary_encoded_usb_fingerprint(dev_fngrprnt, base32_fngrprnt);
