@@ -1,5 +1,10 @@
 # Changelog
 
+# [v5.1.2](https://github.com/carvilsi/canaryusb/releases/tag/v5.1.2) (2025-12-08)
+
+* Fixes bug related with memory allocation when building the canary_dns token.
+* Tuned the size related with canary_dns token.
+
 # [v5.1.1](https://github.com/carvilsi/canaryusb/releases/tag/v5.1.1) (2025-11-10)
 
 * Fixes check for permissions for de-atuhorize a device when using config file.
